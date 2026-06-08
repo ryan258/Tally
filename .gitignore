@@ -1,0 +1,13 @@
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Editor cruft
+*.swp
+*~
+.vscode/
+.idea/
+
+# Local backup files exported from the app
+tally-backup-*.json
+tally-foods-*.json

@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0e1116">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Tally — Calorie & Protein Tracker</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<style>
+  :root{
+    --bg:#0e1116; --surface:#171c24; --surface-2:#1f2630; --line:#2a323d;
+    --text:#e8edf2; --muted:#8a96a5; --accent:#4cc2ff; --accent-2:#2b9eff;
+    --good:#34d399; --warn:#fbbf24; --bad:#f87171; --protein:#a78bfa;
+    --radius:18px; --tap:52px;
+    --safe-top:env(safe-area-inset-top,0px);
+    --safe-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--bg); color:var(--text);
+    font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    overscroll-behavior-y:none; -webkit-user-select:none; user-select:none;
+  }
+  #app{max-width:640px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+
+  header{
+    position:sticky;top:0;z-index:20;background:rgba(14,17,22,.92);
+    backdrop-filter:blur(10px);
+    padding:calc(var(--safe-top) + 12px) 16px 10px;border-bottom:1px solid var(--line);
+  }
+  .head-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:19px;letter-spacing:.2px}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+  .date{color:var(--muted);font-size:13px;font-weight:500}
+  .icon-btn{
+    width:42px;height:42px;border-radius:12px;border:1px solid var(--line);
+    background:var(--surface);color:var(--text);font-size:20px;display:grid;place-items:center;
+  }
+  .icon-btn:active{background:var(--surface-2)}
+
+  /* summary */
+  .summary{padding:14px 16px 4px}
+  .stat{
+    background:linear-gradient(180deg,var(--surface),var(--surface-2));
+    border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:12px;
+  }
+  .stat-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+  .stat-label{color:var(--muted);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+  .stat-val{font-size:34px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+  .stat-val small{font-size:15px;font-weight:600;color:var(--muted)}
+  .goal-edit{color:var(--muted);font-size:13px;font-weight:600;background:none;border:none;padding:4px}
+  .bar{height:10px;border-radius:6px;background:#0a0d12;overflow:hidden;border:1px solid var(--line)}
+  .bar > i{display:block;height:100%;width:0;border-radius:6px;transition:width .35s ease}
+  .bar.cal > i{background:linear-gradient(90deg,var(--accent-2),var(--accent))}
+  .bar.pro > i{background:linear-gradient(90deg,#7c5cf0,var(--protein))}
+  .bar.over > i{background:linear-gradient(90deg,#e0533f,var(--bad))}
+  .breakdown{display:flex;gap:14px;margin-top:9px;color:var(--muted);font-size:13px;flex-wrap:wrap}
+  .breakdown b{color:var(--text);font-weight:700}
+
+  main{flex:1;padding:6px 16px 120px}
+  .section-title{display:flex;align-items:center;justify-content:space-between;margin:18px 2px 10px}
+  .section-title h2{font-size:15px;margin:0;letter-spacing:.3px}
+  .link-btn{background:none;border:none;color:var(--accent);font-weight:700;font-size:14px;padding:6px 4px}
+
+  /* quick foods chips */
+  .chips{display:flex;flex-wrap:wrap;gap:9px}
+  .chip{
+    display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    padding:9px 13px;min-height:var(--tap);text-align:left;color:var(--text);
+  }
+  .chip:active{background:var(--surface-2);transform:scale(.97)}
+  .chip .nm{font-weight:700;font-size:14px}
+  .chip .mt{font-size:12px;color:var(--muted)}
+  .chip.empty{color:var(--muted);font-weight:500;font-size:14px;border-style:dashed;width:100%;justify-content:center;align-items:center;flex-direction:row}
+  .chip.more{width:100%;justify-content:center;align-items:center;flex-direction:row;color:var(--accent);font-weight:700;font-size:14px;background:transparent;border-style:dashed}
+
+  /* log list */
+  .log{display:flex;flex-direction:column;gap:8px}
+  .item{
+    display:flex;align-items:center;gap:12px;background:var(--surface);
+    border:1px solid var(--line);border-radius:14px;padding:11px 13px;
+  }
+  .item .tag{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:18px;flex:0 0 auto}
+  .item.food .tag{background:rgba(76,194,255,.14)}
+  .item.exercise .tag{background:rgba(52,211,153,.14)}
+  .item .body{flex:1;min-width:0}
+  .item .body .nm{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .item .body .mt{font-size:12.5px;color:var(--muted);margin-top:1px}
+  .item .amt{font-weight:800;font-variant-numeric:tabular-nums;font-size:15px}
+  .item.exercise .amt{color:var(--good)}
+  .item .del{width:38px;height:38px;border-radius:10px;border:none;background:transparent;color:var(--muted);font-size:20px;flex:0 0 auto}
+  .item .del:active{background:var(--surface-2);color:var(--bad)}
+  .empty-note{color:var(--muted);text-align:center;padding:26px 10px;font-size:14px}
+
+  /* floating add buttons */
+  .fab-wrap{
+    position:fixed;left:0;right:0;bottom:0;z-index:25;
+    padding:10px 16px calc(var(--safe-bottom) + 12px);
+    background:linear-gradient(180deg,transparent,var(--bg) 36%);
+    display:flex;gap:12px;max-width:640px;margin:0 auto;
+  }
+  .fab{
+    flex:1;height:56px;border-radius:16px;border:none;font-weight:800;font-size:16px;
+    display:flex;align-items:center;justify-content:center;gap:8px;color:#04121b;
+  }
+  .fab.food{background:linear-gradient(180deg,var(--accent),var(--accent-2))}
+  .fab.ex{background:linear-gradient(180deg,#3ee0a3,#22b883)}
+  .fab:active{filter:brightness(.92);transform:translateY(1px)}
+
+  /* modal / sheet */
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+  .scrim.open{opacity:1;pointer-events:auto}
+  .sheet{
+    position:fixed;left:0;right:0;bottom:0;z-index:41;max-width:640px;margin:0 auto;
+    background:var(--surface);border-radius:22px 22px 0 0;border-top:1px solid var(--line);
+    padding:8px 18px calc(var(--safe-bottom) + 18px);
+    transform:translateY(100%);transition:transform .26s cubic-bezier(.2,.8,.2,1);
+    max-height:92vh;overflow:auto;
+  }
+  .sheet.open{transform:translateY(0)}
+  .grab{width:42px;height:5px;border-radius:3px;background:var(--line);margin:8px auto 6px}
+  .sheet h3{margin:6px 2px 14px;font-size:18px}
+  .sheet h4{margin:16px 2px 9px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;font-weight:700}
+  .field{margin-bottom:13px}
+  .field label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin:0 2px 6px}
+  .field input{
+    width:100%;height:var(--tap);border-radius:13px;border:1px solid var(--line);
+    background:var(--surface-2);color:var(--text);font-size:17px;padding:0 15px;
+    -webkit-user-select:text;user-select:text;
+  }
+  .field input:focus{outline:none;border-color:var(--accent)}
+  /* food name type-ahead */
+  .suggest{margin:-4px 0 13px;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--surface-2);max-height:50vh;overflow-y:auto}
+  .suggest:empty{display:none}
+  .suggest-item{display:flex;align-items:center;justify-content:space-between;gap:10px;background:none;border:none;border-bottom:1px solid var(--line);color:var(--text);padding:12px 14px;text-align:left;width:100%;min-height:50px}
+  .suggest-item:last-child{border-bottom:none}
+  .suggest-item:active{background:var(--surface)}
+  .suggest-item .nm{font-weight:600;font-size:15px}
+  .suggest-item .nm b{color:var(--accent);font-weight:800}
+  .suggest-item .mt{font-size:12.5px;color:var(--muted);white-space:nowrap;flex:0 0 auto}
+  .row2{display:flex;gap:11px}
+  .row2 .field{flex:1}
+  .check{display:flex;align-items:center;gap:10px;margin:4px 2px 14px;color:var(--muted);font-size:14px}
+  .check input{width:22px;height:22px;accent-color:var(--accent)}
+  .sheet-actions{display:flex;gap:11px;margin-top:6px}
+  .btn{flex:1;height:54px;border-radius:14px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-weight:700;font-size:16px}
+  .btn.primary{background:linear-gradient(180deg,var(--accent),var(--accent-2));border:none;color:#04121b}
+  .btn.danger{color:var(--bad)}
+  .btn:active{filter:brightness(.93)}
+
+  /* manage foods list */
+  .manage-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .manage-item .body{flex:1;min-width:0}
+  .manage-item .nm{font-weight:700}
+  .manage-item .mt{font-size:12.5px;color:var(--muted)}
+  .mini{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:17px;flex:0 0 auto}
+  .mini.del:active{color:var(--bad)}
+  .toast{
+    position:fixed;left:50%;bottom:calc(var(--safe-bottom) + 92px);transform:translateX(-50%) translateY(20px);
+    background:#04121b;border:1px solid var(--accent);color:var(--text);padding:11px 18px;border-radius:30px;
+    font-size:14px;font-weight:600;z-index:60;opacity:0;pointer-events:none;transition:all .25s;white-space:nowrap;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .hint{color:var(--muted);font-size:13px;margin:2px 2px 14px;line-height:1.5}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="head-row">
+      <div class="brand"><span class="dot"></span>Tally</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="date" id="todayDate"></span>
+        <button class="icon-btn" id="openMenu" aria-label="Menu">⋯</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="summary">
+    <div class="stat">
+      <div class="stat-top">
+        <span class="stat-label">Calories remaining</span>
+        <button class="goal-edit" id="editCalGoal">Goal: <span id="calGoalTxt">2000</span> ✎</button>
+      </div>
+      <div class="stat-val" id="calRemain">2000<small> / 2000</small></div>
+      <div class="bar cal" id="calBar"><i></i></div>
+      <div class="breakdown">
+        <span>Food <b id="calFood">0</b></span>
+        <span>Exercise <b id="calEx">0</b></span>
+        <span>Net <b id="calNet">0</b></span>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-top">
+        <span class="stat-label">Protein</span>
+        <button class="goal-edit" id="editProGoal">Goal: <span id="proGoalTxt">150</span>g ✎</button>
+      </div>
+      <div class="stat-val"><span id="proTotal">0</span><small> / <span id="proGoalSmall">150</span> g</small></div>
+      <div class="bar pro" id="proBar"><i></i></div>
+    </div>
+  </section>
+
+  <main>
+    <div class="section-title">
+      <h2>Quick add</h2>
+      <button class="link-btn" id="manageFoods">Manage</button>
+    </div>
+    <div class="chips" id="quickChips"></div>
+
+    <div class="section-title">
+      <h2>Today's log</h2>
+      <button class="link-btn" id="clearDay">Clear day</button>
+    </div>
+    <div class="log" id="logList"></div>
+  </main>
+
+  <div class="fab-wrap">
+    <button class="fab food" id="addFood">＋ Food</button>
+    <button class="fab ex" id="addExercise">＋ Exercise</button>
+  </div>
+</div>
+
+<!-- Scrim shared by all sheets -->
+<div class="scrim" id="scrim"></div>
+
+<!-- Food sheet -->
+<div class="sheet" id="foodSheet">
+  <div class="grab"></div>
+  <h3 id="foodSheetTitle">Add food</h3>
+  <div class="field">
+    <label>Food name</label>
+    <input id="fName" type="text" placeholder="e.g. Greek yogurt" autocomplete="off" spellcheck="true" autocapitalize="words" autocorrect="on">
+  </div>
+  <div class="suggest" id="fSuggest"></div>
+  <div class="row2">
+    <div class="field">
+      <label>Calories</label>
+      <input id="fCal" type="number" inputmode="numeric" placeholder="0" min="0">
+    </div>
+    <div class="field">
+      <label>Protein (g)</label>
+      <input id="fPro" type="number" inputmode="decimal" placeholder="0" min="0">
+    </div>
+  </div>
+  <label class="check"><input type="checkbox" id="fSave"> Save to my foods for quick add</label>
+  <div class="sheet-actions">
+    <button class="btn" data-close>Cancel</button>
+    <button class="btn primary" id="fSubmit">Add</button>
+  </div>
+</div>
+
+<!-- Exercise sheet -->
+<div class="sheet" id="exSheet">
+  <div class="grab"></div>
+  <h3>Add exercise</h3>
+  <div class="field">
+    <label>Activity</label>
+    <input id="eName" type="text" placeholder="e.g. Walk, Gym" autocomplete="off" spellcheck="true" autocapitalize="words" autocorrect="on">
+  </div>
+  <div class="field">
+    <label>Calories burned</label>
+    <input id="eCal" type="number" inputmode="numeric" placeholder="0" min="0">
+  </div>
+  <div class="sheet-actions">
+    <button class="btn" data-close>Cancel</button>
+    <button class="btn primary" id="eSubmit">Add</button>
+  </div>
+</div>
+
+<!-- Manage foods sheet -->
+<div class="sheet" id="manageSheet">
+  <div class="grab"></div>
+  <h3>My foods</h3>
+  <p class="hint">Saved foods appear as quick-add buttons. Tap edit to change calories or protein.</p>
+  <div id="manageList"></div>
+  <div class="sheet-actions" style="margin-top:16px">
+    <button class="btn" data-close>Close</button>
+    <button class="btn primary" id="addNewFood">＋ New food</button>
+  </div>
+</div>
+
+<!-- Goal sheet -->
+<div class="sheet" id="goalSheet">
+  <div class="grab"></div>
+  <h3 id="goalTitle">Daily goal</h3>
+  <div class="field">
+    <label id="goalLabel">Goal</label>
+    <input id="goalInput" type="number" inputmode="numeric" min="0">
+  </div>
+  <div class="sheet-actions">
+    <button class="btn" data-close>Cancel</button>
+    <button class="btn primary" id="goalSubmit">Save</button>
+  </div>
+</div>
+
+<!-- Menu sheet -->
+<div class="sheet" id="menuSheet">
+  <div class="grab"></div>
+  <h3>Menu &amp; data</h3>
+
+  <h4>Daily goals</h4>
+  <div class="row2">
+    <div class="field">
+      <label>Calorie goal</label>
+      <input id="menuCalGoal" type="number" inputmode="numeric" min="0">
+    </div>
+    <div class="field">
+      <label>Protein goal (g)</label>
+      <input id="menuProGoal" type="number" inputmode="numeric" min="0">
+    </div>
+  </div>
+
+  <h4>Backup &amp; transfer</h4>
+  <p class="hint">Your data lives only on this device. Export a backup file to move Tally to another phone, then import it there.</p>
+  <div class="sheet-actions" style="flex-direction:column">
+    <button class="btn primary" id="exportBtn" style="width:100%">⤓ Export backup (foods + history)</button>
+    <button class="btn" id="importBtn" style="width:100%;margin-top:11px">⤒ Import backup</button>
+    <button class="btn" id="exportFoodsBtn" style="width:100%;margin-top:11px">Export only my foods</button>
+    <button class="btn danger" id="resetAllBtn" style="width:100%;margin-top:11px">Erase all data</button>
+  </div>
+  <input type="file" id="importFile" accept="application/json,.json" hidden>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+  const $ = s => document.querySelector(s);
+  const KEY = "tally.v1";
+
+  /* ---------- state ---------- */
+  const defaultState = () => ({
+    goals:{ calories:2000, protein:150 },
+    foods:[
+      {id:uid(), name:"Egg",            calories:78,  protein:6},
+      {id:uid(), name:"Chicken breast 100g", calories:165, protein:31},
+      {id:uid(), name:"Greek yogurt cup", calories:100, protein:17},
+      {id:uid(), name:"Banana",         calories:105, protein:1},
+      {id:uid(), name:"Protein shake",  calories:160, protein:30}
+    ],
+    days:{}   // "YYYY-MM-DD": { entries:[{id,type:'food'|'exercise',name,calories,protein}] }
+  });
+
+  let state = load();
+
+  function uid(){ return Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4); }
+  function load(){
+    try{
+      const raw = localStorage.getItem(KEY);
+      if(!raw) return defaultState();
+      const s = JSON.parse(raw);
+      if(!s.goals) s.goals = {calories:2000,protein:150};
+      if(!s.foods) s.foods = [];
+      if(!s.days)  s.days = {};
+      return s;
+    }catch(e){ return defaultState(); }
+  }
+  function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+
+  /* ---------- date / midnight reset ----------
+     The day's totals are keyed by the LOCAL calendar date. When the clock
+     passes midnight the key changes, so today's entries start empty — an
+     automatic reset that survives the app being closed or the phone sleeping. */
+  let currentKey = todayKey();
+  function todayKey(d=new Date()){
+    const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+  }
+  function prettyDate(key){
+    const [y,m,d]=key.split("-").map(Number);
+    return new Date(y,m-1,d).toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"});
+  }
+  function today(){
+    if(!state.days[currentKey]) state.days[currentKey] = { entries:[] };
+    return state.days[currentKey];
+  }
+  function checkRollover(){
+    const k = todayKey();
+    if(k !== currentKey){ currentKey = k; render(); }
+  }
+
+  /* ---------- rendering ---------- */
+  function totals(){
+    const e = today().entries;
+    let food=0, ex=0, pro=0;
+    for(const it of e){
+      if(it.type==="exercise"){ ex += +it.calories||0; }
+      else { food += +it.calories||0; pro += +it.protein||0; }
+    }
+    return { food, ex, net:food-ex, pro };
+  }
+
+  function render(){
+    $("#todayDate").textContent = prettyDate(currentKey);
+    const t = totals();
+    const g = state.goals;
+
+    // calories
+    const remain = g.calories - t.net;
+    $("#calRemain").innerHTML = `${remain}<small> / ${g.calories}</small>`;
+    $("#calGoalTxt").textContent = g.calories;
+    $("#calFood").textContent = t.food;
+    $("#calEx").textContent = t.ex;
+    $("#calNet").textContent = t.net;
+    const calPct = g.calories>0 ? (t.net/g.calories)*100 : 0;
+    const calBar = $("#calBar");
+    calBar.classList.toggle("over", t.net>g.calories);
+    calBar.firstElementChild.style.width = Math.max(0,Math.min(100,calPct))+"%";
+
+    // protein
+    $("#proTotal").textContent = round1(t.pro);
+    $("#proGoalTxt").textContent = g.protein;
+    $("#proGoalSmall").textContent = g.protein;
+    const proPct = g.protein>0 ? (t.pro/g.protein)*100 : 0;
+    $("#proBar").firstElementChild.style.width = Math.max(0,Math.min(100,proPct))+"%";
+
+    renderQuick();
+    renderLog();
+  }
+
+  function round1(n){ return Math.round(n*10)/10; }
+
+  let quickExpanded = false;   // saved-foods list starts collapsed; stays as set until toggled or a food is tapped
+  function renderQuick(){
+    const wrap = $("#quickChips");
+    wrap.innerHTML = "";
+    if(state.foods.length===0){
+      const d=document.createElement("button");
+      d.className="chip empty"; d.textContent="No saved foods yet — tap Manage to add some";
+      d.onclick=()=>openManage();
+      wrap.appendChild(d); return;
+    }
+    const total = state.foods.length;
+    // collapsed by default regardless of count: show nothing but the toggle
+    if(quickExpanded){
+      for(const f of state.foods){
+        const b=document.createElement("button");
+        b.className="chip";
+        b.innerHTML=`<span class="nm">${esc(f.name)}</span><span class="mt">${f.calories} cal · ${round1(f.protein)}g</span>`;
+        b.onclick=()=>{ quickExpanded=false; logFood(f.name,f.calories,f.protein); pop(`Added ${f.name}`); };
+        wrap.appendChild(b);
+      }
+    }
+    const t=document.createElement("button");
+    t.className="chip more";
+    t.textContent = quickExpanded ? "Show less ▲" : `Show foods (${total}) ▼`;
+    t.onclick=()=>{ quickExpanded=!quickExpanded; renderQuick(); };
+    wrap.appendChild(t);
+  }
+
+  function renderLog(){
+    const list = $("#logList");
+    list.innerHTML="";
+    const entries = today().entries;
+    if(entries.length===0){
+      list.innerHTML=`<div class="empty-note">Nothing logged yet today.<br>Tap a quick-add button or ＋ Food below.</div>`;
+      return;
+    }
+    // newest first
+    for(let i=entries.length-1;i>=0;i--){
+      const it=entries[i];
+      const row=document.createElement("div");
+      row.className="item "+it.type;
+      if(it.type==="exercise"){
+        row.innerHTML=`<div class="tag">🔥</div>
+          <div class="body"><div class="nm">${esc(it.name)}</div><div class="mt">Exercise</div></div>
+          <div class="amt">−${it.calories}</div>`;
+      }else{
+        row.innerHTML=`<div class="tag">🍽️</div>
+          <div class="body"><div class="nm">${esc(it.name)}</div><div class="mt">${round1(it.protein)}g protein</div></div>
+          <div class="amt">${it.calories}</div>`;
+      }
+      const del=document.createElement("button");
+      del.className="del"; del.innerHTML="✕"; del.setAttribute("aria-label","Delete");
+      del.onclick=()=>{ removeEntry(it.id); };
+      row.appendChild(del);
+      list.appendChild(row);
+    }
+  }
+
+  function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+  /* ---------- mutations ---------- */
+  function logFood(name,cal,pro){
+    today().entries.push({id:uid(),type:"food",name:name||"Food",calories:+cal||0,protein:+pro||0});
+    save(); render();
+  }
+  function logExercise(name,cal){
+    today().entries.push({id:uid(),type:"exercise",name:name||"Exercise",calories:+cal||0});
+    save(); render();
+  }
+  function removeEntry(id){
+    const e=today().entries; const i=e.findIndex(x=>x.id===id);
+    if(i>-1){ e.splice(i,1); save(); render(); }
+  }
+
+  /* ---------- sheets ---------- */
+  const scrim=$("#scrim");
+  let openSheet=null;
+  function show(id){
+    if(openSheet) openSheet.classList.remove("open");
+    const s=$("#"+id); s.classList.add("open"); scrim.classList.add("open"); openSheet=s;
+  }
+  function hide(){
+    if(openSheet) openSheet.classList.remove("open");
+    scrim.classList.remove("open"); openSheet=null;
+    if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  }
+  scrim.onclick=hide;
+  document.querySelectorAll("[data-close]").forEach(b=>b.onclick=hide);
+
+  /* food sheet — one handler, three modes: "add", "edit", "newSaved" */
+  let foodMode="add";
+  let editingFoodId=null;
+  $("#addFood").onclick=()=>{
+    foodMode="add"; editingFoodId=null;
+    $("#foodSheetTitle").textContent="Add food";
+    $("#fSubmit").textContent="Add";
+    $("#fName").value=""; $("#fCal").value=""; $("#fPro").value="";
+    $("#fSave").checked=false;
+    $("#fSave").parentElement.style.display="";
+    clearSuggest();
+    show("foodSheet"); setTimeout(()=>$("#fName").focus(),250);
+  };
+  $("#fSubmit").onclick=()=>{
+    const name=$("#fName").value.trim();
+    const cal=+$("#fCal").value||0;
+    const pro=+$("#fPro").value||0;
+    if(!name){ pop("Enter a name"); $("#fName").focus(); return; }
+
+    if(foodMode==="edit"){
+      const f=state.foods.find(x=>x.id===editingFoodId);
+      if(f){ f.name=name; f.calories=cal; f.protein=pro; }
+      save(); hide(); openManage(); renderQuick(); pop("Saved");
+      return;
+    }
+    if(foodMode==="newSaved"){
+      state.foods.push({id:uid(),name,calories:cal,protein:pro});
+      save(); hide(); openManage(); pop("Food saved");
+      return;
+    }
+    // "add" mode: log it, optionally remember it
+    if($("#fSave").checked) state.foods.push({id:uid(),name,calories:cal,protein:pro});
+    logFood(name,cal,pro);
+    hide(); pop(`Added ${name}`);
+  };
+
+  /* food name type-ahead over saved foods */
+  const fSuggest=$("#fSuggest");
+  function clearSuggest(){ fSuggest.innerHTML=""; }
+  function highlight(name,q){
+    const i=name.toLowerCase().indexOf(q);
+    if(i<0) return esc(name);
+    return esc(name.slice(0,i))+"<b>"+esc(name.slice(i,i+q.length))+"</b>"+esc(name.slice(i+q.length));
+  }
+  $("#fName").addEventListener("input",()=>{
+    if(foodMode!=="add"){ clearSuggest(); return; }   // suggestions only when logging
+    const q=$("#fName").value.trim().toLowerCase();
+    if(!q){ clearSuggest(); return; }
+    const matches=state.foods.filter(f=>f.name.toLowerCase().includes(q)).slice(0,8);
+    if(matches.length===0){ clearSuggest(); return; }
+    fSuggest.innerHTML="";
+    matches.forEach(f=>{
+      const b=document.createElement("button");
+      b.type="button"; b.className="suggest-item";
+      b.innerHTML=`<span class="nm">${highlight(f.name,q)}</span><span class="mt">${f.calories} cal · ${round1(f.protein)}g</span>`;
+      b.onclick=()=>{
+        $("#fName").value=f.name; $("#fCal").value=f.calories; $("#fPro").value=f.protein;
+        $("#fSave").checked=false;     // already in your foods
+        clearSuggest();
+      };
+      fSuggest.appendChild(b);
+    });
+  });
+
+  /* exercise sheet */
+  $("#addExercise").onclick=()=>{
+    $("#eName").value=""; $("#eCal").value="";
+    show("exSheet"); setTimeout(()=>$("#eName").focus(),250);
+  };
+  $("#eSubmit").onclick=()=>{
+    const name=$("#eName").value.trim()||"Exercise";
+    const cal=+$("#eCal").value||0;
+    if(cal<=0){ pop("Enter calories burned"); $("#eCal").focus(); return; }
+    logExercise(name,cal); hide(); pop(`−${cal} cal`);
+  };
+
+  /* manage foods */
+  function openManage(){ renderManage(); show("manageSheet"); }
+  $("#manageFoods").onclick=openManage;
+  function renderManage(){
+    const wrap=$("#manageList"); wrap.innerHTML="";
+    if(state.foods.length===0){
+      wrap.innerHTML=`<p class="hint">No saved foods yet. Tap “New food”.</p>`; return;
+    }
+    state.foods.forEach(f=>{
+      const row=document.createElement("div");
+      row.className="manage-item";
+      row.innerHTML=`<div class="body"><div class="nm">${esc(f.name)}</div><div class="mt">${f.calories} cal · ${round1(f.protein)}g protein</div></div>`;
+      const edit=document.createElement("button");
+      edit.className="mini"; edit.innerHTML="✎"; edit.setAttribute("aria-label","Edit");
+      edit.onclick=()=>editFood(f.id);
+      const del=document.createElement("button");
+      del.className="mini del"; del.innerHTML="🗑"; del.setAttribute("aria-label","Delete");
+      del.onclick=()=>{
+        if(confirm(`Delete "${f.name}" from your foods?`)){
+          state.foods=state.foods.filter(x=>x.id!==f.id); save(); renderManage(); renderQuick();
+        }
+      };
+      row.appendChild(edit); row.appendChild(del);
+      wrap.appendChild(row);
+    });
+  }
+  function editFood(id){
+    const f=state.foods.find(x=>x.id===id); if(!f) return;
+    foodMode="edit"; editingFoodId=id;
+    $("#foodSheetTitle").textContent="Edit food";
+    $("#fSubmit").textContent="Save";
+    $("#fName").value=f.name; $("#fCal").value=f.calories; $("#fPro").value=f.protein;
+    $("#fSave").parentElement.style.display="none";
+    clearSuggest();
+    show("foodSheet"); setTimeout(()=>$("#fName").focus(),250);
+  }
+  $("#addNewFood").onclick=()=>{
+    foodMode="newSaved"; editingFoodId=null;
+    $("#foodSheetTitle").textContent="New saved food";
+    $("#fSubmit").textContent="Save";
+    $("#fName").value=""; $("#fCal").value=""; $("#fPro").value="";
+    $("#fSave").parentElement.style.display="none";
+    clearSuggest();
+    show("foodSheet"); setTimeout(()=>$("#fName").focus(),250);
+  };
+
+  /* goals */
+  let goalKind=null;
+  $("#editCalGoal").onclick=()=>openGoal("calories");
+  $("#editProGoal").onclick=()=>openGoal("protein");
+  function openGoal(kind){
+    goalKind=kind;
+    $("#goalTitle").textContent = kind==="calories" ? "Daily calorie goal" : "Daily protein goal";
+    $("#goalLabel").textContent = kind==="calories" ? "Calories" : "Protein (g)";
+    $("#goalInput").value = state.goals[kind];
+    show("goalSheet"); setTimeout(()=>$("#goalInput").select(),250);
+  }
+  $("#goalSubmit").onclick=()=>{
+    const v=+$("#goalInput").value;
+    if(v>0){ state.goals[goalKind]=v; save(); render(); }
+    hide();
+  };
+
+  /* clear day */
+  $("#clearDay").onclick=()=>{
+    if(today().entries.length===0){ pop("Nothing to clear"); return; }
+    if(confirm("Clear all of today's food and exercise entries?")){
+      today().entries=[]; save(); render(); pop("Day cleared");
+    }
+  };
+
+  /* menu + data */
+  $("#openMenu").onclick=()=>{
+    $("#menuCalGoal").value=state.goals.calories;
+    $("#menuProGoal").value=state.goals.protein;
+    show("menuSheet");
+  };
+  function bindGoalInput(sel,key){
+    const el=$(sel);
+    const apply=()=>{ const v=+el.value; if(v>0){ state.goals[key]=v; save(); render(); } };
+    el.addEventListener("change",apply);
+    el.addEventListener("input",apply);
+  }
+  bindGoalInput("#menuCalGoal","calories");
+  bindGoalInput("#menuProGoal","protein");
+  $("#exportBtn").onclick=()=>downloadJSON(state,`tally-backup-${todayKey()}.json`);
+  $("#exportFoodsBtn").onclick=()=>downloadJSON({foods:state.foods},`tally-foods-${todayKey()}.json`);
+  $("#importBtn").onclick=()=>$("#importFile").click();
+
+  /* ---- import sanitizers: never trust the file's shape ---- */
+  function num(v){ const n=+v; return Number.isFinite(n)&&n>=0 ? n : 0; }
+  function str(v){ return typeof v==="string" ? v : (v==null ? "" : String(v)); }
+  function sanitizeFood(f){
+    if(!f || typeof f!=="object") return null;
+    const name=str(f.name).trim();
+    if(!name) return null;
+    return { id:uid(), name, calories:num(f.calories), protein:num(f.protein) };
+  }
+  function sanitizeFoods(arr){
+    if(!Array.isArray(arr)) return [];
+    return arr.map(sanitizeFood).filter(Boolean);
+  }
+  function sanitizeEntry(it){
+    if(!it || typeof it!=="object") return null;
+    const name=str(it.name).trim();
+    if(!name) return null;
+    const type = it.type==="exercise" ? "exercise" : "food";
+    const e = { id:uid(), type, name, calories:num(it.calories) };
+    if(type==="food") e.protein=num(it.protein);
+    return e;
+  }
+  function sanitizeDays(days){
+    const out={};
+    if(!days || typeof days!=="object") return out;
+    for(const [key,day] of Object.entries(days)){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(key)) continue;          // only valid date keys
+      const entries=(day && Array.isArray(day.entries) ? day.entries : [])
+        .map(sanitizeEntry).filter(Boolean);
+      out[key]={ entries };
+    }
+    return out;
+  }
+  function sanitizeGoals(g){
+    const out={ calories:state.goals.calories, protein:state.goals.protein };
+    if(g && typeof g==="object"){
+      if(num(g.calories)>0) out.calories=num(g.calories);
+      if(num(g.protein)>0)  out.protein=num(g.protein);
+    }
+    return out;
+  }
+
+  $("#importFile").onchange=e=>{
+    const file=e.target.files[0]; if(!file) return;
+    const r=new FileReader();
+    r.onload=()=>{
+      try{
+        const data=JSON.parse(r.result);
+        if(!data || typeof data!=="object"){ pop("Unrecognized file"); return; }
+        if(data.foods && !data.days && !data.goals){
+          // foods-only import: merge by name
+          const added=mergeFoods(data.foods);
+          pop(`Imported ${added} food${added===1?"":"s"}`);
+        }else if(data.foods || data.days){
+          if(confirm("Import this backup? It will replace your current foods, goals, and history.")){
+            state = {
+              goals: sanitizeGoals(data.goals),
+              foods: sanitizeFoods(data.foods),
+              days:  sanitizeDays(data.days)
+            };
+            save(); pop("Backup imported");
+          }
+        }else{ pop("Unrecognized file"); }
+      }catch(err){ pop("Couldn't read file"); }
+      finally{ e.target.value=""; render(); hide(); }
+    };
+    r.readAsText(file);
+  };
+  function mergeFoods(incoming){
+    const have=new Set(state.foods.map(f=>f.name.toLowerCase()));
+    let added=0;
+    sanitizeFoods(incoming).forEach(f=>{
+      if(!have.has(f.name.toLowerCase())){
+        state.foods.push(f); have.add(f.name.toLowerCase()); added++;
+      }
+    });
+    save(); render();
+    return added;
+  }
+  $("#resetAllBtn").onclick=()=>{
+    if(confirm("Erase ALL data on this device (foods, goals, and history)? This can't be undone.")){
+      localStorage.removeItem(KEY); state=defaultState(); save(); render(); hide(); pop("All data erased");
+    }
+  };
+
+  function downloadJSON(obj,filename){
+    const blob=new Blob([JSON.stringify(obj,null,2)],{type:"application/json"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=url; a.download=filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+    pop("Backup downloaded");
+  }
+
+  /* toast */
+  let toastT;
+  function pop(msg){
+    const t=$("#toast"); t.textContent=msg; t.classList.add("show");
+    clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),1600);
+  }
+
+  /* submit on Enter in number/text fields */
+  $("#foodSheet").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#fSubmit").click(); } });
+  $("#exSheet").addEventListener("keydown",e=>{ if(e.key==="Enter") $("#eSubmit").click(); });
+  $("#goalSheet").addEventListener("keydown",e=>{ if(e.key==="Enter") $("#goalSubmit").click(); });
+
+  /* rollover checks: on focus/visibility and a periodic timer */
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden) checkRollover(); });
+  window.addEventListener("focus",checkRollover);
+  setInterval(checkRollover,30000);
+
+  /* go */
+  render();
+
+  /* register service worker for offline use */
+  if("serviceWorker" in navigator){
+    window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+  }
+})();
+</script>
+</body>
+</html>

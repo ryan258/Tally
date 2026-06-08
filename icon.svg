@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#0e1116"/>
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#1f2630" stroke-width="44"/>
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#4cc2ff" stroke-width="44"
+          stroke-linecap="round" stroke-dasharray="707" stroke-dashoffset="225"
+          transform="rotate(-90 256 256)"/>
+  <text x="256" y="248" text-anchor="middle" font-family="system-ui,Segoe UI,Roboto,sans-serif"
+        font-size="120" font-weight="800" fill="#e8edf2">T</text>
+  <text x="256" y="320" text-anchor="middle" font-family="system-ui,Segoe UI,Roboto,sans-serif"
+        font-size="40" font-weight="700" fill="#a78bfa" letter-spacing="4">CAL</text>
+</svg>

@@ -49,4 +49,5 @@ offline after the first load.
 | `index.html` | The whole app (UI + logic + storage). |
 | `manifest.webmanifest` | PWA metadata for installing to the home screen. |
 | `sw.js` | Service worker for offline caching. |
-| `icon.svg` | App icon. |
+| `icon.svg` | App icon (standard "any" purpose). |
+| `icon-maskable.svg` | Maskable icon — fills the platform's adaptive icon shape (rounded/circle) without clipping. |

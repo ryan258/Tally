@@ -1,9 +1,9 @@
 # Tally — Calorie & Protein Tracker
 
 A fast, offline, install-to-home-screen web app for tracking daily calories and
-protein, tuned for a **Google Pixel 6a** (small OLED screen → dark theme, big
+protein, tuned for **small screens such as mobile phones** (dark theme, big
 touch targets, no network needed). Everything is plain HTML/CSS/JS — no build
-step, no server, no accounts. All data lives in the phone's browser storage.
+step, no server, no accounts. All data lives in the device's browser storage.
 
 ## Features
 
@@ -25,27 +25,17 @@ step, no server, no accounts. All data lives in the phone's browser storage.
 - **Installable & offline** — "Add to Home Screen" makes it run full-screen like
   a native app and work with no connection.
 
-## Run it on the phone
+## Install it
 
-The app uses a service worker, which browsers only enable over `http(s)` or
-`localhost` (not `file://`). Serve the folder and open it on the phone.
+Copy these files to any web server — a static host like GitHub Pages, Netlify,
+or Cloudflare Pages, or your own — then open the URL on your device and install
+it as a PWA (in most browsers: menu → **Add to Home screen** / **Install app**).
+Because it's a PWA it runs full-screen like a native app and keeps working
+offline after the first load.
 
-**Quick local serve (same Wi‑Fi):**
-
-```bash
-cd /home/switty/dev/tally
-python3 -m http.server 8080
-```
-
-Then on the Pixel 6a's Chrome, go to `http://<your-computer-ip>:8080`.
-Use Chrome menu → **Add to Home screen** to install it.
-
-**Permanent option:** drop these files on any static host (GitHub Pages,
-Netlify, Cloudflare Pages, etc.) and open the URL on the phone. Because it's a
-PWA it will keep working offline after the first load.
-
-> Tip: opening `index.html` directly as a `file://` still works for the tracker
-> itself — only the offline service worker is skipped.
+> The app uses a service worker, which browsers only enable over `http(s)` (not
+> `file://`). Opening `index.html` directly as a `file://` still works for the
+> tracker itself — only the offline service worker is skipped.
 
 ## Moving to a new phone
 

@@ -32,6 +32,14 @@
     return safeImageUrl(payload.product.image_front_small_url);
   }
 
+  function sanitizeFoodImageMetadata(value){
+    const source = value && typeof value === "object" ? value : {};
+    return {
+      barcode: normalizeBarcode(source.barcode),
+      imageUrl: safeImageUrl(source.imageUrl),
+    };
+  }
+
   function foodFallbackGlyph(name){
     const value = String(name || "").toLowerCase();
     if(value.includes("sandwich") || value.includes("sub ")) return "🥪";
@@ -51,6 +59,7 @@
     openFoodFactsProductUrl,
     safeImageUrl,
     parseOpenFoodFactsImage,
+    sanitizeFoodImageMetadata,
     foodFallbackGlyph,
   });
 

@@ -6,6 +6,7 @@ const {
   openFoodFactsProductUrl,
   parseOpenFoodFactsImage,
   foodFallbackGlyph,
+  sanitizeFoodImageMetadata,
 } = require("../food-images.js");
 
 test("normalizeBarcode accepts standard GTIN lengths and rejects unsafe values", () => {
@@ -49,4 +50,27 @@ test("foodFallbackGlyph provides recognizable local fallbacks", () => {
   assert.equal(foodFallbackGlyph("Ham sandwich on white"), "🥪");
   assert.equal(foodFallbackGlyph("Greek yogurt cup"), "🥣");
   assert.equal(foodFallbackGlyph("Something unknown"), "🍽️");
+});
+
+test("sanitizeFoodImageMetadata keeps only a valid barcode and trusted image", () => {
+  assert.deepEqual(
+    sanitizeFoodImageMetadata({
+      barcode: "040000503781",
+      imageUrl:
+        "https://images.openfoodfacts.org/images/products/040/000/503/781/front_en.200.jpg",
+    }),
+    {
+      barcode: "040000503781",
+      imageUrl:
+        "https://images.openfoodfacts.org/images/products/040/000/503/781/front_en.200.jpg",
+    }
+  );
+
+  assert.deepEqual(
+    sanitizeFoodImageMetadata({
+      barcode: "javascript:alert(1)",
+      imageUrl: "https://example.com/tracker.png",
+    }),
+    { barcode: "", imageUrl: "" }
+  );
 });

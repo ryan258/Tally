@@ -7,6 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="A fast, private calorie and protein tracker that works offline.">
 <title>Tally — Calorie & Protein Tracker</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -87,7 +88,8 @@
     display:flex;align-items:center;gap:12px;background:var(--surface);
     border:1px solid var(--line);border-radius:14px;padding:11px 13px;
   }
-  .item .tag{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:18px;flex:0 0 auto}
+  .item .tag{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;font-size:20px;flex:0 0 auto;overflow:hidden}
+  .item .tag img{width:100%;height:100%;display:block;object-fit:cover}
   .item.food .tag{background:rgba(76,194,255,.14)}
   .item.exercise .tag{background:rgba(52,211,153,.14)}
   .item .body{flex:1;min-width:0}
@@ -157,6 +159,7 @@
   .btn.primary{background:linear-gradient(180deg,var(--accent),var(--accent-2));border:none;color:#04121b}
   .btn.danger{color:var(--bad)}
   .btn:active{filter:brightness(.93)}
+  .btn:disabled{cursor:wait;filter:saturate(.55);opacity:.8}
 
   /* manage foods list */
   .manage-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
@@ -172,7 +175,7 @@
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .hint{color:var(--muted);font-size:13px;margin:2px 2px 14px;line-height:1.5}
-  .ver{text-align:center;color:var(--muted);font-size:11px;letter-spacing:.5px;opacity:.7;margin:24px 0 4px}
+  .ver{text-align:center;color:var(--muted);font-size:11px;letter-spacing:.5px;margin:24px 0 4px}
 </style>
 </head>
 <body>
@@ -242,17 +245,17 @@
   <div class="grab"></div>
   <h3 id="foodSheetTitle">Add food</h3>
   <div class="field">
-    <label>Food name</label>
+    <label for="fName">Food name</label>
     <input id="fName" type="text" placeholder="e.g. Greek yogurt" autocomplete="off" spellcheck="true" autocapitalize="words" autocorrect="on">
   </div>
   <div class="suggest" id="fSuggest"></div>
   <div class="row2">
     <div class="field">
-      <label>Calories</label>
+      <label for="fCal">Calories</label>
       <input id="fCal" type="number" inputmode="numeric" placeholder="0" min="0">
     </div>
     <div class="field">
-      <label>Protein (g)</label>
+      <label for="fPro">Protein (g)</label>
       <input id="fPro" type="number" inputmode="decimal" placeholder="0" min="0">
     </div>
   </div>
@@ -268,11 +271,11 @@
   <div class="grab"></div>
   <h3>Add exercise</h3>
   <div class="field">
-    <label>Activity</label>
+    <label for="eName">Activity</label>
     <input id="eName" type="text" placeholder="e.g. Walk, Gym" autocomplete="off" spellcheck="true" autocapitalize="words" autocorrect="on">
   </div>
   <div class="field">
-    <label>Calories burned</label>
+    <label for="eCal">Calories burned</label>
     <input id="eCal" type="number" inputmode="numeric" placeholder="0" min="0">
   </div>
   <div class="sheet-actions">
@@ -298,7 +301,7 @@
   <div class="grab"></div>
   <h3 id="goalTitle">Daily goal</h3>
   <div class="field">
-    <label id="goalLabel">Goal</label>
+    <label id="goalLabel" for="goalInput">Goal</label>
     <input id="goalInput" type="number" inputmode="numeric" min="0">
   </div>
   <div class="sheet-actions">
@@ -315,11 +318,11 @@
   <h4>Daily goals</h4>
   <div class="row2">
     <div class="field">
-      <label>Calorie goal</label>
+      <label for="menuCalGoal">Calorie goal</label>
       <input id="menuCalGoal" type="number" inputmode="numeric" min="0">
     </div>
     <div class="field">
-      <label>Protein goal (g)</label>
+      <label for="menuProGoal">Protein goal (g)</label>
       <input id="menuProGoal" type="number" inputmode="numeric" min="0">
     </div>
   </div>
@@ -327,7 +330,7 @@
   <h4>USDA Food Database API Key</h4>
   <p class="hint">Optionally enter your free USDA API key to search standard foods live when logging. Your key stays 100% private on this device.</p>
   <div class="field">
-    <label>USDA API Key</label>
+    <label for="menuUsdaKey">USDA API Key</label>
     <input id="menuUsdaKey" type="text" placeholder="Paste your key here" autocomplete="off" spellcheck="false">
   </div>
 
@@ -344,12 +347,14 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="food-images.js"></script>
 <script>
 (function(){
   "use strict";
   const $ = s => document.querySelector(s);
+  const FoodImages = window.TallyFoodImages;
   const KEY = "tally.v1";
-  const VERSION = "1.1.0";   // bump on each release; keep sw.js CACHE in sync
+  const VERSION = "1.2.0";   // bump on each release; keep sw.js CACHE in sync
 
   /* ---------- state ---------- */
   const defaultState = () => ({
@@ -362,7 +367,7 @@
       {id:uid(), name:"Banana",         calories:105, protein:1},
       {id:uid(), name:"Protein shake",  calories:160, protein:30}
     ],
-    days:{}   // "YYYY-MM-DD": { entries:[{id,type:'food'|'exercise',name,calories,protein}] }
+    days:{}   // "YYYY-MM-DD": { entries:[{id,type,name,calories,protein,barcode,imageUrl}] }
   });
 
   let state = load();
@@ -462,7 +467,7 @@
         const b=document.createElement("button");
         b.className="chip";
         b.innerHTML=`<span class="nm">${esc(f.name)}</span><span class="mt">${f.calories} cal · ${round1(f.protein)}g</span>`;
-        b.onclick=()=>{ quickExpanded=false; logFood(f.name,f.calories,f.protein); pop(`Added ${f.name}`); };
+        b.onclick=()=>{ quickExpanded=false; logFood(f.name,f.calories,f.protein,f); pop(`Added ${f.name}`); };
         wrap.appendChild(b);
       }
     }
@@ -491,9 +496,9 @@
           <div class="body"><div class="nm">${esc(it.name)}</div><div class="mt">Exercise</div></div>
           <div class="amt">−${it.calories}</div>`;
       }else{
-        row.innerHTML=`<div class="tag">🍽️</div>
-          <div class="body"><div class="nm">${esc(it.name)}</div><div class="mt">${round1(it.protein)}g protein</div></div>
+        row.innerHTML=`<div class="body"><div class="nm">${esc(it.name)}</div><div class="mt">${round1(it.protein)}g protein</div></div>
           <div class="amt">${it.calories}</div>`;
+        row.prepend(foodVisual(it.name,it.imageUrl));
       }
       const del=document.createElement("button");
       del.className="del"; del.innerHTML="✕"; del.setAttribute("aria-label","Delete");
@@ -505,9 +510,23 @@
 
   function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 
+  function foodVisual(name,imageUrl){
+    const visual=document.createElement("div");
+    visual.className="tag";
+    const fallback=()=>{ visual.replaceChildren(document.createTextNode(FoodImages.foodFallbackGlyph(name))); };
+    const trustedUrl=FoodImages.safeImageUrl(imageUrl);
+    if(!trustedUrl){ fallback(); return visual; }
+    const img=document.createElement("img");
+    img.src=trustedUrl; img.alt=""; img.loading="lazy"; img.referrerPolicy="no-referrer";
+    img.onerror=fallback;
+    visual.appendChild(img);
+    return visual;
+  }
+
   /* ---------- mutations ---------- */
-  function logFood(name,cal,pro){
-    today().entries.push({id:uid(),type:"food",name:name||"Food",calories:+cal||0,protein:+pro||0});
+  function logFood(name,cal,pro,metadata){
+    const image=FoodImages.sanitizeFoodImageMetadata(metadata);
+    today().entries.push({id:uid(),type:"food",name:name||"Food",calories:+cal||0,protein:+pro||0,...image});
     save(); render();
   }
   function logExercise(name,cal){
@@ -537,8 +556,9 @@
   /* food sheet — one handler, three modes: "add", "edit", "newSaved" */
   let foodMode="add";
   let editingFoodId=null;
+  let selectedFoodMetadata=null;
   $("#addFood").onclick=()=>{
-    foodMode="add"; editingFoodId=null;
+    foodMode="add"; editingFoodId=null; selectedFoodMetadata=null;
     $("#foodSheetTitle").textContent="Add food";
     $("#fSubmit").textContent="Add";
     $("#fName").value=""; $("#fCal").value=""; $("#fPro").value="";
@@ -547,7 +567,7 @@
     clearSuggest();
     show("foodSheet"); setTimeout(()=>$("#fName").focus(),250);
   };
-  $("#fSubmit").onclick=()=>{
+  $("#fSubmit").onclick=async()=>{
     const name=$("#fName").value.trim();
     const cal=+$("#fCal").value||0;
     const pro=+$("#fPro").value||0;
@@ -565,8 +585,16 @@
       return;
     }
     // "add" mode: log it, optionally remember it
-    if($("#fSave").checked) state.foods.push({id:uid(),name,calories:cal,protein:pro});
-    logFood(name,cal,pro);
+    const submit=$("#fSubmit");
+    const originalLabel=submit.textContent;
+    const metadata=FoodImages.sanitizeFoodImageMetadata(selectedFoodMetadata);
+    if(metadata.barcode && !metadata.imageUrl){
+      submit.disabled=true; submit.textContent="Finding photo…";
+      metadata.imageUrl=await fetchOpenFoodFactsImage(metadata.barcode);
+      submit.disabled=false; submit.textContent=originalLabel;
+    }
+    if($("#fSave").checked) state.foods.push({id:uid(),name,calories:cal,protein:pro,...metadata});
+    logFood(name,cal,pro,metadata);
     hide(); pop(`Added ${name}`);
   };
 
@@ -597,7 +625,14 @@
     if(cleanName === cleanName.toUpperCase()){
       cleanName = cleanName.toLowerCase().replace(/(^\w|\s\w)/g, m => m.toUpperCase());
     }
-    return { name: cleanName, calories, protein, isUsda: true };
+    return {
+      name: cleanName,
+      calories,
+      protein,
+      barcode: FoodImages.normalizeBarcode(item.gtinUpc),
+      imageUrl: "",
+      isUsda: true,
+    };
   }
 
   async function fetchUsdaFoods(query){
@@ -611,6 +646,22 @@
       if(!data || !Array.isArray(data.foods)) return [];
       return data.foods.map(parseUsdaFood).filter(Boolean);
     }catch(e){ return []; }
+  }
+
+  async function fetchOpenFoodFactsImage(barcode){
+    const url=FoodImages.openFoodFactsProductUrl(barcode);
+    if(!url || !navigator.onLine) return "";
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),3000);
+    try{
+      const res=await fetch(url,{signal:controller.signal,referrerPolicy:"no-referrer"});
+      if(!res.ok) return "";
+      return FoodImages.parseOpenFoodFactsImage(await res.json());
+    }catch(e){
+      return "";
+    }finally{
+      clearTimeout(timeout);
+    }
   }
 
   function renderSuggestions(savedMatches, usdaMatches, q){
@@ -633,6 +684,7 @@
       b.innerHTML=`<span class="nm">${highlight(f.name,q)}${badge}</span><span class="mt">${f.calories} cal · ${round1(f.protein)}g</span>`;
       b.onclick=()=>{
         $("#fName").value=f.name; $("#fCal").value=f.calories; $("#fPro").value=f.protein;
+        selectedFoodMetadata=FoodImages.sanitizeFoodImageMetadata(f);
         $("#fSave").checked=false;
         clearSuggest();
       };
@@ -641,6 +693,7 @@
   }
 
   $("#fName").addEventListener("input",()=>{
+    selectedFoodMetadata=null;
     if(foodMode!=="add"){ clearSuggest(); return; }
     const q=$("#fName").value.trim();
     if(!q){ clearSuggest(); clearTimeout(usdaDebounceT); return; }
@@ -777,7 +830,8 @@
     if(!f || typeof f!=="object") return null;
     const name=str(f.name).trim();
     if(!name) return null;
-    return { id:uid(), name, calories:num(f.calories), protein:num(f.protein) };
+    const image=FoodImages.sanitizeFoodImageMetadata(f);
+    return { id:uid(), name, calories:num(f.calories), protein:num(f.protein), ...image };
   }
   function sanitizeFoods(arr){
     if(!Array.isArray(arr)) return [];
@@ -789,7 +843,10 @@
     if(!name) return null;
     const type = it.type==="exercise" ? "exercise" : "food";
     const e = { id:uid(), type, name, calories:num(it.calories) };
-    if(type==="food") e.protein=num(it.protein);
+    if(type==="food"){
+      e.protein=num(it.protein);
+      Object.assign(e,FoodImages.sanitizeFoodImageMetadata(it));
+    }
     return e;
   }
   function sanitizeDays(days){

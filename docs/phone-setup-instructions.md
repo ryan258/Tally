@@ -43,6 +43,8 @@ Tally supports live nutrition search using the official USDA FoodData Central da
 
 Your API key is saved locally in your phone's browser storage (`localStorage`). It is **never sent to any third-party server or saved in public repository code**.
 
+When you add a branded USDA result, Tally can use its barcode to request a product photo from Open Food Facts. No additional key is required. Image coverage is community-contributed, so products without a photo—and generic foods without a barcode—show a local food icon instead.
+
 ---
 
 ## 4. How Offline Mode & Backups Work

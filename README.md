@@ -16,6 +16,7 @@ step, no server, no accounts. All data lives in the device's browser storage.
   your backup export, but the app only shows the current day — there's no
   in-app history view; you read older days from the exported JSON.
 - **My foods & USDA Search** — save foods you eat often for quick adding. You can also enter a free USDA FoodData Central API key in Menu settings to search standard food calories and protein live when adding foods. Saved foods and USDA results appear in type-ahead suggestions.
+- **Food thumbnails** — when a selected USDA branded food has a barcode and a community-contributed Open Food Facts photo, Tally shows it in today's log. Missing images and offline use fall back to a local food icon.
 - **Editable goals** — tap the goal pill to set your calorie / protein targets.
 - **Export / Import** — back up *foods + goals + history* (or just your foods)
   to a JSON file, then import it on another phone to move everything over.
@@ -44,6 +45,7 @@ offline after the first load.
 | File | Purpose |
 |------|---------|
 | `index.html` | The whole app (UI + logic + storage). |
+| `food-images.js` | Safe barcode lookup, image validation, and local food-image fallbacks. |
 | `manifest.webmanifest` | PWA metadata for installing to the home screen. |
 | `sw.js` | Service worker for offline caching. |
 | `icon.svg` | App icon (standard "any" purpose). |

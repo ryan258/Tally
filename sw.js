@@ -1,6 +1,6 @@
 /* Tally service worker — offline-first cache of the app shell.
    Bump CACHE when you change any file so clients pick up the update. */
-const CACHE = "tally-v3";
+const CACHE = "tally-v4";
 const ASSETS = [
   "./",
   "./index.html",

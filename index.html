@@ -142,8 +142,11 @@
   .suggest-item{display:flex;align-items:center;justify-content:space-between;gap:10px;background:none;border:none;border-bottom:1px solid var(--line);color:var(--text);padding:12px 14px;text-align:left;width:100%;min-height:50px}
   .suggest-item:last-child{border-bottom:none}
   .suggest-item:active{background:var(--surface)}
-  .suggest-item .nm{font-weight:600;font-size:15px}
+  .suggest-item .nm{font-weight:600;font-size:15px;display:flex;align-items:center;flex-wrap:wrap;gap:4px}
   .suggest-item .nm b{color:var(--accent);font-weight:800}
+  .suggest-item .badge{font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px;display:inline-block}
+  .suggest-item .badge.saved{background:rgba(76,194,255,.15);color:var(--accent)}
+  .suggest-item .badge.usda{background:rgba(167,139,250,.15);color:var(--protein)}
   .suggest-item .mt{font-size:12.5px;color:var(--muted);white-space:nowrap;flex:0 0 auto}
   .row2{display:flex;gap:11px}
   .row2 .field{flex:1}
@@ -321,6 +324,13 @@
     </div>
   </div>
 
+  <h4>USDA Food Database API Key</h4>
+  <p class="hint">Optionally enter your free USDA API key to search standard foods live when logging. Your key stays 100% private on this device.</p>
+  <div class="field">
+    <label>USDA API Key</label>
+    <input id="menuUsdaKey" type="text" placeholder="Paste your key here" autocomplete="off" spellcheck="false">
+  </div>
+
   <h4>Backup &amp; transfer</h4>
   <p class="hint">Your data lives only on this device. Export a backup file to move Tally to another phone, then import it there.</p>
   <div class="sheet-actions" style="flex-direction:column">
@@ -339,11 +349,12 @@
   "use strict";
   const $ = s => document.querySelector(s);
   const KEY = "tally.v1";
-  const VERSION = "1.0.0";   // bump on each release; keep sw.js CACHE in sync
+  const VERSION = "1.1.0";   // bump on each release; keep sw.js CACHE in sync
 
   /* ---------- state ---------- */
   const defaultState = () => ({
     goals:{ calories:2000, protein:150 },
+    usdaApiKey: "",
     foods:[
       {id:uid(), name:"Egg",            calories:78,  protein:6},
       {id:uid(), name:"Chicken breast 100g", calories:165, protein:31},
@@ -365,6 +376,7 @@
       if(!s.goals) s.goals = {calories:2000,protein:150};
       if(!s.foods) s.foods = [];
       if(!s.days)  s.days = {};
+      if(typeof s.usdaApiKey !== "string") s.usdaApiKey = "";
       return s;
     }catch(e){ return defaultState(); }
   }
@@ -558,32 +570,94 @@
     hide(); pop(`Added ${name}`);
   };
 
-  /* food name type-ahead over saved foods */
+  /* food name type-ahead over saved foods & USDA FoodData Central API */
   const fSuggest=$("#fSuggest");
   function clearSuggest(){ fSuggest.innerHTML=""; }
   function highlight(name,q){
-    const i=name.toLowerCase().indexOf(q);
+    const i=name.toLowerCase().indexOf(q.toLowerCase());
     if(i<0) return esc(name);
     return esc(name.slice(0,i))+"<b>"+esc(name.slice(i,i+q.length))+"</b>"+esc(name.slice(i+q.length));
   }
-  $("#fName").addEventListener("input",()=>{
-    if(foodMode!=="add"){ clearSuggest(); return; }   // suggestions only when logging
-    const q=$("#fName").value.trim().toLowerCase();
-    if(!q){ clearSuggest(); return; }
-    const matches=state.foods.filter(f=>f.name.toLowerCase().includes(q)).slice(0,8);
-    if(matches.length===0){ clearSuggest(); return; }
+
+  let usdaDebounceT=null;
+  function parseUsdaFood(item){
+    if(!item || !item.description) return null;
+    let calories=0, protein=0;
+    const nutrients = Array.isArray(item.foodNutrients) ? item.foodNutrients : [];
+    for(const n of nutrients){
+      const id = n.nutrientId;
+      const name = String(n.nutrientName||"").toLowerCase();
+      if((id===1008 || id===208 || name.includes("energy")) && (n.unitName==="KCAL" || n.unitName==="kcal" || !n.unitName)){
+        if(calories===0) calories=Math.round(+n.value||0);
+      }else if(id===1003 || id===203 || name.includes("protein")){
+        if(protein===0) protein=round1(+n.value||0);
+      }
+    }
+    let cleanName = item.description.trim();
+    if(cleanName === cleanName.toUpperCase()){
+      cleanName = cleanName.toLowerCase().replace(/(^\w|\s\w)/g, m => m.toUpperCase());
+    }
+    return { name: cleanName, calories, protein, isUsda: true };
+  }
+
+  async function fetchUsdaFoods(query){
+    const key = state.usdaApiKey;
+    if(!key || !query || query.length<2) return [];
+    try{
+      const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&api_key=${encodeURIComponent(key)}&pageSize=6`;
+      const res = await fetch(url);
+      if(!res.ok) return [];
+      const data = await res.json();
+      if(!data || !Array.isArray(data.foods)) return [];
+      return data.foods.map(parseUsdaFood).filter(Boolean);
+    }catch(e){ return []; }
+  }
+
+  function renderSuggestions(savedMatches, usdaMatches, q){
     fSuggest.innerHTML="";
-    matches.forEach(f=>{
+    const combined = [];
+    savedMatches.forEach(f => combined.push({...f, isSaved: true}));
+    const savedNames = new Set(savedMatches.map(f => f.name.toLowerCase()));
+    usdaMatches.forEach(f => {
+      if(!savedNames.has(f.name.toLowerCase())) combined.push(f);
+    });
+
+    if(combined.length===0){ clearSuggest(); return; }
+
+    combined.forEach(f => {
       const b=document.createElement("button");
       b.type="button"; b.className="suggest-item";
-      b.innerHTML=`<span class="nm">${highlight(f.name,q)}</span><span class="mt">${f.calories} cal · ${round1(f.protein)}g</span>`;
+      const badge = f.isSaved
+        ? `<span class="badge saved">Saved</span>`
+        : `<span class="badge usda">USDA</span>`;
+      b.innerHTML=`<span class="nm">${highlight(f.name,q)}${badge}</span><span class="mt">${f.calories} cal · ${round1(f.protein)}g</span>`;
       b.onclick=()=>{
         $("#fName").value=f.name; $("#fCal").value=f.calories; $("#fPro").value=f.protein;
-        $("#fSave").checked=false;     // already in your foods
+        $("#fSave").checked=false;
         clearSuggest();
       };
       fSuggest.appendChild(b);
     });
+  }
+
+  $("#fName").addEventListener("input",()=>{
+    if(foodMode!=="add"){ clearSuggest(); return; }
+    const q=$("#fName").value.trim();
+    if(!q){ clearSuggest(); clearTimeout(usdaDebounceT); return; }
+
+    const qLower = q.toLowerCase();
+    const savedMatches = state.foods.filter(f=>f.name.toLowerCase().includes(qLower)).slice(0,6);
+    renderSuggestions(savedMatches, [], q);
+
+    clearTimeout(usdaDebounceT);
+    if(state.usdaApiKey && q.length>=2){
+      usdaDebounceT = setTimeout(async ()=>{
+        const usdaMatches = await fetchUsdaFoods(q);
+        if($("#fName").value.trim() === q){
+          renderSuggestions(savedMatches, usdaMatches, q);
+        }
+      }, 350);
+    }
   });
 
   /* exercise sheet */
@@ -673,6 +747,8 @@
   $("#openMenu").onclick=()=>{
     $("#menuCalGoal").value=state.goals.calories;
     $("#menuProGoal").value=state.goals.protein;
+    const usdaKeyEl=$("#menuUsdaKey");
+    if(usdaKeyEl) usdaKeyEl.value=state.usdaApiKey||"";
     show("menuSheet");
   };
   function bindGoalInput(sel,key){
@@ -683,6 +759,13 @@
   }
   bindGoalInput("#menuCalGoal","calories");
   bindGoalInput("#menuProGoal","protein");
+
+  const usdaInput=$("#menuUsdaKey");
+  if(usdaInput){
+    const applyUsdaKey=()=>{ state.usdaApiKey=usdaInput.value.trim(); save(); };
+    usdaInput.addEventListener("change",applyUsdaKey);
+    usdaInput.addEventListener("input",applyUsdaKey);
+  }
   $("#exportBtn").onclick=()=>downloadJSON(state,`tally-backup-${todayKey()}.json`);
   $("#exportFoodsBtn").onclick=()=>downloadJSON({foods:state.foods},`tally-foods-${todayKey()}.json`);
   $("#importBtn").onclick=()=>$("#importFile").click();
@@ -744,6 +827,7 @@
           if(confirm("Import this backup? It will replace your current foods, goals, and history.")){
             state = {
               goals: sanitizeGoals(data.goals),
+              usdaApiKey: str(data.usdaApiKey || state.usdaApiKey),
               foods: sanitizeFoods(data.foods),
               days:  sanitizeDays(data.days)
             };

@@ -15,10 +15,7 @@ step, no server, no accounts. All data lives in the device's browser storage.
   closed or the phone sleeping). Past days are kept in storage and included in
   your backup export, but the app only shows the current day — there's no
   in-app history view; you read older days from the exported JSON.
-- **My foods** — save foods you eat often for quick adding. The saved list is
-  collapsed by default; tap **Show foods** to expand it, then tap a food to log
-  it (the list collapses again afterward). Saved foods also power the type-ahead
-  suggestions when you add a food by name.
+- **My foods & USDA Search** — save foods you eat often for quick adding. You can also enter a free USDA FoodData Central API key in Menu settings to search standard food calories and protein live when adding foods. Saved foods and USDA results appear in type-ahead suggestions.
 - **Editable goals** — tap the goal pill to set your calorie / protein targets.
 - **Export / Import** — back up *foods + goals + history* (or just your foods)
   to a JSON file, then import it on another phone to move everything over.

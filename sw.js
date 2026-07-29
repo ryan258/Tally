@@ -1,6 +1,6 @@
 /* Tally service worker — offline-first cache of the app shell.
    Bump CACHE when you change any file so clients pick up the update. */
-const CACHE = "tally-v4";
+const CACHE = "tally-v5";
 const ASSETS = [
   "./",
   "./index.html",
@@ -28,7 +28,9 @@ self.addEventListener("fetch", e => {
       if (hit) {
         // refresh in the background
         fetch(e.request).then(res => {
-          if (res && res.ok) caches.open(CACHE).then(c => c.put(e.request, res.clone()));
+          if (res && res.ok && e.request.url.startsWith(self.location.origin)) {
+            caches.open(CACHE).then(c => c.put(e.request, res.clone()));
+          }
         }).catch(() => {});
         return hit;
       }

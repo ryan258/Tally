@@ -48,3 +48,5 @@ offline after the first load.
 | `sw.js` | Service worker for offline caching. |
 | `icon.svg` | App icon (standard "any" purpose). |
 | `icon-maskable.svg` | Maskable icon — fills the platform's adaptive icon shape (rounded/circle) without clipping. |
+| [`docs/phone-setup-instructions.md`](docs/phone-setup-instructions.md) | Mobile installation guide (iOS & Android PWA setup + USDA key). |
+| [`docs/github-pages-instructions.md`](docs/github-pages-instructions.md) | GitHub Pages deployment guide & API key security practices. |

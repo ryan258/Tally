@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="A fast, private calorie and protein tracker that works offline.">
-<title>Tally — Calorie & Protein Tracker</title>
+<title>Tally — Calorie &amp; Protein Tracker</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -17,6 +17,7 @@
     --bg:#0e1116; --surface:#171c24; --surface-2:#1f2630; --line:#2a323d;
     --text:#e8edf2; --muted:#8a96a5; --accent:#4cc2ff; --accent-2:#2b9eff;
     --good:#34d399; --warn:#fbbf24; --bad:#f87171; --protein:#a78bfa;
+    --carbs:#38bdf8; --fat:#f59e0b; --water:#38bdf8;
     --radius:18px; --tap:52px;
     --safe-top:env(safe-area-inset-top,0px);
     --safe-bottom:env(safe-area-inset-bottom,0px);
@@ -25,12 +26,14 @@
     --bg:#f4f6f9; --surface:#ffffff; --surface-2:#e9eef5; --line:#cbd5e1;
     --text:#0f172a; --muted:#64748b; --accent:#0284c7; --accent-2:#0369a1;
     --good:#10b981; --warn:#f59e0b; --bad:#ef4444; --protein:#7c3aed;
+    --carbs:#0284c7; --fat:#d97706; --water:#0284c7;
   }
   @media (prefers-color-scheme: light) {
     :root:not([data-theme="dark"]) {
       --bg:#f4f6f9; --surface:#ffffff; --surface-2:#e9eef5; --line:#cbd5e1;
       --text:#0f172a; --muted:#64748b; --accent:#0284c7; --accent-2:#0369a1;
       --good:#10b981; --warn:#f59e0b; --bad:#ef4444; --protein:#7c3aed;
+      --carbs:#0284c7; --fat:#d97706; --water:#0284c7;
     }
   }
 
@@ -61,7 +64,7 @@
   }
   .icon-btn:active{background:var(--surface-2)}
 
-  /* collapsed summary header (Idea 56) */
+  /* collapsed summary header */
   .head-summary{display:none;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--muted);padding-top:6px;font-weight:600}
   .head-summary b{color:var(--text);font-weight:800}
   header.collapsed .head-summary{display:flex}
@@ -73,7 +76,6 @@
     border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:12px;
     transition:border-color .3s, background .3s, box-shadow .3s;
   }
-  /* Goal Exceeded State (Idea 64) */
   .stat.over-budget{
     background:linear-gradient(180deg,rgba(248,113,113,.12),var(--surface-2));
     border-color:var(--bad);
@@ -90,7 +92,7 @@
   .stat-val small{font-size:14px;font-weight:600;color:var(--muted)}
   .goal-edit{color:var(--muted);font-size:13px;font-weight:600;background:none;border:none;padding:8px 4px;min-height:44px;cursor:pointer}
 
-  /* Donut Ring Progress (Idea 54) */
+  /* Donut Ring Progress */
   .ring-wrap{position:relative;width:82px;height:82px;flex:0 0 auto}
   .donut-ring{width:100%;height:100%;transform:rotate(-90deg)}
   .donut-ring circle{fill:none;stroke-width:9}
@@ -104,9 +106,32 @@
   .bar > i{display:block;height:100%;width:0;border-radius:6px;transition:width .35s ease}
   .bar.cal > i{background:linear-gradient(90deg,var(--accent-2),var(--accent))}
   .bar.pro > i{background:linear-gradient(90deg,#7c5cf0,var(--protein))}
+  .bar.carbs > i{background:linear-gradient(90deg,#0284c7,var(--carbs))}
+  .bar.fat > i{background:linear-gradient(90deg,#d97706,var(--fat))}
   .bar.over > i{background:linear-gradient(90deg,#e0533f,var(--bad))}
   .breakdown{display:flex;gap:14px;margin-top:10px;color:var(--muted);font-size:13px;flex-wrap:wrap}
   .breakdown b{color:var(--text);font-weight:700}
+
+  /* Macro Breakdown Grid */
+  .macro-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:12px}
+  .macro-stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+  .macro-stat .lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .macro-stat .val{font-size:16px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+  .macro-stat .val small{font-size:11px;color:var(--muted);font-weight:600}
+
+  /* Water Intake Counter Card */
+  .water-card{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;margin-bottom:12px}
+  .water-info{display:flex;flex-direction:column}
+  .water-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .water-val{font-size:18px;font-weight:800;color:var(--text);margin-top:1px;font-variant-numeric:tabular-nums}
+  .water-controls{display:flex;align-items:center;gap:8px}
+  .water-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:18px;font-weight:800;display:grid;place-items:center;cursor:pointer}
+  .water-btn:active{background:var(--line)}
+
+  /* Weekly Calorie Averaging Card */
+  .weekly-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;font-size:13px}
+  .weekly-card .label{color:var(--muted);font-weight:600}
+  .weekly-card b{color:var(--text);font-weight:800}
 
   main{flex:1;padding:6px 16px 120px}
   .section-title{display:flex;align-items:center;justify-content:space-between;margin:18px 2px 10px}
@@ -127,7 +152,13 @@
   .chip.empty{color:var(--muted);font-weight:500;font-size:14px;border-style:dashed;width:100%;justify-content:center;align-items:center;flex-direction:column;padding:24px 16px}
   .chip.more{width:100%;justify-content:center;align-items:center;flex-direction:row;color:var(--accent);font-weight:700;font-size:14px;background:transparent;border-style:dashed;min-height:48px}
 
-  /* log list & swipe-to-delete (Idea 50) */
+  /* Meal Section Grouping */
+  .meal-section{margin-bottom:16px}
+  .meal-header{display:flex;align-items:center;justify-content:space-between;padding:10px 4px 6px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+  .meal-header h3{font-size:14px;font-weight:800;margin:0;color:var(--text);display:flex;align-items:center;gap:6px}
+  .meal-header .meal-sub{font-size:12px;color:var(--muted);font-weight:600}
+
+  /* log list & swipe-to-delete */
   .log{display:flex;flex-direction:column;gap:8px}
   .item-wrap{position:relative;overflow:hidden;border-radius:14px;touch-action:pan-y}
   .item-swipe-bg{position:absolute;inset:0;background:var(--bad);display:flex;align-items:center;justify-content:flex-end;padding-right:20px;color:#fff;font-weight:800;font-size:14px;border-radius:14px}
@@ -143,14 +174,16 @@
   .item.food .tag{background:rgba(76,194,255,.14)}
   .item.exercise .tag{background:rgba(52,211,153,.14)}
   .item .body{flex:1;min-width:0}
-  .item .body .nm{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .item .body .mt{font-size:12.5px;color:var(--muted);margin-top:1px}
+  .item .body .nm{font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px;min-width:0}
+  .item .body .nm-txt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
+  .item .body .mt{font-size:12.5px;color:var(--muted);margin-top:1px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+  .item .note-badge{font-size:11px;background:var(--surface-2);border:1px solid var(--line);color:var(--accent);padding:1px 6px;border-radius:6px;font-weight:600;flex:0 0 auto}
   .item .amt{font-weight:800;font-variant-numeric:tabular-nums;font-size:15px}
   .item.exercise .amt{color:var(--good)}
   .item .del{width:48px;height:48px;border-radius:12px;border:none;background:transparent;color:var(--muted);font-size:20px;flex:0 0 auto;display:grid;place-items:center;cursor:pointer}
   .item .del:active{background:var(--surface-2);color:var(--bad)}
 
-  /* Empty State Illustrations (Idea 59) */
+  /* Empty State Illustrations */
   .empty-state{text-align:center;padding:32px 16px;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center}
   .empty-icon{margin-bottom:12px;opacity:.65;color:var(--accent)}
   .empty-title{font-weight:700;font-size:15px;color:var(--text);margin-bottom:4px}
@@ -196,6 +229,24 @@
   }
   .field input:focus, .field select:focus{outline:none;border-color:var(--accent)}
 
+  /* Meal selector pills */
+  .meal-pills{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+  .meal-pill-btn{flex:1 0 auto;min-width:72px;height:40px;padding:0 8px;font-size:12.5px;border-radius:11px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px}
+  .meal-pill-btn.active{background:var(--accent);color:#04121b;border-color:var(--accent)}
+
+  /* Unit mode toggle */
+  .unit-toggle{display:flex;gap:6px;margin-bottom:12px}
+  .unit-btn{flex:1;height:40px;border-radius:11px;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer}
+  .unit-btn.active{background:var(--accent);color:#04121b;border-color:var(--accent)}
+
+  /* Ratio preset buttons for goals */
+  .ratio-presets{display:flex;gap:6px;margin-bottom:14px}
+  .ratio-btn{flex:1;padding:8px 4px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;text-align:center}
+  .ratio-btn.active{background:var(--accent);color:#04121b;border-color:var(--accent)}
+
+  /* Collapsible section toggle */
+  .collapsible-btn{background:none;border:none;color:var(--accent);font-size:13px;font-weight:700;padding:6px 0;cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin-bottom:8px}
+
   /* food name type-ahead */
   .suggest{margin:-4px 0 13px;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--surface-2);max-height:50vh;overflow-y:auto}
   .suggest:empty{display:none}
@@ -213,7 +264,7 @@
   .check{display:flex;align-items:center;gap:10px;margin:4px 2px 14px;color:var(--muted);font-size:14px}
   .check input{width:22px;height:22px;accent-color:var(--accent)}
 
-  /* Sticky sheet action buttons (Idea 63) */
+  /* Sticky sheet action buttons */
   .sheet-actions{
     position:sticky;bottom:0;z-index:10;
     display:flex;gap:11px;margin-top:12px;padding-top:10px;
@@ -225,7 +276,7 @@
   .btn:active{filter:brightness(.93)}
   .btn:disabled{cursor:wait;filter:saturate(.55);opacity:.8}
 
-  /* manage foods list & drag reordering (Idea 51) */
+  /* manage foods list & drag reordering */
   .manage-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);background:var(--surface);transition:background .15s ease}
   .manage-item.is-dragging{
     position:fixed !important;
@@ -255,12 +306,12 @@
   .mini{width:48px;height:48px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:18px;flex:0 0 auto;display:grid;place-items:center;cursor:pointer}
   .mini.del:active{color:var(--bad)}
 
-  /* Theme Selector (Idea 49) */
+  /* Theme Selector */
   .theme-picker{display:flex;gap:8px;margin-bottom:14px}
   .theme-btn{flex:1;height:48px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:14px;font-weight:600;cursor:pointer}
   .theme-btn.active{background:var(--accent);color:#04121b;border-color:var(--accent);font-weight:800}
 
-  /* Toast with Undo (Idea 60) */
+  /* Toast with Undo */
   .toast{
     position:fixed;left:50%;bottom:calc(var(--safe-bottom) + 92px);transform:translateX(-50%) translateY(20px);
     background:var(--surface-2);border:1px solid var(--accent);color:var(--text);padding:10px 18px;border-radius:30px;
@@ -270,7 +321,7 @@
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
   .toast-undo{background:var(--accent);color:#04121b;border:none;border-radius:16px;padding:4px 10px;font-weight:800;font-size:12px;cursor:pointer}
 
-  /* Pull-to-refresh pull indicator (Idea 53) */
+  /* Pull-to-refresh pull indicator */
   .pull-indicator{text-align:center;font-size:12px;color:var(--muted);font-weight:600;height:0;overflow:hidden;transition:height .15s ease, opacity .15s ease;opacity:0;display:flex;align-items:center;justify-content:center;gap:6px}
   .pull-indicator.visible{height:36px;opacity:1}
 
@@ -292,7 +343,11 @@
     <div class="head-summary" id="headSummary">
       <span><b id="miniRemain">2000</b> cal left</span>
       <span>•</span>
-      <span><b id="miniPro">0</b>g / <span id="miniProGoal">150</span>g pro</span>
+      <span><b id="miniPro">0</b>g P</span>
+      <span>•</span>
+      <span><b id="miniCarbs">0</b>g C</span>
+      <span>•</span>
+      <span><b id="miniFat">0</b>g F</span>
     </div>
   </header>
 
@@ -323,15 +378,41 @@
       </div>
     </div>
 
-    <div class="stat">
-      <div class="stat-top">
-        <div class="stat-info">
-          <span class="stat-label">Protein</span>
-          <div class="stat-val"><span id="proTotal">0</span><small> / <span id="proGoalSmall">150</span> g</small></div>
-        </div>
-        <button class="goal-edit" id="editProGoal">Goal: <span id="proGoalTxt">150</span>g ✎</button>
+    <!-- Macro Breakdown Grid -->
+    <div class="macro-grid">
+      <div class="macro-stat">
+        <div class="lbl">Protein</div>
+        <div class="val"><span id="proTotal">0</span><small>/<span id="proGoalVal">150</span>g</small></div>
+        <div class="bar pro" id="proBar"><i></i></div>
       </div>
-      <div class="bar pro" id="proBar"><i></i></div>
+      <div class="macro-stat">
+        <div class="lbl">Carbs</div>
+        <div class="val"><span id="carbsTotal">0</span><small>/<span id="carbsGoalVal">200</span>g</small></div>
+        <div class="bar carbs" id="carbsBar"><i></i></div>
+      </div>
+      <div class="macro-stat">
+        <div class="lbl">Fat</div>
+        <div class="val"><span id="fatTotal">0</span><small>/<span id="fatGoalVal">67</span>g</small></div>
+        <div class="bar fat" id="fatBar"><i></i></div>
+      </div>
+    </div>
+
+    <!-- Water Counter Card -->
+    <div class="water-card">
+      <div class="water-info">
+        <div class="water-label">💧 Water Intake</div>
+        <div class="water-val"><span id="waterCount">0</span> / <span id="waterGoalVal">8</span> <small style="font-size:13px;color:var(--muted);font-weight:600">glasses</small></div>
+      </div>
+      <div class="water-controls">
+        <button class="water-btn" id="waterSub" aria-label="Subtract water glass">−</button>
+        <button class="water-btn" id="waterAdd" aria-label="Add water glass">＋</button>
+      </div>
+    </div>
+
+    <!-- Weekly Calorie Averaging Card -->
+    <div class="weekly-card" id="weeklyCard">
+      <span class="label">🗓 7-Day Average</span>
+      <span><b id="weeklyAvgVal">0</b> cal/day • <b id="weeklyBankVal">0 cal bank</b></span>
     </div>
   </section>
 
@@ -364,11 +445,32 @@
 <div class="sheet" id="foodSheet">
   <div class="grab"></div>
   <h3 id="foodSheetTitle">Add food</h3>
+
+  <!-- Meal selector pills -->
+  <div class="meal-pills" id="mealPills">
+    <button class="meal-pill-btn active" data-meal="breakfast">🍳 Breakfast</button>
+    <button class="meal-pill-btn" data-meal="lunch">🥗 Lunch</button>
+    <button class="meal-pill-btn" data-meal="dinner">🍽️ Dinner</button>
+    <button class="meal-pill-btn" data-meal="snack">🍎 Snack</button>
+  </div>
+
   <div class="field">
     <label for="fName">Food name</label>
     <input id="fName" type="text" placeholder="e.g. Greek yogurt" autocomplete="off" spellcheck="true" autocapitalize="words" autocorrect="on" enterkeyhint="next">
   </div>
   <div class="suggest" id="fSuggest"></div>
+
+  <!-- Serving mode & decimal quantity -->
+  <div class="unit-toggle" id="unitToggle">
+    <button class="unit-btn active" data-unit="serving">Per serving</button>
+    <button class="unit-btn" data-unit="100g">Per 100g weight</button>
+  </div>
+
+  <div class="field" id="fServingsWrap">
+    <label for="fServings" id="fServingsLabel">Servings / Quantity</label>
+    <input id="fServings" type="number" inputmode="decimal" placeholder="1" step="any" min="0.01" value="1">
+  </div>
+
   <div class="row2">
     <div class="field">
       <label for="fCal">Calories</label>
@@ -376,13 +478,47 @@
     </div>
     <div class="field">
       <label for="fPro">Protein (g)</label>
-      <input id="fPro" type="number" inputmode="decimal" placeholder="0" min="0" enterkeyhint="done">
+      <input id="fPro" type="number" inputmode="decimal" placeholder="0" min="0" enterkeyhint="next">
     </div>
   </div>
+
+  <div class="row2">
+    <div class="field">
+      <label for="fCarbs">Carbs (g)</label>
+      <input id="fCarbs" type="number" inputmode="decimal" placeholder="0" min="0" enterkeyhint="next">
+    </div>
+    <div class="field">
+      <label for="fFat">Fat (g)</label>
+      <input id="fFat" type="number" inputmode="decimal" placeholder="0" min="0" enterkeyhint="next">
+    </div>
+  </div>
+
+  <!-- Collapsible Secondary Nutrients (Fiber & Sugar) -->
+  <button class="collapsible-btn" id="toggleSecondaryNutrients">▸ Fiber &amp; Sugar (Optional)</button>
+  <div id="secondaryNutrientsWrap" style="display:none">
+    <div class="row2">
+      <div class="field">
+        <label for="fFiber">Fiber (g)</label>
+        <input id="fFiber" type="number" inputmode="decimal" placeholder="0" min="0">
+      </div>
+      <div class="field">
+        <label for="fSugar">Sugar (g)</label>
+        <input id="fSugar" type="number" inputmode="decimal" placeholder="0" min="0">
+      </div>
+    </div>
+  </div>
+
+  <!-- Entry Notes Field -->
+  <div class="field">
+    <label for="fNotes">Notes (optional)</label>
+    <input id="fNotes" type="text" placeholder="e.g. Post-workout, Cheat meal" autocomplete="off">
+  </div>
+
   <div class="field">
     <label for="fEmoji">Icon / Emoji (optional)</label>
     <input id="fEmoji" type="text" placeholder="e.g. 🥚, 🍗, 🥣, 🍌" maxlength="4">
   </div>
+
   <label class="check"><input type="checkbox" id="fSave"> Save to my foods for quick add</label>
   <div class="sheet-actions">
     <button class="btn" data-close>Cancel</button>
@@ -401,6 +537,10 @@
   <div class="field">
     <label for="eCal">Calories burned</label>
     <input id="eCal" type="number" inputmode="numeric" placeholder="0" min="0" enterkeyhint="done">
+  </div>
+  <div class="field">
+    <label for="eNotes">Notes (optional)</label>
+    <input id="eNotes" type="text" placeholder="e.g. 30 min cardio" autocomplete="off">
   </div>
   <div class="sheet-actions">
     <button class="btn" data-close>Cancel</button>
@@ -426,10 +566,38 @@
 <!-- Goal sheet -->
 <div class="sheet" id="goalSheet">
   <div class="grab"></div>
-  <h3 id="goalTitle">Daily goal</h3>
+  <h3 id="goalTitle">Daily goals</h3>
+
+  <h4>Macro Percentage Ratios</h4>
+  <div class="ratio-presets" id="ratioPresets">
+    <button class="ratio-btn" data-p="30" data-c="40" data-f="30">30/40/30 (Balanced)</button>
+    <button class="ratio-btn" data-p="30" data-c="50" data-f="20">30/50/20 (High Carb)</button>
+    <button class="ratio-btn" data-p="35" data-c="25" data-f="40">35/25/40 (Low Carb)</button>
+  </div>
+
   <div class="field">
-    <label id="goalLabel" for="goalInput">Goal</label>
-    <input id="goalInput" type="number" inputmode="numeric" min="0" enterkeyhint="done">
+    <label for="goalCalInput">Daily Calorie Goal</label>
+    <input id="goalCalInput" type="number" inputmode="numeric" min="0">
+  </div>
+  <div class="row2">
+    <div class="field">
+      <label for="goalProInput">Protein Goal (g)</label>
+      <input id="goalProInput" type="number" inputmode="numeric" min="0">
+    </div>
+    <div class="field">
+      <label for="goalCarbsInput">Carbs Goal (g)</label>
+      <input id="goalCarbsInput" type="number" inputmode="numeric" min="0">
+    </div>
+  </div>
+  <div class="row2">
+    <div class="field">
+      <label for="goalFatInput">Fat Goal (g)</label>
+      <input id="goalFatInput" type="number" inputmode="numeric" min="0">
+    </div>
+    <div class="field">
+      <label for="goalWaterInput">Water Goal (glasses)</label>
+      <input id="goalWaterInput" type="number" inputmode="numeric" min="0">
+    </div>
   </div>
   <div class="sheet-actions">
     <button class="btn" data-close>Cancel</button>
@@ -460,6 +628,16 @@
       <input id="menuProGoal" type="number" inputmode="numeric" min="0">
     </div>
   </div>
+  <div class="row2">
+    <div class="field">
+      <label for="menuCarbsGoal">Carbs goal (g)</label>
+      <input id="menuCarbsGoal" type="number" inputmode="numeric" min="0">
+    </div>
+    <div class="field">
+      <label for="menuFatGoal">Fat goal (g)</label>
+      <input id="menuFatGoal" type="number" inputmode="numeric" min="0">
+    </div>
+  </div>
 
   <h4>USDA Food Database API Key</h4>
   <p class="hint">Optionally enter your free USDA API key to search standard foods live when logging. Your key stays 100% private on this device.</p>
@@ -485,27 +663,29 @@
 </div>
 
 <script src="food-images.js"></script>
+<script src="tally-helpers.js"></script>
 <script>
 (function(){
   "use strict";
   const $ = s => document.querySelector(s);
   const FoodImages = window.TallyFoodImages;
+  const Helpers = window.TallyHelpers;
   const KEY = "tally.v1";
-  const VERSION = "1.2.0";   // bump on each release; keep sw.js CACHE in sync
+  const VERSION = "1.3.0";
 
   /* ---------- state ---------- */
   const defaultState = () => ({
-    goals:{ calories:2000, protein:150 },
+    goals: { calories: 2000, protein: 150, carbs: 200, fat: 67, fiber: 30, sugar: 50, waterGoal: 8, macroRatios: { protein: 30, carbs: 40, fat: 30 } },
     usdaApiKey: "",
     theme: "auto",
-    foods:[
-      {id:uid(), name:"Egg",            calories:78,  protein:6, emoji:"🥚"},
-      {id:uid(), name:"Chicken breast 100g", calories:165, protein:31, emoji:"🍗"},
-      {id:uid(), name:"Greek yogurt cup", calories:100, protein:17, emoji:"🥣"},
-      {id:uid(), name:"Banana",         calories:105, protein:1, emoji:"🍌"},
-      {id:uid(), name:"Protein shake",  calories:160, protein:30, emoji:"🥤"}
+    foods: [
+      { id: uid(), name: "Egg", calories: 78, protein: 6, carbs: 0.6, fat: 5, fiber: 0, sugar: 0.4, emoji: "🥚" },
+      { id: uid(), name: "Chicken breast 100g", calories: 165, protein: 31, carbs: 0, fat: 3.6, fiber: 0, sugar: 0, emoji: "🍗" },
+      { id: uid(), name: "Greek yogurt cup", calories: 100, protein: 17, carbs: 6, fat: 0.7, fiber: 0, sugar: 4, emoji: "🥣" },
+      { id: uid(), name: "Banana", calories: 105, protein: 1.3, carbs: 27, fat: 0.3, fiber: 3.1, sugar: 14, emoji: "🍌" },
+      { id: uid(), name: "Protein shake", calories: 160, protein: 30, carbs: 3, fat: 2, fiber: 1, sugar: 1, emoji: "🥤" }
     ],
-    days:{}   // "YYYY-MM-DD": { entries:[{id,type,name,calories,protein,barcode,imageUrl,emoji}] }
+    days: {} // "YYYY-MM-DD": { entries:[{id,type,name,calories,protein,carbs,fat,fiber,sugar,servings,unitMode,meal,timestamp,notes,barcode,imageUrl,emoji}], water:0 }
   });
 
   let state = load();
@@ -516,7 +696,10 @@
       const raw = localStorage.getItem(KEY);
       if(!raw) return defaultState();
       const s = JSON.parse(raw);
-      if(!s.goals) s.goals = {calories:2000,protein:150};
+      if(!s.goals) s.goals = { calories: 2000, protein: 150, carbs: 200, fat: 67, fiber: 30, sugar: 50, waterGoal: 8 };
+      if(typeof s.goals.carbs !== "number") s.goals.carbs = 200;
+      if(typeof s.goals.fat !== "number") s.goals.fat = 67;
+      if(typeof s.goals.waterGoal !== "number") s.goals.waterGoal = 8;
       if(!s.foods) s.foods = [];
       if(!s.days)  s.days = {};
       if(typeof s.usdaApiKey !== "string") s.usdaApiKey = "";
@@ -526,14 +709,14 @@
   }
   function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
 
-  /* ---------- Haptic Feedback (Idea 52) ---------- */
+  /* ---------- Haptic Feedback ---------- */
   function vibrate(pattern=15){
     if("vibrate" in navigator){
       try{ navigator.vibrate(pattern); }catch(e){}
     }
   }
 
-  /* ---------- Theme Switcher (Idea 49) ---------- */
+  /* ---------- Theme Switcher ---------- */
   function applyTheme(themeVal){
     state.theme = themeVal || "auto";
     if(state.theme === "auto"){
@@ -556,7 +739,7 @@
     }
   });
 
-  /* ---------- Emoji Auto-Detector (Idea 58) ---------- */
+  /* ---------- Emoji Auto-Detector ---------- */
   function detectEmoji(name){
     const n=String(name||"").toLowerCase();
     if(n.includes("egg")) return "🥚";
@@ -580,8 +763,8 @@
     return "";
   }
 
-  /* ---------- Animated Count-Up (Idea 55) ---------- */
-  const animState = { calRemain: null, proTotal: null };
+  /* ---------- Animated Count-Up ---------- */
+  const animState = { calRemain: null, proTotal: null, carbsTotal: null, fatTotal: null };
   function animateNumber(el, start, end, duration=350, htmlSuffix=""){
     if(!el) return;
     const format = val => htmlSuffix ? val + htmlSuffix : val;
@@ -609,7 +792,8 @@
     return new Date(y,m-1,d).toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"});
   }
   function today(){
-    if(!state.days[currentKey]) state.days[currentKey] = { entries:[] };
+    if(!state.days[currentKey]) state.days[currentKey] = { entries:[], water:0 };
+    if(typeof state.days[currentKey].water !== "number") state.days[currentKey].water = 0;
     return state.days[currentKey];
   }
   function checkRollover(){
@@ -620,12 +804,19 @@
   /* ---------- rendering ---------- */
   function totals(){
     const e = today().entries;
-    let food=0, ex=0, pro=0;
+    let food=0, ex=0, pro=0, carbs=0, fat=0, fiber=0, sugar=0;
     for(const it of e){
       if(it.type==="exercise"){ ex += +it.calories||0; }
-      else { food += +it.calories||0; pro += +it.protein||0; }
+      else {
+        food += +it.calories||0;
+        pro += +it.protein||0;
+        carbs += +it.carbs||0;
+        fat += +it.fat||0;
+        fiber += +it.fiber||0;
+        sugar += +it.sugar||0;
+      }
     }
-    return { food, ex, net:food-ex, pro };
+    return { food, ex, net:food-ex, pro, carbs, fat, fiber, sugar };
   }
 
   function render(){
@@ -644,12 +835,13 @@
     $("#calEx").textContent = t.ex;
     $("#calNet").textContent = t.net;
 
-    // Collapsed header summary (Idea 56)
+    // Collapsed header summary
     $("#miniRemain").textContent = remain;
-    $("#miniPro").textContent = round1(t.pro);
-    $("#miniProGoal").textContent = g.protein;
+    $("#miniPro").textContent = Helpers.round1(t.pro);
+    $("#miniCarbs").textContent = Helpers.round1(t.carbs);
+    $("#miniFat").textContent = Helpers.round1(t.fat);
 
-    // Donut Ring progress (Idea 54) & Goal Exceeded Card (Idea 64)
+    // Donut Ring progress
     const calPct = g.calories>0 ? (t.net/g.calories) : 0;
     const isOver = t.net > g.calories;
     const calStatCard = $("#calStatCard");
@@ -665,20 +857,61 @@
     calBar.classList.toggle("over", isOver);
     calBar.firstElementChild.style.width = Math.max(0,Math.min(100,calPct*100))+"%";
 
-    // protein
-    animateNumber($("#proTotal"), animState.proTotal, round1(t.pro), 350);
-    animState.proTotal = round1(t.pro);
+    // Protein
+    animateNumber($("#proTotal"), animState.proTotal, Helpers.round1(t.pro), 350);
+    animState.proTotal = Helpers.round1(t.pro);
+    $("#proGoalVal").textContent = g.protein || 150;
+    const proPct = (g.protein > 0) ? (t.pro / g.protein) * 100 : 0;
+    $("#proBar").firstElementChild.style.width = Math.max(0, Math.min(100, proPct)) + "%";
 
-    $("#proGoalTxt").textContent = g.protein;
-    $("#proGoalSmall").textContent = g.protein;
-    const proPct = g.protein>0 ? (t.pro/g.protein)*100 : 0;
-    $("#proBar").firstElementChild.style.width = Math.max(0,Math.min(100,proPct))+"%";
+    // Carbs
+    animateNumber($("#carbsTotal"), animState.carbsTotal, Helpers.round1(t.carbs), 350);
+    animState.carbsTotal = Helpers.round1(t.carbs);
+    $("#carbsGoalVal").textContent = g.carbs || 200;
+    const carbsPct = (g.carbs > 0) ? (t.carbs / g.carbs) * 100 : 0;
+    $("#carbsBar").firstElementChild.style.width = Math.max(0, Math.min(100, carbsPct)) + "%";
+
+    // Fat
+    animateNumber($("#fatTotal"), animState.fatTotal, Helpers.round1(t.fat), 350);
+    animState.fatTotal = Helpers.round1(t.fat);
+    $("#fatGoalVal").textContent = g.fat || 67;
+    const fatPct = (g.fat > 0) ? (t.fat / g.fat) * 100 : 0;
+    $("#fatBar").firstElementChild.style.width = Math.max(0, Math.min(100, fatPct)) + "%";
+
+    // Water counter
+    const water = today().water || 0;
+    const waterGoal = g.waterGoal || 8;
+    $("#waterCount").textContent = water;
+    $("#waterGoalVal").textContent = waterGoal;
+
+    // Weekly Calorie Averaging (Bug 4 fix)
+    const weekly = Helpers.calculateWeeklyAverages(state.days, currentKey, g.calories);
+    $("#weeklyAvgVal").textContent = weekly.avgCalories;
+    if(weekly.loggedDaysCount === 0){
+      $("#weeklyBankVal").textContent = "0 cal bank";
+    } else {
+      const bankSign = weekly.bankNet >= 0 ? "+" : "";
+      const bankLabel = weekly.bankNet >= 0 ? "surplus" : "deficit";
+      $("#weeklyBankVal").textContent = `${bankSign}${weekly.bankNet} cal ${bankLabel}`;
+    }
 
     renderQuick();
     renderLog();
   }
 
-  function round1(n){ return Math.round(n*10)/10; }
+  /* Water Counter Event Handlers */
+  $("#waterAdd").onclick = () => {
+    vibrate(15);
+    today().water = (today().water || 0) + 1;
+    save(); render();
+  };
+  $("#waterSub").onclick = () => {
+    vibrate(15);
+    if((today().water || 0) > 0){
+      today().water--;
+      save(); render();
+    }
+  };
 
   let quickExpanded = false;
   function renderQuick(){
@@ -702,11 +935,26 @@
         b.className="chip";
         const emoji = f.emoji || detectEmoji(f.name);
         const iconSpan = emoji ? `<span style="font-size:16px">${esc(emoji)}</span>` : "";
-        b.innerHTML=`<span class="nm">${iconSpan}${esc(f.name)}</span><span class="mt">${f.calories} cal · ${round1(f.protein)}g</span>`;
+        b.innerHTML=`<span class="nm">${iconSpan}${esc(f.name)}</span><span class="mt">${f.calories} cal · ${Helpers.round1(f.protein)}g P</span>`;
         b.onclick=()=>{
           vibrate(20);
           quickExpanded=false;
-          logFood(f.name,f.calories,f.protein,f);
+          // Bug 3 Fix: Infer current meal dynamically on quick add!
+          logFood({
+            name: f.name,
+            calories: f.calories,
+            protein: f.protein,
+            carbs: f.carbs,
+            fat: f.fat,
+            fiber: f.fiber,
+            sugar: f.sugar,
+            servings: 1,
+            unitMode: f.unitMode || "serving",
+            meal: Helpers.inferMealTag(Date.now()),
+            timestamp: Date.now(),
+            notes: "",
+            metadata: f
+          });
           pop(`Added ${f.name}`);
         };
         wrap.appendChild(b);
@@ -719,7 +967,7 @@
     wrap.appendChild(t);
   }
 
-  /* Log list with Swipe-to-Delete (Idea 50) & Empty State Illustrations (Idea 59) */
+  /* Log list grouped by meal */
   function renderLog(){
     const list = $("#logList");
     list.innerHTML="";
@@ -733,79 +981,115 @@
       return;
     }
 
-    // newest first
-    for(let i=entries.length-1;i>=0;i--){
-      const it=entries[i];
-      const wrap=document.createElement("div");
-      wrap.className="item-wrap";
+    const grouped = Helpers.groupEntriesByMeal(entries);
 
-      const bg=document.createElement("div");
-      bg.className="item-swipe-bg";
-      bg.textContent="Swipe to delete 🗑";
-      wrap.appendChild(bg);
+    for(const mealKey of Helpers.MEAL_ORDER){
+      const grp = grouped[mealKey];
+      if(grp.entries.length === 0) continue;
 
-      const row=document.createElement("div");
-      row.className="item "+it.type;
+      const sec = document.createElement("div");
+      sec.className = "meal-section";
 
-      const emoji = it.emoji || detectEmoji(it.name);
+      const hdr = document.createElement("div");
+      hdr.className = "meal-header";
+      const subInfo = `${grp.netCal} cal • ${grp.protein}g P • ${grp.carbs}g C • ${grp.fat}g F`;
+      hdr.innerHTML = `<h3>${Helpers.MEAL_LABELS[mealKey]}</h3><span class="meal-sub">${subInfo}</span>`;
+      sec.appendChild(hdr);
 
-      if(it.type==="exercise"){
-        const tagIcon = emoji ? esc(emoji) : "🔥";
-        row.innerHTML=`<div class="tag">${tagIcon}</div>
-          <div class="body"><div class="nm">${esc(it.name)}</div><div class="mt">Exercise</div></div>
-          <div class="amt">−${it.calories}</div>`;
-      }else{
-        row.innerHTML=`<div class="body"><div class="nm">${esc(it.name)}</div><div class="mt">${round1(it.protein)}g protein</div></div>
-          <div class="amt">${it.calories}</div>`;
-        if(it.imageUrl){
-          row.prepend(foodVisual(it.name,it.imageUrl));
+      const subList = document.createElement("div");
+      subList.className = "log";
+
+      // Newest first in each section
+      for(let i=grp.entries.length-1; i>=0; i--){
+        const it = grp.entries[i];
+        const wrap = document.createElement("div");
+        wrap.className = "item-wrap";
+
+        const bg = document.createElement("div");
+        bg.className = "item-swipe-bg";
+        bg.textContent = "Swipe to delete 🗑";
+        wrap.appendChild(bg);
+
+        const row = document.createElement("div");
+        row.className = "item " + it.type;
+
+        const emoji = it.emoji || detectEmoji(it.name);
+        const timeStr = Helpers.formatEntryTime(it.timestamp);
+        const noteSpan = it.notes ? `<span class="note-badge">🏷️ ${esc(it.notes)}</span>` : "";
+
+        if(it.type === "exercise"){
+          const tagIcon = emoji ? esc(emoji) : "🔥";
+          row.innerHTML = `<div class="tag">${tagIcon}</div>
+            <div class="body">
+              <div class="nm"><span class="nm-txt">${esc(it.name)}</span> ${noteSpan}</div>
+              <div class="mt">${timeStr ? timeStr + " • " : ""}Exercise</div>
+            </div>
+            <div class="amt">−${it.calories}</div>`;
         } else {
-          const tagDiv=document.createElement("div");
-          tagDiv.className="tag";
-          tagDiv.textContent=emoji || "🍽️";
-          row.prepend(tagDiv);
+          const qtyPrefix = (it.servings && it.servings !== 1)
+            ? (it.unitMode === "100g" ? `${it.servings}g ` : `${it.servings}× `)
+            : "";
+          const macroSub = `${timeStr ? timeStr + " • " : ""}${Helpers.round1(it.protein)}g P • ${Helpers.round1(it.carbs||0)}g C • ${Helpers.round1(it.fat||0)}g F`;
+
+          row.innerHTML = `<div class="body">
+              <div class="nm"><span class="nm-txt">${esc(qtyPrefix + it.name)}</span> ${noteSpan}</div>
+              <div class="mt">${macroSub}</div>
+            </div>
+            <div class="amt">${it.calories}</div>`;
+
+          if(it.imageUrl){
+            row.prepend(foodVisual(it.name, it.imageUrl));
+          } else {
+            const tagDiv = document.createElement("div");
+            tagDiv.className = "tag";
+            tagDiv.textContent = emoji || "🍽️";
+            row.prepend(tagDiv);
+          }
         }
+
+        const del = document.createElement("button");
+        del.className = "del"; del.innerHTML = "✕"; del.setAttribute("aria-label", "Delete");
+        del.onclick = () => { vibrate(25); removeEntryWithUndo(it.id); };
+        row.appendChild(del);
+        wrap.appendChild(row);
+
+        // Touch Swipe-to-delete gesture
+        let startX=0, currentX=0, isSwiping=false;
+        row.addEventListener("touchstart", e => {
+          startX = e.touches[0].clientX;
+          currentX = startX;
+          isSwiping = true;
+          row.classList.add("swiping");
+        }, {passive:true});
+
+        row.addEventListener("touchmove", e => {
+          if(!isSwiping) return;
+          currentX = e.touches[0].clientX;
+          const dx = currentX - startX;
+          if(dx < 0 && dx > -120){
+            row.style.transform = `translateX(${dx}px)`;
+          }
+        }, {passive:true});
+
+        row.addEventListener("touchend", () => {
+          if(!isSwiping) return;
+          isSwiping = false;
+          row.classList.remove("swiping");
+          const dx = currentX - startX;
+          if(dx < -70){
+            row.style.transform = "translateX(-100%)";
+            vibrate([20,30,20]);
+            setTimeout(() => removeEntryWithUndo(it.id), 120);
+          } else {
+            row.style.transform = "translateX(0)";
+          }
+        });
+
+        subList.appendChild(wrap);
       }
 
-      const del=document.createElement("button");
-      del.className="del"; del.innerHTML="✕"; del.setAttribute("aria-label","Delete");
-      del.onclick=()=>{ vibrate(25); removeEntry(it.id); };
-      row.appendChild(del);
-      wrap.appendChild(row);
-
-      // Touch Swipe-to-delete gesture (Idea 50)
-      let startX=0, currentX=0, isSwiping=false;
-      row.addEventListener("touchstart", e => {
-        startX = e.touches[0].clientX;
-        currentX = startX;   // a tap fires no touchmove; without this dx reads as a full-width swipe
-        isSwiping = true;
-        row.classList.add("swiping");
-      }, {passive:true});
-
-      row.addEventListener("touchmove", e => {
-        if(!isSwiping) return;
-        currentX = e.touches[0].clientX;
-        const dx = currentX - startX;
-        if(dx < 0 && dx > -120){
-          row.style.transform = `translateX(${dx}px)`;
-        }
-      }, {passive:true});
-
-      row.addEventListener("touchend", () => {
-        if(!isSwiping) return;
-        isSwiping = false;
-        row.classList.remove("swiping");
-        const dx = currentX - startX;
-        if(dx < -70){
-          row.style.transform = "translateX(-100%)";
-          vibrate([20,30,20]);
-          setTimeout(() => removeEntry(it.id), 120);
-        } else {
-          row.style.transform = "translateX(0)";
-        }
-      });
-
-      list.appendChild(wrap);
+      sec.appendChild(subList);
+      list.appendChild(sec);
     }
   }
 
@@ -824,20 +1108,57 @@
     return visual;
   }
 
-  /* ---------- mutations ---------- */
-  function logFood(name,cal,pro,metadata){
-    const image=FoodImages.sanitizeFoodImageMetadata(metadata);
-    const emoji=str(metadata ? metadata.emoji : "").trim().slice(0,10) || detectEmoji(name);
-    today().entries.push({id:uid(),type:"food",name:name||"Food",calories:+cal||0,protein:+pro||0,emoji,...image});
+  /* ---------- mutations (Refactored to Options Object) ---------- */
+  function logFood(opts){
+    const o = opts || {};
+    const image = FoodImages.sanitizeFoodImageMetadata(o.metadata);
+    const emoji = Helpers.str(o.metadata ? o.metadata.emoji : "").trim().slice(0,10) || detectEmoji(o.name);
+    today().entries.push({
+      id: uid(),
+      type: "food",
+      name: o.name || "Food",
+      calories: Helpers.num(o.calories),
+      protein: Helpers.num(o.protein),
+      carbs: Helpers.num(o.carbs),
+      fat: Helpers.num(o.fat),
+      fiber: Helpers.num(o.fiber),
+      sugar: Helpers.num(o.sugar),
+      servings: Helpers.num(o.servings) || 1,
+      unitMode: o.unitMode || "serving",
+      meal: o.meal || Helpers.inferMealTag(o.timestamp),
+      timestamp: o.timestamp || Date.now(),
+      notes: Helpers.str(o.notes).trim(),
+      emoji,
+      ...image
+    });
     save(); render();
   }
-  function logExercise(name,cal){
-    today().entries.push({id:uid(),type:"exercise",name:name||"Exercise",calories:+cal||0});
+
+  function logExercise(name, cal, notes){
+    today().entries.push({
+      id: uid(),
+      type: "exercise",
+      name: name || "Exercise",
+      calories: Helpers.num(cal),
+      timestamp: Date.now(),
+      notes: Helpers.str(notes).trim()
+    });
     save(); render();
   }
-  function removeEntry(id){
-    const e=today().entries; const i=e.findIndex(x=>x.id===id);
-    if(i>-1){ e.splice(i,1); save(); render(); }
+
+  function removeEntryWithUndo(id){
+    const e = today().entries;
+    const i = e.findIndex(x => x.id === id);
+    if(i > -1){
+      const deleted = e[i];
+      e.splice(i, 1);
+      save(); render();
+      popUndo(`Deleted ${deleted.name}`, () => {
+        today().entries.splice(i, 0, deleted);
+        save(); render();
+        pop(`Restored ${deleted.name}`);
+      });
+    }
   }
 
   /* ---------- sheets ---------- */
@@ -855,40 +1176,164 @@
   scrim.onclick=hide;
   document.querySelectorAll("[data-close]").forEach(b=>b.onclick=hide);
 
-  /* food sheet — one handler, three modes: "add", "edit", "newSaved" */
+  /* Food Sheet logic */
   let foodMode="add";
   let editingFoodId=null;
   let selectedFoodMetadata=null;
+  let activeMeal = "breakfast";
+  let activeUnitMode = "serving";
+  let baseFoodNutrients = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, sugar: 0 };
+  let isScalingProgrammatically = false;
+
+  // Meal selection buttons
+  document.querySelectorAll(".meal-pill-btn").forEach(btn => {
+    btn.onclick = () => {
+      vibrate(10);
+      activeMeal = btn.dataset.meal;
+      document.querySelectorAll(".meal-pill-btn").forEach(b => b.classList.toggle("active", b === btn));
+    };
+  });
+
+  // Unit mode toggle
+  document.querySelectorAll(".unit-btn").forEach(btn => {
+    btn.onclick = () => {
+      vibrate(10);
+      activeUnitMode = btn.dataset.unit;
+      document.querySelectorAll(".unit-btn").forEach(b => b.classList.toggle("active", b === btn));
+      $("#fServingsLabel").textContent = activeUnitMode === "100g" ? "Weight in Grams (g)" : "Servings / Quantity";
+      if(activeUnitMode === "100g" && (+$("#fServings").value === 1 || !$("#fServings").value)) {
+        $("#fServings").value = "100";
+      } else if(activeUnitMode === "serving" && (+$("#fServings").value === 100)) {
+        $("#fServings").value = "1";
+      }
+      recalcNutrientsFromServings();
+    };
+  });
+
+  // Secondary nutrients collapsible
+  $("#toggleSecondaryNutrients").onclick = () => {
+    const wrap = $("#secondaryNutrientsWrap");
+    const isHidden = wrap.style.display === "none";
+    wrap.style.display = isHidden ? "block" : "none";
+    $("#toggleSecondaryNutrients").textContent = isHidden ? "▾ Fiber & Sugar (Optional)" : "▸ Fiber & Sugar (Optional)";
+  };
+
+  function setMealPill(mealTag){
+    activeMeal = mealTag || Helpers.inferMealTag();
+    document.querySelectorAll(".meal-pill-btn").forEach(b => {
+      b.classList.toggle("active", b.dataset.meal === activeMeal);
+    });
+  }
+
+  function setUnitToggle(unitMode){
+    activeUnitMode = unitMode || "serving";
+    document.querySelectorAll(".unit-btn").forEach(b => {
+      b.classList.toggle("active", b.dataset.unit === activeUnitMode);
+    });
+    $("#fServingsLabel").textContent = activeUnitMode === "100g" ? "Weight in Grams (g)" : "Servings / Quantity";
+  }
+
+  function resetBaseNutrients(){
+    baseFoodNutrients = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, sugar: 0 };
+  }
+
+  // Bug 1 & Bug 2 Fix: Sync manual field entries to baseFoodNutrients!
+  function updateBaseFromManualFields(){
+    if(isScalingProgrammatically) return;
+    const q = +$("#fServings").value || (activeUnitMode === "100g" ? 100 : 1);
+    const factor = activeUnitMode === "100g" ? q / 100 : q;
+    const f = factor > 0 ? factor : 1;
+
+    baseFoodNutrients = {
+      calories: (+$("#fCal").value || 0) / f,
+      protein: (+$("#fPro").value || 0) / f,
+      carbs: (+$("#fCarbs").value || 0) / f,
+      fat: (+$("#fFat").value || 0) / f,
+      fiber: (+$("#fFiber").value || 0) / f,
+      sugar: (+$("#fSugar").value || 0) / f,
+    };
+  }
+
+  ["#fCal", "#fPro", "#fCarbs", "#fFat", "#fFiber", "#fSugar"].forEach(id => {
+    $(id).addEventListener("input", updateBaseFromManualFields);
+  });
+
+  function recalcNutrientsFromServings(){
+    if(foodMode !== "add") return;
+    const qty = +$("#fServings").value || (activeUnitMode === "100g" ? 100 : 1);
+
+    // If baseFoodNutrients wasn't populated yet, capture current inputs as base!
+    if(baseFoodNutrients.calories === 0 && (+$("#fCal").value > 0 || +$("#fPro").value > 0)){
+      updateBaseFromManualFields();
+    }
+
+    if(baseFoodNutrients.calories === 0 && baseFoodNutrients.protein === 0) return;
+
+    isScalingProgrammatically = true;
+    const scaled = Helpers.calculateServingNutrients(baseFoodNutrients, qty, activeUnitMode === "100g");
+    $("#fCal").value = scaled.calories;
+    $("#fPro").value = scaled.protein;
+    $("#fCarbs").value = scaled.carbs;
+    $("#fFat").value = scaled.fat;
+    $("#fFiber").value = scaled.fiber;
+    $("#fSugar").value = scaled.sugar;
+    isScalingProgrammatically = false;
+  }
+
+  $("#fServings").addEventListener("input", recalcNutrientsFromServings);
+
   $("#addFood").onclick=()=>{
     foodMode="add"; editingFoodId=null; selectedFoodMetadata=null;
+    resetBaseNutrients();
     $("#foodSheetTitle").textContent="Add food";
     $("#fSubmit").textContent="Add";
     $("#fName").value=""; $("#fCal").value=""; $("#fPro").value="";
+    $("#fCarbs").value=""; $("#fFat").value=""; $("#fFiber").value=""; $("#fSugar").value="";
+    $("#fServings").value="1"; $("#fNotes").value=""; $("#fEmoji").value="";
+
+    // Bug 2 Fix: Hide servings and unit toggle in edit/newSaved modes!
+    $("#fServingsWrap").style.display = "";
+    $("#unitToggle").style.display = "";
+
+    setMealPill(Helpers.inferMealTag());
+    setUnitToggle("serving");
     $("#fSave").checked=false;
     $("#fSave").parentElement.style.display="";
     clearSuggest();
     show("foodSheet"); setTimeout(()=>$("#fName").focus(),250);
   };
+
   $("#fSubmit").onclick=async()=>{
     const name=$("#fName").value.trim();
-    const cal=+$("#fCal").value||0;
-    const pro=+$("#fPro").value||0;
+    let cal=+$("#fCal").value||0;
+    let pro=+$("#fPro").value||0;
+    let carbs=+$("#fCarbs").value||0;
+    let fat=+$("#fFat").value||0;
+    let fiber=+$("#fFiber").value||0;
+    let sugar=+$("#fSugar").value||0;
+    const servings=+$("#fServings").value||(activeUnitMode==="100g"?100:1);
+    const notes=$("#fNotes").value.trim();
     if(!name){ pop("Enter a name"); $("#fName").focus(); return; }
 
     if(foodMode==="edit"){
       const f=state.foods.find(x=>x.id===editingFoodId);
       const emoji = $("#fEmoji").value.trim() || detectEmoji(name);
-      if(f){ f.name=name; f.calories=cal; f.protein=pro; f.emoji=emoji; }
+      if(f){
+        f.name=name; f.calories=cal; f.protein=pro; f.carbs=carbs; f.fat=fat;
+        f.fiber=fiber; f.sugar=sugar; f.unitMode=activeUnitMode; f.emoji=emoji;
+      }
       save(); hide(); openManage(); renderQuick(); pop("Saved");
       return;
     }
     if(foodMode==="newSaved"){
       const emoji = $("#fEmoji").value.trim() || detectEmoji(name);
-      state.foods.push({id:uid(),name,calories:cal,protein:pro,emoji});
+      state.foods.push({
+        id:uid(), name, calories:cal, protein:pro, carbs, fat, fiber, sugar, unitMode:activeUnitMode, emoji
+      });
       save(); hide(); openManage(); pop("Food saved");
       return;
     }
-    // "add" mode: log it, optionally remember it
+
     const submit=$("#fSubmit");
     const originalLabel=submit.textContent;
     const metadata=FoodImages.sanitizeFoodImageMetadata(selectedFoodMetadata);
@@ -900,13 +1345,33 @@
       metadata.imageUrl=await fetchOpenFoodFactsImage(metadata.barcode);
       submit.disabled=false; submit.textContent=originalLabel;
     }
-    if($("#fSave").checked) state.foods.push({id:uid(),name,calories:cal,protein:pro,...metadata});
-    logFood(name,cal,pro,metadata);
+
+    if($("#fSave").checked){
+      // Save base per-serving / per-100g nutrients to saved foods!
+      const baseSave = (baseFoodNutrients.calories > 0) ? baseFoodNutrients : { calories: cal, protein: pro, carbs, fat, fiber, sugar };
+      state.foods.push({
+        id:uid(), name,
+        calories: Math.round(baseSave.calories),
+        protein: Helpers.round1(baseSave.protein),
+        carbs: Helpers.round1(baseSave.carbs),
+        fat: Helpers.round1(baseSave.fat),
+        fiber: Helpers.round1(baseSave.fiber),
+        sugar: Helpers.round1(baseSave.sugar),
+        unitMode: activeUnitMode,
+        ...metadata
+      });
+    }
+
+    logFood({
+      name, calories: cal, protein: pro, carbs, fat, fiber, sugar,
+      servings, unitMode: activeUnitMode, meal: activeMeal, timestamp: Date.now(), notes, metadata
+    });
+
     vibrate(20);
     hide(); pop(`Added ${name}`);
   };
 
-  /* food name type-ahead over saved foods & USDA FoodData Central API */
+  /* Typeahead over saved foods & USDA FoodData Central API */
   const fSuggest=$("#fSuggest");
   function clearSuggest(){ fSuggest.innerHTML=""; }
   function highlight(name,q){
@@ -916,17 +1381,28 @@
   }
 
   let usdaDebounceT=null;
+  // Bug 5 Fix: Exact USDA Nutrient ID Matching!
   function parseUsdaFood(item){
     if(!item || !item.description) return null;
-    let calories=0, protein=0;
+    let calories=0, protein=0, carbs=0, fat=0, fiber=0, sugar=0;
     const nutrients = Array.isArray(item.foodNutrients) ? item.foodNutrients : [];
+
     for(const n of nutrients){
       const id = n.nutrientId;
-      const name = String(n.nutrientName||"").toLowerCase();
-      if((id===1008 || id===208 || name.includes("energy")) && (n.unitName==="KCAL" || n.unitName==="kcal" || !n.unitName)){
-        if(calories===0) calories=Math.round(+n.value||0);
-      }else if(id===1003 || id===203 || name.includes("protein")){
-        if(protein===0) protein=round1(+n.value||0);
+      const val = +n.value || 0;
+
+      if(id === 1008 || id === 208){
+        if(calories === 0) calories = Math.round(val);
+      } else if(id === 1003 || id === 203){
+        if(protein === 0) protein = Helpers.round1(val);
+      } else if(id === 1005 || id === 205){
+        if(carbs === 0) carbs = Helpers.round1(val);
+      } else if(id === 1004 || id === 204){
+        if(fat === 0) fat = Helpers.round1(val);
+      } else if(id === 1079 || id === 291){
+        if(fiber === 0) fiber = Helpers.round1(val);
+      } else if(id === 2000 || id === 269){
+        if(sugar === 0) sugar = Helpers.round1(val);
       }
     }
     let cleanName = item.description.trim();
@@ -937,6 +1413,10 @@
       name: cleanName,
       calories,
       protein,
+      carbs,
+      fat,
+      fiber,
+      sugar,
       barcode: FoodImages.normalizeBarcode(item.gtinUpc),
       imageUrl: "",
       emoji: detectEmoji(cleanName),
@@ -992,12 +1472,22 @@
         : `<span class="badge usda">USDA</span>`;
       const emojiVal = f.emoji || detectEmoji(f.name);
       const emojiSpan = emojiVal ? `<span style="font-size:16px;margin-right:4px">${esc(emojiVal)}</span>` : "";
-      b.innerHTML=`<span class="nm">${emojiSpan}${highlight(f.name,q)}${badge}</span><span class="mt">${f.calories} cal · ${round1(f.protein)}g</span>`;
+      const macroInfo = `${f.calories} cal · ${Helpers.round1(f.protein)}g P · ${Helpers.round1(f.carbs||0)}g C · ${Helpers.round1(f.fat||0)}g F`;
+
+      b.innerHTML=`<span class="nm">${emojiSpan}${highlight(f.name,q)}${badge}</span><span class="mt">${macroInfo}</span>`;
       b.onclick=()=>{
-        $("#fName").value=f.name; $("#fCal").value=f.calories; $("#fPro").value=f.protein;
+        $("#fName").value = f.name;
+        baseFoodNutrients = {
+          calories: f.calories||0, protein: f.protein||0, carbs: f.carbs||0,
+          fat: f.fat||0, fiber: f.fiber||0, sugar: f.sugar||0
+        };
+        setUnitToggle(f.unitMode || "serving");
+        $("#fServings").value = activeUnitMode === "100g" ? "100" : "1";
+        recalcNutrientsFromServings();
+
         if($("#fEmoji")) $("#fEmoji").value = f.emoji || detectEmoji(f.name);
-        selectedFoodMetadata=FoodImages.sanitizeFoodImageMetadata(f);
-        $("#fSave").checked=false;
+        selectedFoodMetadata = FoodImages.sanitizeFoodImageMetadata(f);
+        $("#fSave").checked = false;
         clearSuggest();
       };
       fSuggest.appendChild(b);
@@ -1006,6 +1496,9 @@
 
   $("#fName").addEventListener("input",()=>{
     selectedFoodMetadata=null;
+    // The name is only a label — resetting the base here would desync it from the
+    // nutrient fields, so changing servings afterwards would silently do nothing.
+    // Base is reset at every sheet entry point instead.
     if(foodMode!=="add"){ clearSuggest(); return; }
     const q=$("#fName").value.trim();
     if(!q){ clearSuggest(); clearTimeout(usdaDebounceT); return; }
@@ -1025,20 +1518,21 @@
     }
   });
 
-  /* exercise sheet */
+  /* Exercise sheet */
   $("#addExercise").onclick=()=>{
-    $("#eName").value=""; $("#eCal").value="";
+    $("#eName").value=""; $("#eCal").value=""; $("#eNotes").value="";
     show("exSheet"); setTimeout(()=>$("#eName").focus(),250);
   };
   $("#eSubmit").onclick=()=>{
     const name=$("#eName").value.trim()||"Exercise";
     const cal=+$("#eCal").value||0;
+    const notes=$("#eNotes").value.trim();
     if(cal<=0){ pop("Enter calories burned"); $("#eCal").focus(); return; }
     vibrate(20);
-    logExercise(name,cal); hide(); pop(`−${cal} cal`);
+    logExercise(name, cal, notes); hide(); pop(`−${cal} cal`);
   };
 
-  /* manage foods with Search (Idea 57) & Drag Reordering (Idea 51) */
+  /* Manage foods */
   function openManage(){
     const searchInput = $("#manageSearch");
     if(searchInput) searchInput.value = "";
@@ -1083,7 +1577,7 @@
       const emojiSpan = emojiVal ? `<span style="font-size:16px">${esc(emojiVal)}</span>` : "";
 
       row.innerHTML=`<div class="drag-handle" title="Drag to reorder"${manageSearchQuery ? " hidden" : ""}>⋮⋮</div>
-        <div class="body"><div class="nm">${emojiSpan}${esc(f.name)}</div><div class="mt">${f.calories} cal · ${round1(f.protein)}g protein</div></div>`;
+        <div class="body"><div class="nm">${emojiSpan}${esc(f.name)}</div><div class="mt">${f.calories} cal · ${Helpers.round1(f.protein)}g P · ${Helpers.round1(f.carbs||0)}g C · ${Helpers.round1(f.fat||0)}g F</div></div>`;
 
       const edit=document.createElement("button");
       edit.className="mini"; edit.innerHTML="✎"; edit.setAttribute("aria-label","Edit");
@@ -1100,7 +1594,7 @@
 
       row.appendChild(edit); row.appendChild(del);
 
-      // Drag Reordering Touch/Pointer Event Handlers (Idea 51)
+      // Drag Reordering Handlers
       const handle = row.querySelector(".drag-handle");
       let isDragging = false;
       let offsetY = 0;
@@ -1178,8 +1672,6 @@
           .map(el => el.dataset.id)
           .filter(Boolean);
 
-        // ponytail: only persist when the DOM holds the whole list — a filtered list would
-        // push every hidden food to the end. Reordering a filtered list is ill-defined anyway.
         if (currentDomIds.length === state.foods.length) {
           const idMap = new Map(state.foods.map(item => [item.id, item]));
           const newFoods = [];
@@ -1211,44 +1703,109 @@
   function editFood(id){
     const f=state.foods.find(x=>x.id===id); if(!f) return;
     foodMode="edit"; editingFoodId=id;
+    resetBaseNutrients();
     $("#foodSheetTitle").textContent="Edit food";
     $("#fSubmit").textContent="Save";
     $("#fName").value=f.name; $("#fCal").value=f.calories; $("#fPro").value=f.protein;
+    $("#fCarbs").value=f.carbs||0; $("#fFat").value=f.fat||0;
+    $("#fFiber").value=f.fiber||0; $("#fSugar").value=f.sugar||0;
+
+    // Bug 2 Fix: Hide servings and unit toggle in edit mode!
+    $("#fServingsWrap").style.display = "none";
+    $("#unitToggle").style.display = "none";
+
+    setUnitToggle(f.unitMode || "serving");
     if($("#fEmoji")) $("#fEmoji").value = f.emoji || detectEmoji(f.name);
     $("#fSave").parentElement.style.display="none";
     clearSuggest();
     show("foodSheet"); setTimeout(()=>$("#fName").focus(),250);
   }
+
   $("#addNewFood").onclick=()=>{
     foodMode="newSaved"; editingFoodId=null;
+    resetBaseNutrients();
     $("#foodSheetTitle").textContent="New saved food";
     $("#fSubmit").textContent="Save";
     $("#fName").value=""; $("#fCal").value=""; $("#fPro").value="";
+    $("#fCarbs").value=""; $("#fFat").value=""; $("#fFiber").value=""; $("#fSugar").value="";
+
+    // Bug 2 Fix: Hide servings and unit toggle in newSaved mode!
+    $("#fServingsWrap").style.display = "none";
+    $("#unitToggle").style.display = "none";
+
+    setUnitToggle("serving");
     if($("#fEmoji")) $("#fEmoji").value = "";
     $("#fSave").parentElement.style.display="none";
     clearSuggest();
     show("foodSheet"); setTimeout(()=>$("#fName").focus(),250);
   };
 
-  /* goals */
-  let goalKind=null;
-  $("#editCalGoal").onclick=()=>openGoal("calories");
-  $("#editProGoal").onclick=()=>openGoal("protein");
-  function openGoal(kind){
-    goalKind=kind;
-    $("#goalTitle").textContent = kind==="calories" ? "Daily calorie goal" : "Daily protein goal";
-    $("#goalLabel").textContent = kind==="calories" ? "Calories" : "Protein (g)";
-    $("#goalInput").value = state.goals[kind];
-    show("goalSheet"); setTimeout(()=>$("#goalInput").select(),250);
+  /* Goals & Macro Ratios */
+  $("#editCalGoal").onclick = () => openGoalSheet();
+  function openGoalSheet(){
+    $("#goalCalInput").value = state.goals.calories || 2000;
+    $("#goalProInput").value = state.goals.protein || 150;
+    $("#goalCarbsInput").value = state.goals.carbs || 200;
+    $("#goalFatInput").value = state.goals.fat || 67;
+    $("#goalWaterInput").value = state.goals.waterGoal || 8;
+    setActiveRatio(state.goals.macroRatios);
+    show("goalSheet"); setTimeout(() => $("#goalCalInput").select(), 250);
   }
+
+  /* Macro ratio presets. The .active button is the pending choice while the sheet is open;
+     it's committed to state.goals.macroRatios on save so calorie edits keep re-deriving. */
+  function activeRatio(){
+    const b = document.querySelector(".ratio-btn.active");
+    return b ? { protein:+b.dataset.p, carbs:+b.dataset.c, fat:+b.dataset.f } : null;
+  }
+  function setActiveRatio(r){
+    document.querySelectorAll(".ratio-btn").forEach(b => b.classList.toggle("active",
+      !!r && +b.dataset.p === r.protein && +b.dataset.c === r.carbs && +b.dataset.f === r.fat));
+  }
+  function applyRatioToInputs(){
+    const r = activeRatio();
+    if(!r) return;
+    const derived = Helpers.deriveMacroGoalsFromRatios(+$("#goalCalInput").value || 2000, r.protein, r.carbs, r.fat);
+    $("#goalProInput").value = derived.protein;
+    $("#goalCarbsInput").value = derived.carbs;
+    $("#goalFatInput").value = derived.fat;
+  }
+
+  document.querySelectorAll(".ratio-btn").forEach(btn => {
+    btn.onclick = () => {
+      vibrate(10);
+      document.querySelectorAll(".ratio-btn").forEach(b => b.classList.toggle("active", b === btn));
+      applyRatioToInputs();
+    };
+  });
+
+  $("#goalCalInput").addEventListener("input", applyRatioToInputs);
+
+  // Typing your own gram target drops the preset, so a later calorie edit can't overwrite it.
+  ["#goalProInput", "#goalCarbsInput", "#goalFatInput"].forEach(sel => {
+    $(sel).addEventListener("input", () => setActiveRatio(null));
+  });
+
   $("#goalSubmit").onclick=()=>{
-    const v=+$("#goalInput").value;
-    if(v>0){ state.goals[goalKind]=v; save(); render(); }
+    const cal = +$("#goalCalInput").value || 2000;
+    const pro = +$("#goalProInput").value || 150;
+    const carbs = +$("#goalCarbsInput").value || 200;
+    const fat = +$("#goalFatInput").value || 67;
+    const water = +$("#goalWaterInput").value || 8;
+
+    state.goals.calories = cal;
+    state.goals.protein = pro;
+    state.goals.carbs = carbs;
+    state.goals.fat = fat;
+    state.goals.waterGoal = water;
+    state.goals.macroRatios = activeRatio();
+
+    save(); render();
     vibrate(15);
     hide();
   };
 
-  /* Clear day with Non-Blocking Undo Toast (Idea 60) */
+  /* Clear day with Undo Toast */
   let clearedEntriesBackup = null;
   $("#clearDay").onclick=()=>{
     const entries = today().entries;
@@ -1268,15 +1825,18 @@
     });
   };
 
-  /* menu + data */
+  /* Menu + Data */
   $("#openMenu").onclick=()=>{
     $("#menuCalGoal").value=state.goals.calories;
     $("#menuProGoal").value=state.goals.protein;
+    $("#menuCarbsGoal").value=state.goals.carbs||200;
+    $("#menuFatGoal").value=state.goals.fat||67;
     const usdaKeyEl=$("#menuUsdaKey");
     if(usdaKeyEl) usdaKeyEl.value=state.usdaApiKey||"";
     applyTheme(state.theme);
     show("menuSheet");
   };
+
   function bindGoalInput(sel,key){
     const el=$(sel);
     const apply=()=>{ const v=+el.value; if(v>0){ state.goals[key]=v; save(); render(); } };
@@ -1285,6 +1845,8 @@
   }
   bindGoalInput("#menuCalGoal","calories");
   bindGoalInput("#menuProGoal","protein");
+  bindGoalInput("#menuCarbsGoal","carbs");
+  bindGoalInput("#menuFatGoal","fat");
 
   const usdaInput=$("#menuUsdaKey");
   if(usdaInput){
@@ -1296,17 +1858,19 @@
   $("#exportFoodsBtn").onclick=()=>downloadJSON({foods:state.foods},`tally-foods-${todayKey()}.json`);
   $("#importBtn").onclick=()=>$("#importFile").click();
 
-  /* ---- import sanitizers ---- */
-  function num(v){ const n=+v; return Number.isFinite(n)&&n>=0 ? n : 0; }
-  function str(v){ return typeof v==="string" ? v : (v==null ? "" : String(v)); }
+  /* import sanitizers */
   function sanitizeFood(f){
     if(!f || typeof f!=="object") return null;
-    const name=str(f.name).trim();
+    const name=Helpers.str(f.name).trim();
     if(!name) return null;
     const image=FoodImages.sanitizeFoodImageMetadata(f);
-    const rawEmoji=str(f.emoji).trim().slice(0,10);
+    const rawEmoji=Helpers.str(f.emoji).trim().slice(0,10);
     const emoji=rawEmoji || detectEmoji(name);
-    return { id:uid(), name, calories:num(f.calories), protein:num(f.protein), emoji, ...image };
+    return {
+      id: uid(), name, calories: Helpers.num(f.calories), protein: Helpers.num(f.protein),
+      carbs: Helpers.num(f.carbs), fat: Helpers.num(f.fat), fiber: Helpers.num(f.fiber), sugar: Helpers.num(f.sugar),
+      unitMode: f.unitMode || "serving", emoji, ...image
+    };
   }
   function sanitizeFoods(arr){
     if(!Array.isArray(arr)) return [];
@@ -1314,15 +1878,27 @@
   }
   function sanitizeEntry(it){
     if(!it || typeof it!=="object") return null;
-    const name=str(it.name).trim();
+    const name=Helpers.str(it.name).trim();
     if(!name) return null;
     const type = it.type==="exercise" ? "exercise" : "food";
-    const rawEmoji=str(it.emoji).trim().slice(0,10);
+    const rawEmoji=Helpers.str(it.emoji).trim().slice(0,10);
     const emoji=rawEmoji || detectEmoji(name);
-    const e = { id:uid(), type, name, calories:num(it.calories), emoji };
+    const e = {
+      id: uid(), type, name, calories: Helpers.num(it.calories),
+      // Keep an absent timestamp absent — inventing import time would fabricate a clock
+      // reading and a meal. Helpers.mealForEntry handles the gap deterministically.
+      timestamp: Helpers.num(it.timestamp), notes: Helpers.str(it.notes).trim(), emoji
+    };
     if(type==="food"){
-      e.protein=num(it.protein);
-      Object.assign(e,FoodImages.sanitizeFoodImageMetadata(it));
+      e.protein = Helpers.num(it.protein);
+      e.carbs = Helpers.num(it.carbs);
+      e.fat = Helpers.num(it.fat);
+      e.fiber = Helpers.num(it.fiber);
+      e.sugar = Helpers.num(it.sugar);
+      e.servings = Helpers.num(it.servings) || 1;
+      e.unitMode = it.unitMode || "serving";
+      e.meal = Helpers.MEAL_ORDER.indexOf(it.meal) > -1 ? it.meal : "";
+      Object.assign(e, FoodImages.sanitizeFoodImageMetadata(it));
     }
     return e;
   }
@@ -1333,15 +1909,27 @@
       if(!/^\d{4}-\d{2}-\d{2}$/.test(key)) continue;
       const entries=(day && Array.isArray(day.entries) ? day.entries : [])
         .map(sanitizeEntry).filter(Boolean);
-      out[key]={ entries };
+      const water = day ? Helpers.num(day.water) : 0;
+      out[key]={ entries, water };
     }
     return out;
   }
   function sanitizeGoals(g){
-    const out={ calories:state.goals.calories, protein:state.goals.protein };
+    const out={
+      calories: state.goals.calories, protein: state.goals.protein,
+      carbs: state.goals.carbs || 200, fat: state.goals.fat || 67, waterGoal: state.goals.waterGoal || 8,
+      macroRatios: state.goals.macroRatios || null
+    };
     if(g && typeof g==="object"){
-      if(num(g.calories)>0) out.calories=num(g.calories);
-      if(num(g.protein)>0)  out.protein=num(g.protein);
+      const r = g.macroRatios;
+      out.macroRatios = (r && typeof r==="object")
+        ? { protein:Helpers.num(r.protein), carbs:Helpers.num(r.carbs), fat:Helpers.num(r.fat) }
+        : null;
+      if(Helpers.num(g.calories)>0) out.calories=Helpers.num(g.calories);
+      if(Helpers.num(g.protein)>0)  out.protein=Helpers.num(g.protein);
+      if(Helpers.num(g.carbs)>0)    out.carbs=Helpers.num(g.carbs);
+      if(Helpers.num(g.fat)>0)      out.fat=Helpers.num(g.fat);
+      if(Helpers.num(g.waterGoal)>0) out.waterGoal=Helpers.num(g.waterGoal);
     }
     return out;
   }
@@ -1360,8 +1948,8 @@
           if(confirm("Import this backup? It will replace your current foods, goals, and history.")){
             state = {
               goals: sanitizeGoals(data.goals),
-              usdaApiKey: str(data.usdaApiKey || state.usdaApiKey),
-              theme: str(data.theme || state.theme),
+              usdaApiKey: Helpers.str(data.usdaApiKey || state.usdaApiKey),
+              theme: Helpers.str(data.theme || state.theme),
               foods: sanitizeFoods(data.foods),
               days:  sanitizeDays(data.days)
             };
@@ -1399,7 +1987,7 @@
     pop("Backup downloaded");
   }
 
-  /* Toast & Toast with Undo (Idea 60) */
+  /* Toast & Toast with Undo */
   let toastT;
   function pop(msg){
     const t=$("#toast"), tm=$("#toastMsg"), tu=$("#toastUndo");
@@ -1427,11 +2015,13 @@
     },5000);
   }
 
-  /* Keyboard "Next" sequence (Idea 62) */
-  const fNameEl = $("#fName"), fCalEl = $("#fCal"), fProEl = $("#fPro");
+  /* Keyboard "Next" sequence */
+  const fNameEl = $("#fName"), fCalEl = $("#fCal"), fProEl = $("#fPro"), fCarbsEl = $("#fCarbs"), fFatEl = $("#fFat");
   if(fNameEl) fNameEl.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); fCalEl.focus(); } });
   if(fCalEl) fCalEl.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); fProEl.focus(); } });
-  if(fProEl) fProEl.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#fSubmit").click(); } });
+  if(fProEl) fProEl.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); fCarbsEl.focus(); } });
+  if(fCarbsEl) fCarbsEl.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); fFatEl.focus(); } });
+  if(fFatEl) fFatEl.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#fSubmit").click(); } });
 
   const eNameEl = $("#eName"), eCalEl = $("#eCal");
   if(eNameEl) eNameEl.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); eCalEl.focus(); } });
@@ -1439,7 +2029,7 @@
 
   $("#goalSheet").addEventListener("keydown",e=>{ if(e.key==="Enter") $("#goalSubmit").click(); });
 
-  /* Collapsing summary header on scroll (Idea 56) */
+  /* Collapsing summary header on scroll */
   const mainHeader = $("#mainHeader");
   if(mainHeader){
     window.addEventListener("scroll", () => {
@@ -1447,7 +2037,7 @@
     }, {passive:true});
   }
 
-  /* Pull-to-Refresh gesture (Idea 53) */
+  /* Pull-to-Refresh gesture */
   const pullInd = $("#pullIndicator");
   let pStartY = 0, pCurrentY = 0, isPulling = false;
   document.addEventListener("touchstart", e => {

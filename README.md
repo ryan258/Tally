@@ -1,39 +1,28 @@
-# Tally — Calorie & Protein Tracker
+# Tally — Calorie & Macro Tracker
 
-A fast, offline, install-to-home-screen web app for tracking daily calories and
-protein, tuned for **small screens such as mobile phones** (dark theme, big
-touch targets, no network needed). Everything is plain HTML/CSS/JS — no build
-step, no server, no accounts. All data lives in the device's browser storage.
+A fast, offline, install-to-home-screen web app for tracking daily calories, protein, carbs, fat, and water intake, tuned for **small screens such as mobile phones** (dark/light themes, big touch targets, no network needed). Everything is plain HTML/CSS/JS — no build step, no server, no accounts. All data lives in the device's browser storage.
 
 ## Features
 
 - **Calories** — log food calories; **calories remaining** = goal − (food − exercise).
-- **Protein** — every food entry tracks grams of protein toward a daily goal.
+- **Full Macros & Micronutrients** — track protein, carbs, fat, fiber, and sugar with live goal progress bars.
+- **Water Intake Counter** — track daily glasses of water with simple `+` / `−` controls.
+- **Meal Grouping & Timestamps** — organize daily entries by meal (Breakfast 🍳, Lunch 🥗, Dinner 🍽️, Snack 🍎) with timestamps (e.g. `8:30 AM`) and meal sub-totals.
+- **Servings & Per-100g Toggle** — support decimal serving multipliers (e.g. 1.5×) or log foods by weight in grams (100g base scaling).
 - **Exercise** — log calories burned; they subtract from the day's calorie total.
-- **Midnight reset** — totals are keyed to the local calendar date, so at
-  midnight the day automatically starts back at zero (survives the app being
-  closed or the phone sleeping). Past days are kept in storage and included in
-  your backup export, but the app only shows the current day — there's no
-  in-app history view; you read older days from the exported JSON.
-- **My foods & USDA Search** — save foods you eat often for quick adding. You can also enter a free USDA FoodData Central API key in Menu settings to search standard food calories and protein live when adding foods. Saved foods and USDA results appear in type-ahead suggestions.
-- **Food thumbnails** — when a selected USDA branded food has a barcode and a community-contributed Open Food Facts photo, Tally shows it in today's log. Missing images and offline use fall back to a local food icon.
-- **Editable goals** — tap the goal pill to set your calorie / protein targets.
-- **Export / Import** — back up *foods + goals + history* (or just your foods)
-  to a JSON file, then import it on another phone to move everything over.
-- **Installable & offline** — "Add to Home Screen" makes it run full-screen like
-  a native app and work with no connection.
+- **Weekly Calorie Averaging** — view 7-day average daily calories and banked surplus/deficit relative to logged days.
+- **Macro-Percentage Goals** — select percentage goal ratios (e.g. 30/40/30 Balanced, 30/50/20 High Carb, 35/25/40 Low Carb) that auto-derive gram targets.
+- **1-Tap Undo Toast** — restore deleted entries instantly with a non-blocking 5-second Undo banner.
+- **Notes Field** — tag entries with notes (e.g. `🏷️ Post-workout`).
+- **Midnight Reset** — totals are keyed to the local calendar date, so at midnight the day automatically starts back at zero.
+- **My Foods & USDA Search** — save foods for quick adding, or search standard USDA FoodData Central items live.
+- **Food Thumbnails** — Open Food Facts barcode image thumbnails with local fallback glyphs.
+- **Export / Import** — back up *foods + goals + history* (or just your foods) to a JSON file.
+- **Installable & Offline** — "Add to Home Screen" PWA support.
 
 ## Install it
 
-Copy these files to any web server — a static host like GitHub Pages, Netlify,
-or Cloudflare Pages, or your own — then open the URL on your device and install
-it as a PWA (in most browsers: menu → **Add to Home screen** / **Install app**).
-Because it's a PWA it runs full-screen like a native app and keeps working
-offline after the first load.
-
-> The app uses a service worker, which browsers only enable over `http(s)` (not
-> `file://`). Opening `index.html` directly as a `file://` still works for the
-> tracker itself — only the offline service worker is skipped.
+Copy these files to any web server — a static host like GitHub Pages, Netlify, or Cloudflare Pages, or your own — then open the URL on your device and install it as a PWA (in most browsers: menu → **Add to Home screen** / **Install app**).
 
 ## Moving to a new phone
 
@@ -44,11 +33,12 @@ offline after the first load.
 
 | File | Purpose |
 |------|---------|
-| `index.html` | The whole app (UI + logic + storage). |
+| `index.html` | The main UI markup and application controller script. |
+| `tally-helpers.js` | Pure utilities for macro ratio derivations, serving scaling, meal grouping, and 7-day averages. |
 | `food-images.js` | Safe barcode lookup, image validation, and local food-image fallbacks. |
 | `manifest.webmanifest` | PWA metadata for installing to the home screen. |
 | `sw.js` | Service worker for offline caching. |
 | `icon.svg` | App icon (standard "any" purpose). |
-| `icon-maskable.svg` | Maskable icon — fills the platform's adaptive icon shape (rounded/circle) without clipping. |
+| `icon-maskable.svg` | Maskable icon — fills adaptive platform shapes. |
 | [`docs/phone-setup-instructions.md`](docs/phone-setup-instructions.md) | Mobile installation guide (iOS & Android PWA setup + USDA key). |
 | [`docs/github-pages-instructions.md`](docs/github-pages-instructions.md) | GitHub Pages deployment guide & API key security practices. |

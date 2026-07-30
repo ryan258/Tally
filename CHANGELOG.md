@@ -2,6 +2,31 @@
 
 All notable changes to the Tally calorie & protein tracker project will be documented in this file.
 
+## [1.3.0] - 2026-07-30
+
+### Added — Tracking, Data Model & Goal Enhancements (Ideas 1–7, 11, 13, 14, 16, 18)
+
+- **1 & 2. Carbs, Fat, Fiber & Sugar Tracking**: Added full macro and micronutrient tracking (Carbs, Fat, Fiber, Sugar) across log entries, saved foods, summary dashboard, export/import, and USDA search.
+- **3. Water Intake Counter**: Added an interactive daily water counter (`💧 Water Intake`) with `+` / `−` glass tracking and daily targets.
+- **4. Meal Grouping**: Added meal section tags (**Breakfast 🍳**, **Lunch 🥗**, **Dinner 🍽️**, **Snack 🍎**) with meal sub-totals.
+- **5. Timestamp Each Entry**: Recorded creation timestamps for food and exercise log entries, displayed on today's log.
+- **6 & 13. Editable Decimal Serving Quantity**: Added decimal quantity support (e.g. `1.5×`, `0.5×`) in food entry sheets with dynamic nutrient scaling.
+- **7. Per-100g vs Per-Serving Toggle**: Added a unit mode toggle switch ("Per serving" vs "Per 100g weight") for proportional nutrient logging by weight in grams.
+- **11. Single-Item Delete Undo**: Replaced deletion confirmations with a 1-tap **Undo** toast (`Deleted [Food Name]`) restoring log items to their exact position.
+- **14. Entry Notes Field**: Added optional `Notes` input field for food and exercise entries rendered as tags (e.g. `🏷️ Post-workout`).
+- **16. Weekly Calorie Averaging**: Added a 7-day average calorie card displaying daily average intake and banked surplus/deficit relative to logged days.
+- **18. Macro-Percentage Goals**: Added macro percentage ratio presets (30/40/30 Balanced, 30/50/20 High Carb, 35/25/40 Low Carb) auto-calculating gram targets from daily calorie goals.
+
+### Fixed
+- **Manual Servings Scaling**: Fixed manual food entry servings scaling by dynamically syncing manual inputs to base nutrients.
+- **Base Nutrient Scope**: Fixed leak of `baseFoodNutrients` across sheet modes and hid servings wrap in Edit / New Saved food modes.
+- **Quick-Add Meal Tagging**: Fixed quick-add chips to dynamically infer current meal tag rather than using stale initial state.
+- **Weekly Bank Calculation**: Corrected 7-day bank deficit/surplus calculation to scale target relative to logged days only instead of unlogged days.
+- **USDA Exact ID Matching**: Refactored USDA nutrient parsing to match exact USDA nutrient ID numbers (1008, 1003, 1005, 1004, 1079, 2000) instead of loose substrings.
+- **Refactored `logFood` Signature**: Updated `logFood` to accept a clean options object.
+- **CSS Text Ellipsis**: Fixed text truncation on long item names inside flex container log rows.
+- **Goal Load Migration**: Preserved intentional `0` values in goal migration checks.
+
 ## [1.2.0] - 2026-07-30
 
 ### Added — UI & UX Enhancements (Ideas 49–64)

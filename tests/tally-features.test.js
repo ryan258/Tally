@@ -14,6 +14,9 @@ const {
   groupEntriesByMeal,
   calculateWeeklyAverages,
   calculateConsistency,
+  generateSimpsonsDemoData,
+  getTrendData,
+  calculateWeeklySummary,
   buildHistoryCsv,
 } = require("../tally-helpers.js");
 
@@ -172,4 +175,62 @@ test("buildHistoryCsv escapes cells that would otherwise break a spreadsheet", (
   // Exercise rows leave the macro columns empty rather than writing a misleading 0.
   const walk = csv.split("\n").find(l => l.includes("Walk"));
   assert.equal(walk, "2026-07-29,,,exercise,Walk,,150,,,,,,");
+});
+
+test("generateSimpsonsDemoData creates 30 days of authentic Homer Simpson entries", () => {
+  const simpDays = generateSimpsonsDemoData("2026-07-30");
+  const keys = Object.keys(simpDays);
+  assert.equal(keys.length, 30);
+  assert.ok(keys.includes("2026-07-30"));
+
+  const todaySimp = simpDays["2026-07-30"];
+  assert.ok(todaySimp.entries.length >= 4);
+  const names = todaySimp.entries.map(e => e.name);
+  assert.ok(names.includes("Pink Frosted Donut"));
+  assert.ok(names.includes("Krusty Burger"));
+  assert.ok(names.includes("Duff Beer"));
+
+  // Every activity should be reachable — indexing by the same modulus as the branch
+  // condition pinned this to a single exercise.
+  const activities = new Set();
+  for(const k of keys) for(const e of simpDays[k].entries) if(e.type === "exercise") activities.add(e.name);
+  assert.equal(activities.size, 3, `expected all 3 activities, got ${[...activities]}`);
+});
+
+test("getTrendData and calculateWeeklySummary compute accurate 7-day and 30-day insights", () => {
+  const simpDays = generateSimpsonsDemoData("2026-07-30");
+  const trend7 = getTrendData(simpDays, "2026-07-30", 7);
+  assert.equal(trend7.length, 7);
+  assert.equal(trend7[6].key, "2026-07-30");
+
+  const trend30 = getTrendData(simpDays, "2026-07-30", 30);
+  assert.equal(trend30.length, 30);
+
+  const summary = calculateWeeklySummary(simpDays, "2026-07-30", 2000, 150);
+  assert.equal(summary.loggedDaysCount, 7);
+  assert.ok(summary.avgCalories > 1500 && summary.avgCalories < 3000);
+  assert.ok(summary.avgProtein > 30);
+  assert.ok(summary.bestDay !== null);
+  assert.ok(summary.highestDay !== null);
+});
+
+test("highestDay is the most calories eaten, not the furthest day from goal", () => {
+  const day = cal => ({ entries: [{ type: "food", calories: cal, protein: 50 }] });
+  // A week trending under goal: ranking by |net - goal| would wrongly pick the 100 cal day.
+  const days = {
+    "2026-07-30": day(1900),
+    "2026-07-29": day(100),
+    "2026-07-28": day(1500),
+  };
+  const s = calculateWeeklySummary(days, "2026-07-30", 2000, 150);
+
+  assert.equal(s.highestDay.calories, 1900);
+  assert.equal(s.bestDay.calories, 1900);   // closest to the 2000 goal
+  assert.ok(s.highestDay.calories >= s.bestDay.calories, "highest can never be under best");
+
+  // An over-goal day outranks a closer-to-goal one for "highest".
+  const withSpike = { ...days, "2026-07-27": day(3200) };
+  const s2 = calculateWeeklySummary(withSpike, "2026-07-30", 2000, 150);
+  assert.equal(s2.highestDay.calories, 3200);
+  assert.equal(s2.bestDay.calories, 1900);
 });

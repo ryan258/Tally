@@ -260,6 +260,220 @@
     return rows.join("\n");
   }
 
+  const SIMPSONS_EXERCISES = [
+    { name: "Chasing Donut Truck", calories: 180, notes: "Sprint down Evergreen Terrace" },
+    { name: "Bowling at Barney's", calories: 220, notes: "3 games with the Pin Pals" },
+    { name: "Power Plant Patrol", calories: 140, notes: "Walking Sector 7G" }
+  ];
+
+  function generateSimpsonsDemoData(currentKey){
+    const base = parseDayKey(currentKey);
+    const days = {};
+
+    for(let i = 29; i >= 0; i--){
+      const d = new Date(base);
+      d.setDate(d.getDate() - i);
+      const key = dayKey(d);
+      const dayNum = d.getDate();
+
+      const entries = [];
+      const dateSeed = dayNum + i * 3;
+
+      // Breakfast
+      const bDonutCount = (dateSeed % 2 === 0) ? 2 : 1;
+      entries.push({
+        id: "simp-b-" + key,
+        type: "food",
+        name: "Pink Frosted Donut",
+        calories: 280 * bDonutCount,
+        protein: round1(3 * bDonutCount),
+        carbs: round1(34 * bDonutCount),
+        fat: round1(15 * bDonutCount),
+        fiber: bDonutCount,
+        sugar: 20 * bDonutCount,
+        servings: bDonutCount,
+        unitMode: "serving",
+        meal: "breakfast",
+        timestamp: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 8, 15).getTime(),
+        notes: bDonutCount > 1 ? "Mmm... donuts..." : "Breakfast of champions",
+        emoji: "🍩"
+      });
+
+      // Lunch
+      entries.push({
+        id: "simp-l-" + key,
+        type: "food",
+        name: "Krusty Burger",
+        calories: 540,
+        protein: 26,
+        carbs: 42,
+        fat: 28,
+        fiber: 2,
+        sugar: 8,
+        servings: 1,
+        unitMode: "serving",
+        meal: "lunch",
+        timestamp: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 30).getTime(),
+        notes: "Hey Hey!",
+        emoji: "🍔"
+      });
+
+      // Dinner
+      entries.push({
+        id: "simp-d-" + key,
+        type: "food",
+        name: "Pork Chop",
+        calories: 320,
+        protein: 35,
+        carbs: 0,
+        fat: 18,
+        fiber: 0,
+        sugar: 0,
+        servings: 1,
+        unitMode: "serving",
+        meal: "dinner",
+        timestamp: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 18, 45).getTime(),
+        notes: "Marge's special recipe",
+        emoji: "🥩"
+      });
+
+      // Duff Beer / Snack
+      const duffCount = (dateSeed % 3) + 1;
+      entries.push({
+        id: "simp-s-" + key,
+        type: "food",
+        name: "Duff Beer",
+        calories: 150 * duffCount,
+        protein: round1(1 * duffCount),
+        carbs: round1(13 * duffCount),
+        fat: 0,
+        fiber: 0,
+        sugar: 0,
+        servings: duffCount,
+        unitMode: "serving",
+        meal: "snack",
+        timestamp: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 21, 0).getTime(),
+        notes: "At Moe's Tavern",
+        emoji: "🍺"
+      });
+
+      // Activity
+      if(dateSeed % 3 === 0){
+        // Indexing by dateSeed % 3 would always be 0 inside this branch — divide first
+        // so all three activities actually appear.
+        const ex = SIMPSONS_EXERCISES[Math.floor(dateSeed / 3) % SIMPSONS_EXERCISES.length];
+        entries.push({
+          id: "simp-ex-" + key,
+          type: "exercise",
+          name: ex.name,
+          calories: ex.calories,
+          timestamp: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 17, 30).getTime(),
+          notes: ex.notes
+        });
+      }
+
+      days[key] = { entries, water: (dateSeed % 4) + 4 };
+    }
+
+    return days;
+  }
+
+  function getTrendData(daysMap, currentKey, numDays = 7){
+    const days = daysMap || {};
+    const base = parseDayKey(currentKey);
+    const result = [];
+
+    for(let i = numDays - 1; i >= 0; i--){
+      const d = new Date(base);
+      d.setDate(d.getDate() - i);
+      const key = dayKey(d);
+
+      const dayObj = days[key];
+      const hasLog = !!(dayObj && Array.isArray(dayObj.entries) && dayObj.entries.length > 0);
+
+      let foodCal = 0, exCal = 0, protein = 0;
+      if(hasLog){
+        for(const item of dayObj.entries){
+          if(item.type === "exercise") exCal += num(item.calories);
+          else {
+            foodCal += num(item.calories);
+            protein += num(item.protein);
+          }
+        }
+      }
+
+      const netCalories = foodCal - exCal;
+      const proteinGrams = round1(protein);
+
+      const dayShort = d.toLocaleDateString(undefined, { weekday: "short" });
+      const dateNum = d.getDate();
+      const label = `${dayShort} ${dateNum}`;
+
+      result.push({
+        key,
+        label,
+        dayShort,
+        dateNum,
+        netCalories,
+        proteinGrams,
+        hasLog
+      });
+    }
+
+    return result;
+  }
+
+  function calculateWeeklySummary(daysMap, currentKey, calGoal = 2000, proGoal = 150){
+    const trend = getTrendData(daysMap, currentKey, 7);
+    const logged = trend.filter(t => t.hasLog);
+
+    if(logged.length === 0){
+      return {
+        loggedDaysCount: 0,
+        avgCalories: 0,
+        avgProtein: 0,
+        bestDay: null,
+        highestDay: null,
+        calHitRate: 0,
+        proHitRate: 0
+      };
+    }
+
+    let totalCal = 0, totalPro = 0;
+    let calHits = 0, proHits = 0;
+    let bestDay = logged[0], highestDay = logged[0];
+    let minCalDiff = Math.abs(logged[0].netCalories - calGoal);
+
+    for(const day of logged){
+      totalCal += day.netCalories;
+      totalPro += day.proteinGrams;
+
+      if(calGoal > 0 && day.netCalories <= calGoal) calHits++;
+      if(proGoal > 0 && day.proteinGrams >= proGoal) proHits++;
+
+      // Best = closest to the calorie goal, breaking ties on more protein.
+      const diff = Math.abs(day.netCalories - calGoal);
+      if(diff < minCalDiff || (diff === minCalDiff && day.proteinGrams > bestDay.proteinGrams)){
+        minCalDiff = diff;
+        bestDay = day;
+      }
+      // Highest = most calories eaten. Ranking by distance-from-goal instead would
+      // surface the *lowest* day whenever the week trends under the goal.
+      if(day.netCalories > highestDay.netCalories) highestDay = day;
+    }
+
+    const box = d => ({ key: d.key, label: d.label, calories: d.netCalories, protein: d.proteinGrams });
+    return {
+      loggedDaysCount: logged.length,
+      avgCalories: Math.round(totalCal / logged.length),
+      avgProtein: round1(totalPro / logged.length),
+      bestDay: box(bestDay),
+      highestDay: box(highestDay),
+      calHitRate: Math.round((calHits / logged.length) * 100),
+      proHitRate: Math.round((proHits / logged.length) * 100)
+    };
+  }
+
   const api = Object.freeze({
     num,
     str,
@@ -276,6 +490,9 @@
     groupEntriesByMeal,
     calculateWeeklyAverages,
     calculateConsistency,
+    generateSimpsonsDemoData,
+    getTrendData,
+    calculateWeeklySummary,
     buildHistoryCsv,
     CSV_COLUMNS,
   });

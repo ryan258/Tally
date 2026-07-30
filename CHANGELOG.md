@@ -2,9 +2,26 @@
 
 All notable changes to the Tally calorie & protein tracker project will be documented in this file.
 
+## [1.5.0] - 2026-07-30
+
+### Added — Pop Art Redesign, Trend Charts & Simpsons Demo Data (Ideas 25, 27)
+
+- **Simpsons 30-Day Demo Data**: One-tap demo data loader in Settings featuring 30 days of Homer Simpson's favorite foods (Pink Frosted Donuts 🍩, Krusty Burgers 🍔, Duff Beer 🍺, Pork Chops 🥩) and activities (Power Plant Patrol, Donut Truck Chasing). Replaces the current log, so export a backup first if the day matters.
+- **25. 7-Day / 30-Day Trend Charts**: New trend card with a period toggle (`[7 DAYS | 30 DAYS]`) rendering CSS bar charts for calorie and protein intake against a dashed goal line.
+- **27. Expanded Weekly Summary Card**: Insights card showing 7-day calorie & protein averages, best day, highest day, and goal hit-rates.
+- **Premium Editorial Pop Art Redesign**: 1950s Pop Art visual system with newsprint halftone overlay, canary yellow hero card, hot magenta accents, and Bangers display typography.
+
+### Fixed
+
+- **"Highest day" showed the lowest-calorie day**: `calculateWeeklySummary` ranked it by distance from the calorie goal, so any week trending under goal surfaced the smallest day. It is now the day with the most calories, and `worstDay` is renamed `highestDay` to match the label it feeds. Regression test added.
+- **Restored v1.4.0 features lost in the redesign**: CSV export, focus management, reduced-motion support, progress bar labels, the calorie sanity cap, the storage-quota guard, and backup schema versioning were dropped when `index.html` was regenerated. All re-wired against the current markup.
+- **Version divergence**: `index.html` had drifted back to a hardcoded `"1.3.0"` while the service worker cached `tally-v1.4.0`. Both now read `version.js` again, and the `<script src="version.js">` tag is restored.
+- **Dead manifest shortcuts**: the `?action=` deep-link handler was missing, so the home-screen shortcuts opened the app and did nothing.
+- **Empty live region**: `#srTotals` existed in the markup but was never written to.
+
 ## [1.4.0] - 2026-07-30
 
-### Added — Accessibility, PWA & Housekeeping (Ideas 12, 26, 32, 33, 34, 65, 66, 67, 69, 72, 74, 87, 98, 100)
+### Added — Accessibility, PWA & Housekeeping (Ideas 12, 26, 32, 33, 34, 65, 66, 67, 69, 72, 74, 87, 98, 99, 100)
 
 - **98. Single-source version**: New `version.js` sets `TALLY_VERSION`, loaded by both `index.html` and `sw.js` (`importScripts`). The service worker cache name is now derived from it, so a version bump can no longer be forgotten.
 - **26, 32 & 33. Consistency card**: New card showing the current protein-goal streak, the hit rate across logged days, and days logged this month. Today counts as in-progress, so an unfinished today never breaks a live streak.

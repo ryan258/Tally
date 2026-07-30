@@ -8,7 +8,7 @@ L = a project).
 The numbers are stable IDs from the original list of 100 — they never get reused or
 renumbered, so `43` means the same thing forever. Shipped ideas are removed from this
 file and recorded in [CHANGELOG.md](../CHANGELOG.md); the gaps in the numbering are
-the done ones. **57 of 100 remain.**
+the done ones. **55 of 100 remain.**
 
 ---
 
@@ -31,8 +31,6 @@ the done ones. **57 of 100 remain.**
 
 ## Insights & history
 
-- `25` **7-day / 30-day trend charts** for calories and protein. (M)
-- `27` **Weekly summary card** — averages, best/worst day, goal-hit rate. (M)
 - `28` **History browser** — swipe back to view and edit past days. (M)
 - `29` **Calendar heatmap** of goal adherence (green = hit, red = over). (M)
 - `30` **Weight log** with a simple line chart alongside intake. (M)

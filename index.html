@@ -127,6 +127,17 @@
   /* Summary Section */
   .summary{padding: 14px 4px 6px}
 
+  /* TODAY / INSIGHTS view switcher */
+  .view-tabs{display:flex;gap:6px;padding:10px 4px 0}
+  .view-tab{
+    flex:1; background:#fff; border:3px solid #000; border-radius:12px;
+    padding:7px 0; font-family:'Bangers',cursive; font-size:18px; letter-spacing:1.5px;
+    cursor:pointer; box-shadow:3px 3px 0 #000;
+  }
+  .view-tab.active{background:var(--pop-yellow); box-shadow:1px 1px 0 #000; transform:translate(2px,2px)}
+  body.view-insights #todayPane, body.view-insights main{display:none}
+  body:not(.view-insights) #insightsPane{display:none}
+
   /* Main Calorie Hero Card - Electric Yellow Reserved */
   .stat{
     background: var(--pop-yellow);
@@ -539,7 +550,13 @@
 <div id="app">
   <div class="pull-indicator" id="pullIndicator">↓ PULL TO REFRESH!</div>
 
+  <div class="view-tabs" role="tablist">
+    <button class="view-tab active" id="tabToday" role="tab" aria-selected="true" aria-controls="todayPane">TODAY</button>
+    <button class="view-tab" id="tabInsights" role="tab" aria-selected="false" aria-controls="insightsPane">INSIGHTS</button>
+  </div>
+
   <section class="summary">
+   <div id="todayPane" role="tabpanel" aria-labelledby="tabToday">
     <div class="stat" id="calStatCard">
       <div class="stat-top">
         <div class="stat-info">
@@ -596,7 +613,9 @@
         <button class="water-btn" id="waterAdd" aria-label="Add one glass of water">＋</button>
       </div>
     </div>
+   </div>
 
+   <div id="insightsPane" role="tabpanel" aria-labelledby="tabInsights">
     <!-- Weekly Calorie Averaging Card -->
     <div class="weekly-card" id="weeklyCard">
       <span class="label">🗓 YOUR 7-DAY RHYTHM</span>
@@ -658,6 +677,7 @@
         <div class="chart-container" id="proChart"></div>
       </div>
     </div>
+   </div>
 
     <div id="srTotals" class="sr-only" role="status" aria-live="polite"></div>
   </section>
@@ -1223,6 +1243,20 @@
     $("#wCalHitRate").textContent = `${summary.calHitRate}%`;
     $("#wProHitRate").textContent = `${summary.proHitRate}%`;
   }
+
+  /* TODAY / INSIGHTS view switcher */
+  function setView(v){
+    const insights = v === "insights";
+    document.body.classList.toggle("view-insights", insights);
+    $("#tabToday").classList.toggle("active", !insights);
+    $("#tabInsights").classList.toggle("active", insights);
+    $("#tabToday").setAttribute("aria-selected", String(!insights));
+    $("#tabInsights").setAttribute("aria-selected", String(insights));
+    try{ localStorage.setItem("tally.view", v); }catch(e){}
+  }
+  $("#tabToday").onclick = () => { vibrate(10); setView("today"); };
+  $("#tabInsights").onclick = () => { vibrate(10); setView("insights"); scrollTo(0,0); };
+  try{ setView(localStorage.getItem("tally.view") || "today"); }catch(e){}
 
   /* Item 25: 7-Day / 30-Day Trend Charts Renderer */
   let trendPeriod = 7;

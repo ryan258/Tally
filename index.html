@@ -21,75 +21,124 @@
     --safe-top:env(safe-area-inset-top,0px);
     --safe-bottom:env(safe-area-inset-bottom,0px);
   }
+  :root[data-theme="light"] {
+    --bg:#f4f6f9; --surface:#ffffff; --surface-2:#e9eef5; --line:#cbd5e1;
+    --text:#0f172a; --muted:#64748b; --accent:#0284c7; --accent-2:#0369a1;
+    --good:#10b981; --warn:#f59e0b; --bad:#ef4444; --protein:#7c3aed;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg:#f4f6f9; --surface:#ffffff; --surface-2:#e9eef5; --line:#cbd5e1;
+      --text:#0f172a; --muted:#64748b; --accent:#0284c7; --accent-2:#0369a1;
+      --good:#10b981; --warn:#f59e0b; --bad:#ef4444; --protein:#7c3aed;
+    }
+  }
+
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;height:100%}
   body{
     background:var(--bg); color:var(--text);
     font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     overscroll-behavior-y:none; -webkit-user-select:none; user-select:none;
+    transition:background-color .3s,color .3s;
   }
   #app{max-width:640px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
 
   header{
-    position:sticky;top:0;z-index:20;background:rgba(14,17,22,.92);
-    backdrop-filter:blur(10px);
-    padding:calc(var(--safe-top) + 12px) 16px 10px;border-bottom:1px solid var(--line);
+    position:sticky;top:0;z-index:20;background:var(--bg);
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    padding:calc(var(--safe-top) + 10px) 16px 10px;border-bottom:1px solid var(--line);
+    transition:padding .2s;
   }
   .head-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
   .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:19px;letter-spacing:.2px}
   .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
   .date{color:var(--muted);font-size:13px;font-weight:500}
   .icon-btn{
-    width:42px;height:42px;border-radius:12px;border:1px solid var(--line);
+    width:48px;height:48px;border-radius:14px;border:1px solid var(--line);
     background:var(--surface);color:var(--text);font-size:20px;display:grid;place-items:center;
+    cursor:pointer;
   }
   .icon-btn:active{background:var(--surface-2)}
 
-  /* summary */
+  /* collapsed summary header (Idea 56) */
+  .head-summary{display:none;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--muted);padding-top:6px;font-weight:600}
+  .head-summary b{color:var(--text);font-weight:800}
+  header.collapsed .head-summary{display:flex}
+
+  /* summary cards */
   .summary{padding:14px 16px 4px}
   .stat{
     background:linear-gradient(180deg,var(--surface),var(--surface-2));
     border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:12px;
+    transition:border-color .3s, background .3s, box-shadow .3s;
   }
-  .stat-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
-  .stat-label{color:var(--muted);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.6px}
-  .stat-val{font-size:34px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
-  .stat-val small{font-size:15px;font-weight:600;color:var(--muted)}
-  .goal-edit{color:var(--muted);font-size:13px;font-weight:600;background:none;border:none;padding:4px}
-  .bar{height:10px;border-radius:6px;background:#0a0d12;overflow:hidden;border:1px solid var(--line)}
+  /* Goal Exceeded State (Idea 64) */
+  .stat.over-budget{
+    background:linear-gradient(180deg,rgba(248,113,113,.12),var(--surface-2));
+    border-color:var(--bad);
+    box-shadow:0 0 16px rgba(248,113,113,.18);
+  }
+  .stat.over-budget .stat-label::after{
+    content:" • EXCEEDED";color:var(--bad);font-weight:800;letter-spacing:.5px;
+  }
+
+  .stat-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .stat-info{flex:1;min-width:0}
+  .stat-label{color:var(--muted);font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+  .stat-val{font-size:32px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums;margin-top:2px}
+  .stat-val small{font-size:14px;font-weight:600;color:var(--muted)}
+  .goal-edit{color:var(--muted);font-size:13px;font-weight:600;background:none;border:none;padding:8px 4px;min-height:44px;cursor:pointer}
+
+  /* Donut Ring Progress (Idea 54) */
+  .ring-wrap{position:relative;width:82px;height:82px;flex:0 0 auto}
+  .donut-ring{width:100%;height:100%;transform:rotate(-90deg)}
+  .donut-ring circle{fill:none;stroke-width:9}
+  .ring-bg{stroke:var(--line);opacity:.6}
+  .ring-fg{stroke:var(--accent);stroke-linecap:round;stroke-dasharray:251.2;stroke-dashoffset:251.2;transition:stroke-dashoffset .4s ease, stroke .3s ease}
+  .ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+  .ring-center span{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--text)}
+  .ring-center small{font-size:10px;color:var(--muted);margin-top:2px;font-weight:700;text-transform:uppercase}
+
+  .bar{height:10px;border-radius:6px;background:var(--bg);overflow:hidden;border:1px solid var(--line);margin-top:10px}
   .bar > i{display:block;height:100%;width:0;border-radius:6px;transition:width .35s ease}
   .bar.cal > i{background:linear-gradient(90deg,var(--accent-2),var(--accent))}
   .bar.pro > i{background:linear-gradient(90deg,#7c5cf0,var(--protein))}
   .bar.over > i{background:linear-gradient(90deg,#e0533f,var(--bad))}
-  .breakdown{display:flex;gap:14px;margin-top:9px;color:var(--muted);font-size:13px;flex-wrap:wrap}
+  .breakdown{display:flex;gap:14px;margin-top:10px;color:var(--muted);font-size:13px;flex-wrap:wrap}
   .breakdown b{color:var(--text);font-weight:700}
 
   main{flex:1;padding:6px 16px 120px}
   .section-title{display:flex;align-items:center;justify-content:space-between;margin:18px 2px 10px}
   .section-title h2{font-size:15px;margin:0;letter-spacing:.3px}
-  .link-btn{background:none;border:none;color:var(--accent);font-weight:700;font-size:14px;padding:6px 4px}
+  .link-btn{background:none;border:none;color:var(--accent);font-weight:700;font-size:14px;padding:8px 10px;min-height:48px;display:inline-flex;align-items:center;cursor:pointer}
 
   /* quick foods chips */
   .chips{display:flex;flex-wrap:wrap;gap:9px}
   .chip{
     display:flex;flex-direction:column;align-items:flex-start;gap:2px;
     background:var(--surface);border:1px solid var(--line);border-radius:14px;
-    padding:9px 13px;min-height:var(--tap);text-align:left;color:var(--text);
+    padding:10px 14px;min-height:var(--tap);text-align:left;color:var(--text);
+    cursor:pointer;
   }
   .chip:active{background:var(--surface-2);transform:scale(.97)}
-  .chip .nm{font-weight:700;font-size:14px}
+  .chip .nm{font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px}
   .chip .mt{font-size:12px;color:var(--muted)}
-  .chip.empty{color:var(--muted);font-weight:500;font-size:14px;border-style:dashed;width:100%;justify-content:center;align-items:center;flex-direction:row}
-  .chip.more{width:100%;justify-content:center;align-items:center;flex-direction:row;color:var(--accent);font-weight:700;font-size:14px;background:transparent;border-style:dashed}
+  .chip.empty{color:var(--muted);font-weight:500;font-size:14px;border-style:dashed;width:100%;justify-content:center;align-items:center;flex-direction:column;padding:24px 16px}
+  .chip.more{width:100%;justify-content:center;align-items:center;flex-direction:row;color:var(--accent);font-weight:700;font-size:14px;background:transparent;border-style:dashed;min-height:48px}
 
-  /* log list */
+  /* log list & swipe-to-delete (Idea 50) */
   .log{display:flex;flex-direction:column;gap:8px}
+  .item-wrap{position:relative;overflow:hidden;border-radius:14px;touch-action:pan-y}
+  .item-swipe-bg{position:absolute;inset:0;background:var(--bad);display:flex;align-items:center;justify-content:flex-end;padding-right:20px;color:#fff;font-weight:800;font-size:14px;border-radius:14px}
   .item{
+    position:relative;z-index:2;
     display:flex;align-items:center;gap:12px;background:var(--surface);
     border:1px solid var(--line);border-radius:14px;padding:11px 13px;
+    transition:transform .15s ease-out;
   }
-  .item .tag{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;font-size:20px;flex:0 0 auto;overflow:hidden}
-  .item .tag img{width:100%;height:100%;display:block;object-fit:cover}
+  .item.swiping{transition:none}
+  .item .tag{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;font-size:22px;flex:0 0 auto;overflow:hidden}
   .item.food .tag{background:rgba(76,194,255,.14)}
   .item.exercise .tag{background:rgba(52,211,153,.14)}
   .item .body{flex:1;min-width:0}
@@ -97,8 +146,14 @@
   .item .body .mt{font-size:12.5px;color:var(--muted);margin-top:1px}
   .item .amt{font-weight:800;font-variant-numeric:tabular-nums;font-size:15px}
   .item.exercise .amt{color:var(--good)}
-  .item .del{width:38px;height:38px;border-radius:10px;border:none;background:transparent;color:var(--muted);font-size:20px;flex:0 0 auto}
+  .item .del{width:48px;height:48px;border-radius:12px;border:none;background:transparent;color:var(--muted);font-size:20px;flex:0 0 auto;display:grid;place-items:center;cursor:pointer}
   .item .del:active{background:var(--surface-2);color:var(--bad)}
+
+  /* Empty State Illustrations (Idea 59) */
+  .empty-state{text-align:center;padding:32px 16px;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .empty-icon{margin-bottom:12px;opacity:.65;color:var(--accent)}
+  .empty-title{font-weight:700;font-size:15px;color:var(--text);margin-bottom:4px}
+  .empty-desc{font-size:13px;color:var(--muted);max-width:280px;line-height:1.4}
   .empty-note{color:var(--muted);text-align:center;padding:26px 10px;font-size:14px}
 
   /* floating add buttons */
@@ -111,6 +166,7 @@
   .fab{
     flex:1;height:56px;border-radius:16px;border:none;font-weight:800;font-size:16px;
     display:flex;align-items:center;justify-content:center;gap:8px;color:#04121b;
+    cursor:pointer;
   }
   .fab.food{background:linear-gradient(180deg,var(--accent),var(--accent-2))}
   .fab.ex{background:linear-gradient(180deg,#3ee0a3,#22b883)}
@@ -132,16 +188,17 @@
   .sheet h4{margin:16px 2px 9px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;font-weight:700}
   .field{margin-bottom:13px}
   .field label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin:0 2px 6px}
-  .field input{
+  .field input, .field select{
     width:100%;height:var(--tap);border-radius:13px;border:1px solid var(--line);
     background:var(--surface-2);color:var(--text);font-size:17px;padding:0 15px;
     -webkit-user-select:text;user-select:text;
   }
-  .field input:focus{outline:none;border-color:var(--accent)}
+  .field input:focus, .field select:focus{outline:none;border-color:var(--accent)}
+
   /* food name type-ahead */
   .suggest{margin:-4px 0 13px;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--surface-2);max-height:50vh;overflow-y:auto}
   .suggest:empty{display:none}
-  .suggest-item{display:flex;align-items:center;justify-content:space-between;gap:10px;background:none;border:none;border-bottom:1px solid var(--line);color:var(--text);padding:12px 14px;text-align:left;width:100%;min-height:50px}
+  .suggest-item{display:flex;align-items:center;justify-content:space-between;gap:10px;background:none;border:none;border-bottom:1px solid var(--line);color:var(--text);padding:12px 14px;text-align:left;width:100%;min-height:50px;cursor:pointer}
   .suggest-item:last-child{border-bottom:none}
   .suggest-item:active{background:var(--surface)}
   .suggest-item .nm{font-weight:600;font-size:15px;display:flex;align-items:center;flex-wrap:wrap;gap:4px}
@@ -154,33 +211,56 @@
   .row2 .field{flex:1}
   .check{display:flex;align-items:center;gap:10px;margin:4px 2px 14px;color:var(--muted);font-size:14px}
   .check input{width:22px;height:22px;accent-color:var(--accent)}
-  .sheet-actions{display:flex;gap:11px;margin-top:6px}
-  .btn{flex:1;height:54px;border-radius:14px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-weight:700;font-size:16px}
+
+  /* Sticky sheet action buttons (Idea 63) */
+  .sheet-actions{
+    position:sticky;bottom:0;z-index:10;
+    display:flex;gap:11px;margin-top:12px;padding-top:10px;
+    background:var(--surface);border-top:1px solid var(--line);
+  }
+  .btn{flex:1;height:54px;border-radius:14px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-weight:700;font-size:16px;cursor:pointer}
   .btn.primary{background:linear-gradient(180deg,var(--accent),var(--accent-2));border:none;color:#04121b}
   .btn.danger{color:var(--bad)}
   .btn:active{filter:brightness(.93)}
   .btn:disabled{cursor:wait;filter:saturate(.55);opacity:.8}
 
-  /* manage foods list */
-  .manage-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+  /* manage foods list & drag reordering (Idea 51) */
+  .manage-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);background:var(--surface)}
+  .manage-item.dragging{opacity:.4;background:var(--surface-2)}
+  .drag-handle{cursor:grab;color:var(--muted);font-size:18px;padding:8px 4px;user-select:none;flex:0 0 auto;min-width:36px;text-align:center}
   .manage-item .body{flex:1;min-width:0}
-  .manage-item .nm{font-weight:700}
+  .manage-item .nm{font-weight:700;display:flex;align-items:center;gap:6px}
   .manage-item .mt{font-size:12.5px;color:var(--muted)}
-  .mini{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:17px;flex:0 0 auto}
+  .mini{width:48px;height:48px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:18px;flex:0 0 auto;display:grid;place-items:center;cursor:pointer}
   .mini.del:active{color:var(--bad)}
+
+  /* Theme Selector (Idea 49) */
+  .theme-picker{display:flex;gap:8px;margin-bottom:14px}
+  .theme-btn{flex:1;height:48px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:14px;font-weight:600;cursor:pointer}
+  .theme-btn.active{background:var(--accent);color:#04121b;border-color:var(--accent);font-weight:800}
+
+  /* Toast with Undo (Idea 60) */
   .toast{
     position:fixed;left:50%;bottom:calc(var(--safe-bottom) + 92px);transform:translateX(-50%) translateY(20px);
-    background:#04121b;border:1px solid var(--accent);color:var(--text);padding:11px 18px;border-radius:30px;
+    background:var(--surface-2);border:1px solid var(--accent);color:var(--text);padding:10px 18px;border-radius:30px;
     font-size:14px;font-weight:600;z-index:60;opacity:0;pointer-events:none;transition:all .25s;white-space:nowrap;
+    display:flex;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,.3);
   }
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+  .toast-undo{background:var(--accent);color:#04121b;border:none;border-radius:16px;padding:4px 10px;font-weight:800;font-size:12px;cursor:pointer}
+
+  /* Pull-to-refresh pull indicator (Idea 53) */
+  .pull-indicator{text-align:center;font-size:12px;color:var(--muted);font-weight:600;height:0;overflow:hidden;transition:height .15s ease, opacity .15s ease;opacity:0;display:flex;align-items:center;justify-content:center;gap:6px}
+  .pull-indicator.visible{height:36px;opacity:1}
+
   .hint{color:var(--muted);font-size:13px;margin:2px 2px 14px;line-height:1.5}
   .ver{text-align:center;color:var(--muted);font-size:11px;letter-spacing:.5px;margin:24px 0 4px}
 </style>
 </head>
 <body>
 <div id="app">
-  <header>
+  <div class="pull-indicator" id="pullIndicator">↓ Pull to refresh</div>
+  <header id="mainHeader">
     <div class="head-row">
       <div class="brand"><span class="dot"></span>Tally</div>
       <div style="display:flex;align-items:center;gap:8px">
@@ -188,15 +268,32 @@
         <button class="icon-btn" id="openMenu" aria-label="Menu">⋯</button>
       </div>
     </div>
+    <div class="head-summary" id="headSummary">
+      <span><b id="miniRemain">2000</b> cal left</span>
+      <span>•</span>
+      <span><b id="miniPro">0</b>g / <span id="miniProGoal">150</span>g pro</span>
+    </div>
   </header>
 
   <section class="summary">
-    <div class="stat">
+    <div class="stat" id="calStatCard">
       <div class="stat-top">
-        <span class="stat-label">Calories remaining</span>
-        <button class="goal-edit" id="editCalGoal">Goal: <span id="calGoalTxt">2000</span> ✎</button>
+        <div class="stat-info">
+          <span class="stat-label">Calories remaining</span>
+          <div class="stat-val" id="calRemain">2000<small> / 2000</small></div>
+          <button class="goal-edit" id="editCalGoal">Goal: <span id="calGoalTxt">2000</span> ✎</button>
+        </div>
+        <div class="ring-wrap" title="Calorie progress donut ring">
+          <svg class="donut-ring" viewBox="0 0 100 100">
+            <circle class="ring-bg" cx="50" cy="50" r="40"/>
+            <circle class="ring-fg" id="donutFg" cx="50" cy="50" r="40"/>
+          </svg>
+          <div class="ring-center">
+            <span id="calRemainNum">2000</span>
+            <small>rem</small>
+          </div>
+        </div>
       </div>
-      <div class="stat-val" id="calRemain">2000<small> / 2000</small></div>
       <div class="bar cal" id="calBar"><i></i></div>
       <div class="breakdown">
         <span>Food <b id="calFood">0</b></span>
@@ -207,10 +304,12 @@
 
     <div class="stat">
       <div class="stat-top">
-        <span class="stat-label">Protein</span>
+        <div class="stat-info">
+          <span class="stat-label">Protein</span>
+          <div class="stat-val"><span id="proTotal">0</span><small> / <span id="proGoalSmall">150</span> g</small></div>
+        </div>
         <button class="goal-edit" id="editProGoal">Goal: <span id="proGoalTxt">150</span>g ✎</button>
       </div>
-      <div class="stat-val"><span id="proTotal">0</span><small> / <span id="proGoalSmall">150</span> g</small></div>
       <div class="bar pro" id="proBar"><i></i></div>
     </div>
   </section>
@@ -246,18 +345,22 @@
   <h3 id="foodSheetTitle">Add food</h3>
   <div class="field">
     <label for="fName">Food name</label>
-    <input id="fName" type="text" placeholder="e.g. Greek yogurt" autocomplete="off" spellcheck="true" autocapitalize="words" autocorrect="on">
+    <input id="fName" type="text" placeholder="e.g. Greek yogurt" autocomplete="off" spellcheck="true" autocapitalize="words" autocorrect="on" enterkeyhint="next">
   </div>
   <div class="suggest" id="fSuggest"></div>
   <div class="row2">
     <div class="field">
       <label for="fCal">Calories</label>
-      <input id="fCal" type="number" inputmode="numeric" placeholder="0" min="0">
+      <input id="fCal" type="number" inputmode="numeric" placeholder="0" min="0" enterkeyhint="next">
     </div>
     <div class="field">
       <label for="fPro">Protein (g)</label>
-      <input id="fPro" type="number" inputmode="decimal" placeholder="0" min="0">
+      <input id="fPro" type="number" inputmode="decimal" placeholder="0" min="0" enterkeyhint="done">
     </div>
+  </div>
+  <div class="field">
+    <label for="fEmoji">Icon / Emoji (optional)</label>
+    <input id="fEmoji" type="text" placeholder="e.g. 🥚, 🍗, 🥣, 🍌" maxlength="4">
   </div>
   <label class="check"><input type="checkbox" id="fSave"> Save to my foods for quick add</label>
   <div class="sheet-actions">
@@ -272,11 +375,11 @@
   <h3>Add exercise</h3>
   <div class="field">
     <label for="eName">Activity</label>
-    <input id="eName" type="text" placeholder="e.g. Walk, Gym" autocomplete="off" spellcheck="true" autocapitalize="words" autocorrect="on">
+    <input id="eName" type="text" placeholder="e.g. Walk, Gym" autocomplete="off" spellcheck="true" autocapitalize="words" autocorrect="on" enterkeyhint="next">
   </div>
   <div class="field">
     <label for="eCal">Calories burned</label>
-    <input id="eCal" type="number" inputmode="numeric" placeholder="0" min="0">
+    <input id="eCal" type="number" inputmode="numeric" placeholder="0" min="0" enterkeyhint="done">
   </div>
   <div class="sheet-actions">
     <button class="btn" data-close>Cancel</button>
@@ -288,7 +391,10 @@
 <div class="sheet" id="manageSheet">
   <div class="grab"></div>
   <h3>My foods</h3>
-  <p class="hint">Saved foods appear as quick-add buttons. Tap edit to change calories or protein.</p>
+  <p class="hint">Saved foods appear as quick-add buttons. Drag handles (⋮⋮) to reorder.</p>
+  <div class="field" style="margin-bottom:12px">
+    <input id="manageSearch" type="search" placeholder="Search my foods..." autocomplete="off">
+  </div>
   <div id="manageList"></div>
   <div class="sheet-actions" style="margin-top:16px">
     <button class="btn" data-close>Close</button>
@@ -302,7 +408,7 @@
   <h3 id="goalTitle">Daily goal</h3>
   <div class="field">
     <label id="goalLabel" for="goalInput">Goal</label>
-    <input id="goalInput" type="number" inputmode="numeric" min="0">
+    <input id="goalInput" type="number" inputmode="numeric" min="0" enterkeyhint="done">
   </div>
   <div class="sheet-actions">
     <button class="btn" data-close>Cancel</button>
@@ -314,6 +420,13 @@
 <div class="sheet" id="menuSheet">
   <div class="grab"></div>
   <h3>Menu &amp; data</h3>
+
+  <h4>App theme</h4>
+  <div class="theme-picker" id="themePicker">
+    <button class="theme-btn active" data-theme-val="auto">Auto (System)</button>
+    <button class="theme-btn" data-theme-val="dark">Dark</button>
+    <button class="theme-btn" data-theme-val="light">Light</button>
+  </div>
 
   <h4>Daily goals</h4>
   <div class="row2">
@@ -345,7 +458,10 @@
   <input type="file" id="importFile" accept="application/json,.json" hidden>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast">
+  <span id="toastMsg"></span>
+  <button class="toast-undo" id="toastUndo" style="display:none">Undo</button>
+</div>
 
 <script src="food-images.js"></script>
 <script>
@@ -360,14 +476,15 @@
   const defaultState = () => ({
     goals:{ calories:2000, protein:150 },
     usdaApiKey: "",
+    theme: "auto",
     foods:[
-      {id:uid(), name:"Egg",            calories:78,  protein:6},
-      {id:uid(), name:"Chicken breast 100g", calories:165, protein:31},
-      {id:uid(), name:"Greek yogurt cup", calories:100, protein:17},
-      {id:uid(), name:"Banana",         calories:105, protein:1},
-      {id:uid(), name:"Protein shake",  calories:160, protein:30}
+      {id:uid(), name:"Egg",            calories:78,  protein:6, emoji:"🥚"},
+      {id:uid(), name:"Chicken breast 100g", calories:165, protein:31, emoji:"🍗"},
+      {id:uid(), name:"Greek yogurt cup", calories:100, protein:17, emoji:"🥣"},
+      {id:uid(), name:"Banana",         calories:105, protein:1, emoji:"🍌"},
+      {id:uid(), name:"Protein shake",  calories:160, protein:30, emoji:"🥤"}
     ],
-    days:{}   // "YYYY-MM-DD": { entries:[{id,type,name,calories,protein,barcode,imageUrl}] }
+    days:{}   // "YYYY-MM-DD": { entries:[{id,type,name,calories,protein,barcode,imageUrl,emoji}] }
   });
 
   let state = load();
@@ -382,15 +499,85 @@
       if(!s.foods) s.foods = [];
       if(!s.days)  s.days = {};
       if(typeof s.usdaApiKey !== "string") s.usdaApiKey = "";
+      if(typeof s.theme !== "string") s.theme = "auto";
       return s;
     }catch(e){ return defaultState(); }
   }
   function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
 
-  /* ---------- date / midnight reset ----------
-     The day's totals are keyed by the LOCAL calendar date. When the clock
-     passes midnight the key changes, so today's entries start empty — an
-     automatic reset that survives the app being closed or the phone sleeping. */
+  /* ---------- Haptic Feedback (Idea 52) ---------- */
+  function vibrate(pattern=15){
+    if("vibrate" in navigator){
+      try{ navigator.vibrate(pattern); }catch(e){}
+    }
+  }
+
+  /* ---------- Theme Switcher (Idea 49) ---------- */
+  function applyTheme(themeVal){
+    state.theme = themeVal || "auto";
+    if(state.theme === "auto"){
+      document.documentElement.removeAttribute("data-theme");
+    } else {
+      document.documentElement.setAttribute("data-theme", state.theme);
+    }
+    save();
+    document.querySelectorAll(".theme-btn").forEach(b => {
+      b.classList.toggle("active", b.getAttribute("data-theme-val") === state.theme);
+    });
+  }
+  applyTheme(state.theme);
+
+  document.addEventListener("click", e => {
+    const btn = e.target.closest(".theme-btn");
+    if(btn){
+      vibrate(10);
+      applyTheme(btn.getAttribute("data-theme-val"));
+    }
+  });
+
+  /* ---------- Emoji Auto-Detector (Idea 58) ---------- */
+  function detectEmoji(name){
+    const n=String(name||"").toLowerCase();
+    if(n.includes("egg")) return "🥚";
+    if(n.includes("chicken")||n.includes("poultry")) return "🍗";
+    if(n.includes("yogurt")||n.includes("oat")||n.includes("cereal")) return "🥣";
+    if(n.includes("banana")) return "🍌";
+    if(n.includes("shake")||n.includes("smoothie")||n.includes("drink")) return "🥤";
+    if(n.includes("steak")||n.includes("beef")||n.includes("meat")) return "🥩";
+    if(n.includes("apple")) return "🍎";
+    if(n.includes("salad")) return "🥗";
+    if(n.includes("pizza")) return "🍕";
+    if(n.includes("rice")) return "🍚";
+    if(n.includes("fish")||n.includes("salmon")||n.includes("tuna")) return "🐟";
+    if(n.includes("bread")||n.includes("toast")) return "🍞";
+    if(n.includes("coffee")||n.includes("espresso")) return "☕";
+    if(n.includes("milk")||n.includes("cheese")) return "🧀";
+    if(n.includes("walk")||n.includes("hike")) return "🚶";
+    if(n.includes("run")||n.includes("jog")) return "🏃";
+    if(n.includes("gym")||n.includes("workout")||n.includes("lift")) return "🏋️";
+    if(n.includes("cycle")||n.includes("bike")) return "🚴";
+    return "";
+  }
+
+  /* ---------- Animated Count-Up (Idea 55) ---------- */
+  const animState = { calRemain: null, proTotal: null };
+  function animateNumber(el, start, end, duration=350, htmlSuffix=""){
+    if(!el) return;
+    const format = val => htmlSuffix ? val + htmlSuffix : val;
+    if(start === null || start === end || isNaN(start)){ el.innerHTML = format(end); return; }
+    const startTime = performance.now();
+    function update(now){
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(start + (end - start) * easeProgress);
+      el.innerHTML = format(current);
+      if(progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  }
+
+  /* ---------- date / midnight reset ---------- */
   let currentKey = todayKey();
   function todayKey(d=new Date()){
     const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0");
@@ -427,18 +614,40 @@
 
     // calories
     const remain = g.calories - t.net;
-    $("#calRemain").innerHTML = `${remain}<small> / ${g.calories}</small>`;
+    animateNumber($("#calRemainNum"), animState.calRemain, remain, 350);
+    animateNumber($("#calRemain"), animState.calRemain, remain, 350, `<small> / ${g.calories}</small>`);
+    animState.calRemain = remain;
+
     $("#calGoalTxt").textContent = g.calories;
     $("#calFood").textContent = t.food;
     $("#calEx").textContent = t.ex;
     $("#calNet").textContent = t.net;
-    const calPct = g.calories>0 ? (t.net/g.calories)*100 : 0;
+
+    // Collapsed header summary (Idea 56)
+    $("#miniRemain").textContent = remain;
+    $("#miniPro").textContent = round1(t.pro);
+    $("#miniProGoal").textContent = g.protein;
+
+    // Donut Ring progress (Idea 54) & Goal Exceeded Card (Idea 64)
+    const calPct = g.calories>0 ? (t.net/g.calories) : 0;
+    const isOver = t.net > g.calories;
+    const calStatCard = $("#calStatCard");
+    calStatCard.classList.toggle("over-budget", isOver);
+
+    const donutFg = $("#donutFg");
+    const strokeLength = 251.2;
+    const clampedPct = Math.max(0, Math.min(1, calPct));
+    donutFg.style.strokeDashoffset = strokeLength * (1 - clampedPct);
+    donutFg.style.stroke = isOver ? "var(--bad)" : "var(--accent)";
+
     const calBar = $("#calBar");
-    calBar.classList.toggle("over", t.net>g.calories);
-    calBar.firstElementChild.style.width = Math.max(0,Math.min(100,calPct))+"%";
+    calBar.classList.toggle("over", isOver);
+    calBar.firstElementChild.style.width = Math.max(0,Math.min(100,calPct*100))+"%";
 
     // protein
-    $("#proTotal").textContent = round1(t.pro);
+    animateNumber($("#proTotal"), animState.proTotal, round1(t.pro), 350);
+    animState.proTotal = round1(t.pro);
+
     $("#proGoalTxt").textContent = g.protein;
     $("#proGoalSmall").textContent = g.protein;
     const proPct = g.protein>0 ? (t.pro/g.protein)*100 : 0;
@@ -450,61 +659,131 @@
 
   function round1(n){ return Math.round(n*10)/10; }
 
-  let quickExpanded = false;   // saved-foods list starts collapsed; stays as set until toggled or a food is tapped
+  let quickExpanded = false;
   function renderQuick(){
     const wrap = $("#quickChips");
     wrap.innerHTML = "";
     if(state.foods.length===0){
       const d=document.createElement("button");
-      d.className="chip empty"; d.textContent="No saved foods yet — tap Manage to add some";
-      d.onclick=()=>openManage();
+      d.className="chip empty";
+      d.innerHTML=`<div class="empty-state" style="padding:10px 0">
+        <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <div class="empty-title">No saved foods yet</div>
+        <div class="empty-desc">Tap <b>Manage</b> to add your favorite go-to meals for 1-tap quick adding.</div>
+      </div>`;
+      d.onclick=()=>{ vibrate(10); openManage(); };
       wrap.appendChild(d); return;
     }
     const total = state.foods.length;
-    // collapsed by default regardless of count: show nothing but the toggle
     if(quickExpanded){
       for(const f of state.foods){
         const b=document.createElement("button");
         b.className="chip";
-        b.innerHTML=`<span class="nm">${esc(f.name)}</span><span class="mt">${f.calories} cal · ${round1(f.protein)}g</span>`;
-        b.onclick=()=>{ quickExpanded=false; logFood(f.name,f.calories,f.protein,f); pop(`Added ${f.name}`); };
+        const emoji = f.emoji || detectEmoji(f.name);
+        const iconSpan = emoji ? `<span style="font-size:16px">${esc(emoji)}</span>` : "";
+        b.innerHTML=`<span class="nm">${iconSpan}${esc(f.name)}</span><span class="mt">${f.calories} cal · ${round1(f.protein)}g</span>`;
+        b.onclick=()=>{
+          vibrate(20);
+          quickExpanded=false;
+          logFood(f.name,f.calories,f.protein,f);
+          pop(`Added ${f.name}`);
+        };
         wrap.appendChild(b);
       }
     }
     const t=document.createElement("button");
     t.className="chip more";
     t.textContent = quickExpanded ? "Show less ▲" : `Show foods (${total}) ▼`;
-    t.onclick=()=>{ quickExpanded=!quickExpanded; renderQuick(); };
+    t.onclick=()=>{ vibrate(10); quickExpanded=!quickExpanded; renderQuick(); };
     wrap.appendChild(t);
   }
 
+  /* Log list with Swipe-to-Delete (Idea 50) & Empty State Illustrations (Idea 59) */
   function renderLog(){
     const list = $("#logList");
     list.innerHTML="";
     const entries = today().entries;
     if(entries.length===0){
-      list.innerHTML=`<div class="empty-note">Nothing logged yet today.<br>Tap a quick-add button or ＋ Food below.</div>`;
+      list.innerHTML=`<div class="empty-state">
+        <svg class="empty-icon" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="empty-title">Nothing logged yet today</div>
+        <div class="empty-desc">Tap a quick-add chip above or <b>＋ Food</b> below to start logging.</div>
+      </div>`;
       return;
     }
+
     // newest first
     for(let i=entries.length-1;i>=0;i--){
       const it=entries[i];
+      const wrap=document.createElement("div");
+      wrap.className="item-wrap";
+
+      const bg=document.createElement("div");
+      bg.className="item-swipe-bg";
+      bg.textContent="Swipe to delete 🗑";
+      wrap.appendChild(bg);
+
       const row=document.createElement("div");
       row.className="item "+it.type;
+
+      const emoji = it.emoji || detectEmoji(it.name);
+
       if(it.type==="exercise"){
-        row.innerHTML=`<div class="tag">🔥</div>
+        const tagIcon = emoji ? esc(emoji) : "🔥";
+        row.innerHTML=`<div class="tag">${tagIcon}</div>
           <div class="body"><div class="nm">${esc(it.name)}</div><div class="mt">Exercise</div></div>
           <div class="amt">−${it.calories}</div>`;
       }else{
         row.innerHTML=`<div class="body"><div class="nm">${esc(it.name)}</div><div class="mt">${round1(it.protein)}g protein</div></div>
           <div class="amt">${it.calories}</div>`;
-        row.prepend(foodVisual(it.name,it.imageUrl));
+        if(it.imageUrl){
+          row.prepend(foodVisual(it.name,it.imageUrl));
+        } else {
+          const tagDiv=document.createElement("div");
+          tagDiv.className="tag";
+          tagDiv.textContent=emoji || "🍽️";
+          row.prepend(tagDiv);
+        }
       }
+
       const del=document.createElement("button");
       del.className="del"; del.innerHTML="✕"; del.setAttribute("aria-label","Delete");
-      del.onclick=()=>{ removeEntry(it.id); };
+      del.onclick=()=>{ vibrate(25); removeEntry(it.id); };
       row.appendChild(del);
-      list.appendChild(row);
+      wrap.appendChild(row);
+
+      // Touch Swipe-to-delete gesture (Idea 50)
+      let startX=0, currentX=0, isSwiping=false;
+      row.addEventListener("touchstart", e => {
+        startX = e.touches[0].clientX;
+        isSwiping = true;
+        row.classList.add("swiping");
+      }, {passive:true});
+
+      row.addEventListener("touchmove", e => {
+        if(!isSwiping) return;
+        currentX = e.touches[0].clientX;
+        const dx = currentX - startX;
+        if(dx < 0 && dx > -120){
+          row.style.transform = `translateX(${dx}px)`;
+        }
+      }, {passive:true});
+
+      row.addEventListener("touchend", () => {
+        if(!isSwiping) return;
+        isSwiping = false;
+        row.classList.remove("swiping");
+        const dx = currentX - startX;
+        if(dx < -70){
+          row.style.transform = "translateX(-100%)";
+          vibrate([20,30,20]);
+          setTimeout(() => removeEntry(it.id), 120);
+        } else {
+          row.style.transform = "translateX(0)";
+        }
+      });
+
+      list.appendChild(wrap);
     }
   }
 
@@ -526,7 +805,8 @@
   /* ---------- mutations ---------- */
   function logFood(name,cal,pro,metadata){
     const image=FoodImages.sanitizeFoodImageMetadata(metadata);
-    today().entries.push({id:uid(),type:"food",name:name||"Food",calories:+cal||0,protein:+pro||0,...image});
+    const emoji=str(metadata ? metadata.emoji : "").trim().slice(0,10) || detectEmoji(name);
+    today().entries.push({id:uid(),type:"food",name:name||"Food",calories:+cal||0,protein:+pro||0,emoji,...image});
     save(); render();
   }
   function logExercise(name,cal){
@@ -575,12 +855,14 @@
 
     if(foodMode==="edit"){
       const f=state.foods.find(x=>x.id===editingFoodId);
-      if(f){ f.name=name; f.calories=cal; f.protein=pro; }
+      const emoji = $("#fEmoji").value.trim() || detectEmoji(name);
+      if(f){ f.name=name; f.calories=cal; f.protein=pro; f.emoji=emoji; }
       save(); hide(); openManage(); renderQuick(); pop("Saved");
       return;
     }
     if(foodMode==="newSaved"){
-      state.foods.push({id:uid(),name,calories:cal,protein:pro});
+      const emoji = $("#fEmoji").value.trim() || detectEmoji(name);
+      state.foods.push({id:uid(),name,calories:cal,protein:pro,emoji});
       save(); hide(); openManage(); pop("Food saved");
       return;
     }
@@ -588,6 +870,9 @@
     const submit=$("#fSubmit");
     const originalLabel=submit.textContent;
     const metadata=FoodImages.sanitizeFoodImageMetadata(selectedFoodMetadata);
+    const emoji = $("#fEmoji").value.trim() || detectEmoji(name);
+    metadata.emoji = emoji;
+
     if(metadata.barcode && !metadata.imageUrl){
       submit.disabled=true; submit.textContent="Finding photo…";
       metadata.imageUrl=await fetchOpenFoodFactsImage(metadata.barcode);
@@ -595,6 +880,7 @@
     }
     if($("#fSave").checked) state.foods.push({id:uid(),name,calories:cal,protein:pro,...metadata});
     logFood(name,cal,pro,metadata);
+    vibrate(20);
     hide(); pop(`Added ${name}`);
   };
 
@@ -631,6 +917,7 @@
       protein,
       barcode: FoodImages.normalizeBarcode(item.gtinUpc),
       imageUrl: "",
+      emoji: detectEmoji(cleanName),
       isUsda: true,
     };
   }
@@ -681,9 +968,12 @@
       const badge = f.isSaved
         ? `<span class="badge saved">Saved</span>`
         : `<span class="badge usda">USDA</span>`;
-      b.innerHTML=`<span class="nm">${highlight(f.name,q)}${badge}</span><span class="mt">${f.calories} cal · ${round1(f.protein)}g</span>`;
+      const emojiVal = f.emoji || detectEmoji(f.name);
+      const emojiSpan = emojiVal ? `<span style="font-size:16px;margin-right:4px">${esc(emojiVal)}</span>` : "";
+      b.innerHTML=`<span class="nm">${emojiSpan}${highlight(f.name,q)}${badge}</span><span class="mt">${f.calories} cal · ${round1(f.protein)}g</span>`;
       b.onclick=()=>{
         $("#fName").value=f.name; $("#fCal").value=f.calories; $("#fPro").value=f.protein;
+        if($("#fEmoji")) $("#fEmoji").value = f.emoji || detectEmoji(f.name);
         selectedFoodMetadata=FoodImages.sanitizeFoodImageMetadata(f);
         $("#fSave").checked=false;
         clearSuggest();
@@ -722,41 +1012,119 @@
     const name=$("#eName").value.trim()||"Exercise";
     const cal=+$("#eCal").value||0;
     if(cal<=0){ pop("Enter calories burned"); $("#eCal").focus(); return; }
+    vibrate(20);
     logExercise(name,cal); hide(); pop(`−${cal} cal`);
   };
 
-  /* manage foods */
-  function openManage(){ renderManage(); show("manageSheet"); }
+  /* manage foods with Search (Idea 57) & Drag Reordering (Idea 51) */
+  function openManage(){
+    const searchInput = $("#manageSearch");
+    if(searchInput) searchInput.value = "";
+    renderManage();
+    show("manageSheet");
+  }
   $("#manageFoods").onclick=openManage;
+
+  let manageSearchQuery = "";
+  const manageSearchEl = $("#manageSearch");
+  if(manageSearchEl){
+    manageSearchEl.addEventListener("input", e => {
+      manageSearchQuery = e.target.value.trim().toLowerCase();
+      renderManage();
+    });
+  }
+
   function renderManage(){
     const wrap=$("#manageList"); wrap.innerHTML="";
     if(state.foods.length===0){
-      wrap.innerHTML=`<p class="hint">No saved foods yet. Tap “New food”.</p>`; return;
+      wrap.innerHTML=`<div class="empty-state">
+        <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <div class="empty-title">No saved foods yet</div>
+        <div class="empty-desc">Tap <b>＋ New food</b> below to add your first saved item.</div>
+      </div>`;
+      return;
     }
-    state.foods.forEach(f=>{
+
+    const filtered = state.foods.filter(f => !manageSearchQuery || f.name.toLowerCase().includes(manageSearchQuery));
+    if(filtered.length===0){
+      wrap.innerHTML=`<div class="empty-note">No foods matching “${esc(manageSearchQuery)}”.</div>`;
+      return;
+    }
+
+    filtered.forEach((f, index)=>{
       const row=document.createElement("div");
       row.className="manage-item";
-      row.innerHTML=`<div class="body"><div class="nm">${esc(f.name)}</div><div class="mt">${f.calories} cal · ${round1(f.protein)}g protein</div></div>`;
+      row.dataset.id = f.id;
+      row.dataset.index = index;
+
+      const emojiVal = f.emoji || detectEmoji(f.name);
+      const emojiSpan = emojiVal ? `<span style="font-size:16px">${esc(emojiVal)}</span>` : "";
+
+      row.innerHTML=`<div class="drag-handle" title="Drag to reorder">⋮⋮</div>
+        <div class="body"><div class="nm">${emojiSpan}${esc(f.name)}</div><div class="mt">${f.calories} cal · ${round1(f.protein)}g protein</div></div>`;
+
       const edit=document.createElement("button");
       edit.className="mini"; edit.innerHTML="✎"; edit.setAttribute("aria-label","Edit");
       edit.onclick=()=>editFood(f.id);
+
       const del=document.createElement("button");
       del.className="mini del"; del.innerHTML="🗑"; del.setAttribute("aria-label","Delete");
       del.onclick=()=>{
+        vibrate(25);
         if(confirm(`Delete "${f.name}" from your foods?`)){
           state.foods=state.foods.filter(x=>x.id!==f.id); save(); renderManage(); renderQuick();
         }
       };
+
       row.appendChild(edit); row.appendChild(del);
+
+      // Drag Reordering Touch/Pointer Event Handlers (Idea 51)
+      const handle = row.querySelector(".drag-handle");
+      let startY = 0, initialIdx = index;
+      handle.addEventListener("touchstart", e => {
+        startY = e.touches[0].clientY;
+        row.classList.add("dragging");
+        vibrate(10);
+      }, {passive:true});
+
+      handle.addEventListener("touchmove", e => {
+        const currentY = e.touches[0].clientY;
+        const dy = currentY - startY;
+        row.style.transform = `translateY(${dy}px)`;
+      }, {passive:true});
+
+      handle.addEventListener("touchend", e => {
+        row.classList.remove("dragging");
+        row.style.transform = "none";
+        const touchY = e.changedTouches[0].clientY;
+        const items = Array.from(wrap.children);
+        const target = items.find(item => {
+          const rect = item.getBoundingClientRect();
+          return touchY >= rect.top && touchY <= rect.bottom;
+        });
+        if(target && target !== row){
+          const targetId = target.dataset.id;
+          const fromIdx = state.foods.findIndex(x => x.id === f.id);
+          const toIdx = state.foods.findIndex(x => x.id === targetId);
+          if(fromIdx > -1 && toIdx > -1){
+            const [moved] = state.foods.splice(fromIdx, 1);
+            state.foods.splice(toIdx, 0, moved);
+            save(); renderManage(); renderQuick(); vibrate(15);
+          }
+        }
+      });
+
       wrap.appendChild(row);
     });
   }
+
   function editFood(id){
     const f=state.foods.find(x=>x.id===id); if(!f) return;
     foodMode="edit"; editingFoodId=id;
     $("#foodSheetTitle").textContent="Edit food";
     $("#fSubmit").textContent="Save";
     $("#fName").value=f.name; $("#fCal").value=f.calories; $("#fPro").value=f.protein;
+    if($("#fEmoji")) $("#fEmoji").value = f.emoji || detectEmoji(f.name);
     $("#fSave").parentElement.style.display="none";
     clearSuggest();
     show("foodSheet"); setTimeout(()=>$("#fName").focus(),250);
@@ -766,6 +1134,7 @@
     $("#foodSheetTitle").textContent="New saved food";
     $("#fSubmit").textContent="Save";
     $("#fName").value=""; $("#fCal").value=""; $("#fPro").value="";
+    if($("#fEmoji")) $("#fEmoji").value = "";
     $("#fSave").parentElement.style.display="none";
     clearSuggest();
     show("foodSheet"); setTimeout(()=>$("#fName").focus(),250);
@@ -785,15 +1154,28 @@
   $("#goalSubmit").onclick=()=>{
     const v=+$("#goalInput").value;
     if(v>0){ state.goals[goalKind]=v; save(); render(); }
+    vibrate(15);
     hide();
   };
 
-  /* clear day */
+  /* Clear day with Non-Blocking Undo Toast (Idea 60) */
+  let clearedEntriesBackup = null;
   $("#clearDay").onclick=()=>{
-    if(today().entries.length===0){ pop("Nothing to clear"); return; }
-    if(confirm("Clear all of today's food and exercise entries?")){
-      today().entries=[]; save(); render(); pop("Day cleared");
-    }
+    const entries = today().entries;
+    if(entries.length===0){ pop("Nothing to clear"); return; }
+    clearedEntriesBackup = [...entries];
+    today().entries = [];
+    save(); render();
+    vibrate(25);
+    popUndo("Day cleared", () => {
+      if(clearedEntriesBackup){
+        today().entries = clearedEntriesBackup;
+        clearedEntriesBackup = null;
+        save(); render();
+        vibrate(15);
+        pop("Day restored!");
+      }
+    });
   };
 
   /* menu + data */
@@ -802,6 +1184,7 @@
     $("#menuProGoal").value=state.goals.protein;
     const usdaKeyEl=$("#menuUsdaKey");
     if(usdaKeyEl) usdaKeyEl.value=state.usdaApiKey||"";
+    applyTheme(state.theme);
     show("menuSheet");
   };
   function bindGoalInput(sel,key){
@@ -823,7 +1206,7 @@
   $("#exportFoodsBtn").onclick=()=>downloadJSON({foods:state.foods},`tally-foods-${todayKey()}.json`);
   $("#importBtn").onclick=()=>$("#importFile").click();
 
-  /* ---- import sanitizers: never trust the file's shape ---- */
+  /* ---- import sanitizers ---- */
   function num(v){ const n=+v; return Number.isFinite(n)&&n>=0 ? n : 0; }
   function str(v){ return typeof v==="string" ? v : (v==null ? "" : String(v)); }
   function sanitizeFood(f){
@@ -831,7 +1214,9 @@
     const name=str(f.name).trim();
     if(!name) return null;
     const image=FoodImages.sanitizeFoodImageMetadata(f);
-    return { id:uid(), name, calories:num(f.calories), protein:num(f.protein), ...image };
+    const rawEmoji=str(f.emoji).trim().slice(0,10);
+    const emoji=rawEmoji || detectEmoji(name);
+    return { id:uid(), name, calories:num(f.calories), protein:num(f.protein), emoji, ...image };
   }
   function sanitizeFoods(arr){
     if(!Array.isArray(arr)) return [];
@@ -842,7 +1227,9 @@
     const name=str(it.name).trim();
     if(!name) return null;
     const type = it.type==="exercise" ? "exercise" : "food";
-    const e = { id:uid(), type, name, calories:num(it.calories) };
+    const rawEmoji=str(it.emoji).trim().slice(0,10);
+    const emoji=rawEmoji || detectEmoji(name);
+    const e = { id:uid(), type, name, calories:num(it.calories), emoji };
     if(type==="food"){
       e.protein=num(it.protein);
       Object.assign(e,FoodImages.sanitizeFoodImageMetadata(it));
@@ -853,7 +1240,7 @@
     const out={};
     if(!days || typeof days!=="object") return out;
     for(const [key,day] of Object.entries(days)){
-      if(!/^\d{4}-\d{2}-\d{2}$/.test(key)) continue;          // only valid date keys
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(key)) continue;
       const entries=(day && Array.isArray(day.entries) ? day.entries : [])
         .map(sanitizeEntry).filter(Boolean);
       out[key]={ entries };
@@ -877,7 +1264,6 @@
         const data=JSON.parse(r.result);
         if(!data || typeof data!=="object"){ pop("Unrecognized file"); return; }
         if(data.foods && !data.days && !data.goals){
-          // foods-only import: merge by name
           const added=mergeFoods(data.foods);
           pop(`Imported ${added} food${added===1?"":"s"}`);
         }else if(data.foods || data.days){
@@ -885,10 +1271,11 @@
             state = {
               goals: sanitizeGoals(data.goals),
               usdaApiKey: str(data.usdaApiKey || state.usdaApiKey),
+              theme: str(data.theme || state.theme),
               foods: sanitizeFoods(data.foods),
               days:  sanitizeDays(data.days)
             };
-            save(); pop("Backup imported");
+            save(); applyTheme(state.theme); pop("Backup imported");
           }
         }else{ pop("Unrecognized file"); }
       }catch(err){ pop("Couldn't read file"); }
@@ -909,7 +1296,7 @@
   }
   $("#resetAllBtn").onclick=()=>{
     if(confirm("Erase ALL data on this device (foods, goals, and history)? This can't be undone.")){
-      localStorage.removeItem(KEY); state=defaultState(); save(); render(); hide(); pop("All data erased");
+      localStorage.removeItem(KEY); state=defaultState(); save(); applyTheme(state.theme); render(); hide(); pop("All data erased");
     }
   };
 
@@ -922,19 +1309,87 @@
     pop("Backup downloaded");
   }
 
-  /* toast */
+  /* Toast & Toast with Undo (Idea 60) */
   let toastT;
   function pop(msg){
-    const t=$("#toast"); t.textContent=msg; t.classList.add("show");
-    clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),1600);
+    const t=$("#toast"), tm=$("#toastMsg"), tu=$("#toastUndo");
+    if(tm) tm.textContent=msg;
+    if(tu){ tu.style.display="none"; tu.onclick=null; }
+    t.classList.add("show");
+    clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),1800);
   }
 
-  /* submit on Enter in number/text fields */
-  $("#foodSheet").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#fSubmit").click(); } });
-  $("#exSheet").addEventListener("keydown",e=>{ if(e.key==="Enter") $("#eSubmit").click(); });
+  function popUndo(msg, undoFn){
+    const t=$("#toast"), tm=$("#toastMsg"), tu=$("#toastUndo");
+    if(tm) tm.textContent=msg;
+    if(tu){
+      tu.style.display="inline-block";
+      tu.onclick=()=>{
+        t.classList.remove("show");
+        clearTimeout(toastT);
+        if(undoFn) undoFn();
+      };
+    }
+    t.classList.add("show");
+    clearTimeout(toastT); toastT=setTimeout(()=>{
+      t.classList.remove("show");
+      if(tu) tu.style.display="none";
+    },5000);
+  }
+
+  /* Keyboard "Next" sequence (Idea 62) */
+  const fNameEl = $("#fName"), fCalEl = $("#fCal"), fProEl = $("#fPro");
+  if(fNameEl) fNameEl.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); fCalEl.focus(); } });
+  if(fCalEl) fCalEl.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); fProEl.focus(); } });
+  if(fProEl) fProEl.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#fSubmit").click(); } });
+
+  const eNameEl = $("#eName"), eCalEl = $("#eCal");
+  if(eNameEl) eNameEl.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); eCalEl.focus(); } });
+  if(eCalEl) eCalEl.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#eSubmit").click(); } });
+
   $("#goalSheet").addEventListener("keydown",e=>{ if(e.key==="Enter") $("#goalSubmit").click(); });
 
-  /* rollover checks: on focus/visibility and a periodic timer */
+  /* Collapsing summary header on scroll (Idea 56) */
+  const mainHeader = $("#mainHeader");
+  if(mainHeader){
+    window.addEventListener("scroll", () => {
+      mainHeader.classList.toggle("collapsed", window.scrollY > 60);
+    }, {passive:true});
+  }
+
+  /* Pull-to-Refresh gesture (Idea 53) */
+  const pullInd = $("#pullIndicator");
+  let pStartY = 0, pCurrentY = 0, isPulling = false;
+  document.addEventListener("touchstart", e => {
+    if(window.scrollY === 0){
+      pStartY = e.touches[0].clientY;
+      isPulling = true;
+    }
+  }, {passive:true});
+  document.addEventListener("touchmove", e => {
+    if(!isPulling) return;
+    pCurrentY = e.touches[0].clientY;
+    const dy = pCurrentY - pStartY;
+    if(dy > 15 && window.scrollY === 0){
+      if(pullInd) pullInd.classList.add("visible");
+    } else {
+      if(pullInd) pullInd.classList.remove("visible");
+    }
+  }, {passive:true});
+  document.addEventListener("touchend", () => {
+    if(!isPulling) return;
+    isPulling = false;
+    const dy = pCurrentY - pStartY;
+    if(dy > 60 && window.scrollY === 0){
+      vibrate(20);
+      checkRollover();
+      pop("Refreshed");
+    }
+    if(pullInd) pullInd.classList.remove("visible");
+    pStartY = 0; pCurrentY = 0;
+  });
+
+  /* rollover checks */
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden) checkRollover(); });
   window.addEventListener("focus",checkRollover);
   setInterval(checkRollover,30000);

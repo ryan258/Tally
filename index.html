@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0e1116">
+<meta name="theme-color" content="#ffe600">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,454 +12,469 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Outfit:wght@500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#0e1116; --surface:#171c24; --surface-2:#1f2630; --line:#2a323d;
-    --text:#e8edf2; --muted:#8a96a5; --accent:#4cc2ff; --accent-2:#2b9eff;
-    --good:#34d399; --warn:#fbbf24; --bad:#f87171; --protein:#a78bfa;
-    --carbs:#38bdf8; --fat:#f59e0b; --water:#38bdf8;
-    --radius:18px; --tap:52px;
-    --safe-top:env(safe-area-inset-top,0px);
-    --safe-bottom:env(safe-area-inset-bottom,0px);
+  /* -------------------------------------------------------------
+     PREMIUM EDITORIAL POP ART DESIGN SYSTEM — Refined & Crisp
+     ------------------------------------------------------------- */
+  :root {
+    --pop-yellow: #ffe600;
+    --pop-cyan: #00e5ff;
+    --pop-pink: #ff2a85;
+    --pop-red: #ff3333;
+    --pop-green: #00e676;
+    --pop-orange: #ff9100;
+    --pop-black: #000000;
+    --pop-paper: #fff8e7;
+    --pop-card-bg: #ffffff;
+
+    --bg: var(--pop-paper);
+    --surface: #ffffff;
+    --surface-2: #fff3d1;
+    --line: #000000;
+    --text: #000000;
+    --muted: #444444;
+    --accent: var(--pop-cyan);
+    --accent-2: var(--pop-yellow);
+    --good: var(--pop-green);
+    --warn: var(--pop-orange);
+    --bad: var(--pop-red);
+    --protein: var(--pop-pink);
+    --carbs: var(--pop-cyan);
+    --fat: var(--pop-yellow);
+    --water: var(--pop-cyan);
+
+    --radius: 16px;
+    --tap: 50px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
-  :root[data-theme="light"] {
-    --bg:#f4f6f9; --surface:#ffffff; --surface-2:#e9eef5; --line:#cbd5e1;
-    --text:#0f172a; --muted:#64748b; --accent:#0284c7; --accent-2:#0369a1;
-    --good:#10b981; --warn:#f59e0b; --bad:#ef4444; --protein:#7c3aed;
-    --carbs:#0284c7; --fat:#d97706; --water:#0284c7;
-  }
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) {
-      --bg:#f4f6f9; --surface:#ffffff; --surface-2:#e9eef5; --line:#cbd5e1;
-      --text:#0f172a; --muted:#64748b; --accent:#0284c7; --accent-2:#0369a1;
-      --good:#10b981; --warn:#f59e0b; --bad:#ef4444; --protein:#7c3aed;
-      --carbs:#0284c7; --fat:#d97706; --water:#0284c7;
-    }
+
+  :root[data-theme="dark"] {
+    --bg: #121216;
+    --surface: #1e1e24;
+    --surface-2: #282836;
+    --line: #000000;
+    --text: #ffffff;
+    --muted: #b0b0c8;
+    --pop-paper: #121216;
+    --pop-card-bg: #1e1e24;
   }
 
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;height:100%}
   body{
-    background:var(--bg); color:var(--text);
-    font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    overscroll-behavior-y:none; -webkit-user-select:none; user-select:none;
-    transition:background-color .3s,color .3s;
+    background-color: var(--bg);
+    background-image: radial-gradient(#d8c9b0 1.5px, transparent 1.5px);
+    background-size: 14px 14px;
+    color: var(--text);
+    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+    font-size: 15px; line-height: 1.4;
+    overscroll-behavior-y: none;
+    -webkit-user-select: none; user-select: none;
+    transition: background-color .3s, color .3s;
   }
-  #app{max-width:640px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
 
+  #app{max-width:680px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding:0 8px;}
+
+  /* Header */
   header{
-    position:sticky;top:0;z-index:20;background:var(--bg);
-    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-    padding:calc(var(--safe-top) + 10px) 16px 10px;border-bottom:1px solid var(--line);
-    transition:padding .2s;
+    position: sticky; top: 0; z-index: 20;
+    background: var(--pop-yellow);
+    border-bottom: 3px solid #000;
+    padding: calc(var(--safe-top) + 10px) 16px 10px;
+    box-shadow: 0 3px 0 #000;
   }
   .head-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:19px;letter-spacing:.2px}
-  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
-  .date{color:var(--muted);font-size:13px;font-weight:500}
-  .icon-btn{
-    width:48px;height:48px;border-radius:14px;border:1px solid var(--line);
-    background:var(--surface);color:var(--text);font-size:20px;display:grid;place-items:center;
-    cursor:pointer;
+  .brand{
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Bangers', cursive; font-size: 32px; letter-spacing: 2px;
+    color: #000; text-shadow: 2px 2px 0 #fff;
   }
-  .icon-btn:active{background:var(--surface-2)}
+  .brand .dot{
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--pop-pink); border: 2px solid #000;
+    display: grid; place-items: center; box-shadow: 2px 2px 0 #000;
+  }
+  .brand .dot::after{content:"★";color:#fff;font-size:14px;line-height:1;}
+  .date{
+    font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: #000;
+    background: #fff; padding: 5px 12px; border: 2px solid #000;
+    border-radius: 10px; box-shadow: 2px 2px 0 #000;
+  }
+  .icon-btn{
+    width: 44px; height: 44px; border-radius: 12px; border: 2.5px solid #000;
+    background: #fff; color: #000; font-size: 22px; font-weight: 900;
+    display: grid; place-items: center; cursor: pointer; box-shadow: 2.5px 2.5px 0 #000;
+    transition: transform .1s;
+  }
+  .icon-btn:active{transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000;}
 
-  /* collapsed summary header */
-  .head-summary{display:none;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--muted);padding-top:6px;font-weight:600}
-  .head-summary b{color:var(--text);font-weight:800}
-  header.collapsed .head-summary{display:flex}
+  /* Collapsed Header Summary */
+  .head-summary{
+    display: none; align-items: center; justify-content: center; gap: 12px;
+    font-family: 'Bangers', cursive; font-size: 17px; color: #000;
+    margin-top: 6px; padding-top: 6px; border-top: 2px dashed #000; letter-spacing: 1px;
+  }
+  .head-summary b{color: var(--pop-pink); font-size: 19px; text-shadow: 1px 1px 0 #000;}
+  header.collapsed .head-summary{display: flex}
 
-  /* summary cards */
-  .summary{padding:14px 16px 4px}
+  /* Summary Section */
+  .summary{padding: 14px 4px 6px}
+
+  /* Main Calorie Hero Card - Electric Yellow Reserved */
   .stat{
-    background:linear-gradient(180deg,var(--surface),var(--surface-2));
-    border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:12px;
-    transition:border-color .3s, background .3s, box-shadow .3s;
+    background: var(--pop-yellow);
+    border: 3px solid #000; border-radius: 20px;
+    padding: 18px 20px; margin-bottom: 14px;
+    box-shadow: 4px 4px 0 #000;
+    position: relative; overflow: hidden;
+  }
+  .stat::before {
+    content: "BOOM!";
+    position: absolute; right: -8px; top: -10px;
+    font-family: 'Bangers', cursive; font-size: 24px; color: var(--pop-pink);
+    background: #fff; border: 2.5px solid #000; padding: 2px 12px;
+    transform: rotate(6deg); border-radius: 12px; box-shadow: 2px 2px 0 #000;
+    letter-spacing: 1px; z-index: 2;
   }
   .stat.over-budget{
-    background:linear-gradient(180deg,rgba(248,113,113,.12),var(--surface-2));
-    border-color:var(--bad);
-    box-shadow:0 0 16px rgba(248,113,113,.18);
+    background: var(--pop-red); color: #fff;
+    box-shadow: 4px 4px 0 #000;
   }
-  .stat.over-budget .stat-label::after{
-    content:" • EXCEEDED";color:var(--bad);font-weight:800;letter-spacing:.5px;
+  .stat.over-budget::before {
+    content: "KAPOW!"; background: var(--pop-yellow); color: #000;
   }
+  .stat.over-budget .stat-label{color: #fff; text-shadow: 1px 1px 0 #000;}
+  .stat.over-budget .stat-val{color: #fff; text-shadow: 2px 2px 0 #000;}
+  .stat.over-budget .goal-edit{color: #fff;}
 
   .stat-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
   .stat-info{flex:1;min-width:0}
-  .stat-label{color:var(--muted);font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
-  .stat-val{font-size:32px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums;margin-top:2px}
-  .stat-val small{font-size:14px;font-weight:600;color:var(--muted)}
-  .goal-edit{color:var(--muted);font-size:13px;font-weight:600;background:none;border:none;padding:8px 4px;min-height:44px;cursor:pointer}
-
-  /* Donut Ring Progress */
-  .ring-wrap{position:relative;width:82px;height:82px;flex:0 0 auto}
-  .donut-ring{width:100%;height:100%;transform:rotate(-90deg)}
-  .donut-ring circle{fill:none;stroke-width:9}
-  .ring-bg{stroke:var(--line);opacity:.6}
-  .ring-fg{stroke:var(--accent);stroke-linecap:round;stroke-dasharray:251.2;stroke-dashoffset:251.2;transition:stroke-dashoffset .4s ease, stroke .3s ease}
-  .ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
-  .ring-center span{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--text)}
-  .ring-center small{font-size:10px;color:var(--muted);margin-top:2px;font-weight:700;text-transform:uppercase}
-
-  .bar{height:10px;border-radius:6px;background:var(--bg);overflow:hidden;border:1px solid var(--line);margin-top:10px}
-  .bar > i{display:block;height:100%;width:0;border-radius:6px;transition:width .35s ease}
-  .bar.cal > i{background:linear-gradient(90deg,var(--accent-2),var(--accent))}
-  .bar.pro > i{background:linear-gradient(90deg,#7c5cf0,var(--protein))}
-  .bar.carbs > i{background:linear-gradient(90deg,#0284c7,var(--carbs))}
-  .bar.fat > i{background:linear-gradient(90deg,#d97706,var(--fat))}
-  .bar.over > i{background:linear-gradient(90deg,#e0533f,var(--bad))}
-  .breakdown{display:flex;gap:14px;margin-top:10px;color:var(--muted);font-size:13px;flex-wrap:wrap}
-  .breakdown b{color:var(--text);font-weight:700}
-
-  /* Macro Breakdown Grid */
-  .macro-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:12px}
-  .macro-stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
-  .macro-stat .lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-  .macro-stat .val{font-size:16px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
-  .macro-stat .val small{font-size:11px;color:var(--muted);font-weight:600}
-
-  /* Water Intake Counter Card */
-  .water-card{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;margin-bottom:12px}
-  .water-info{display:flex;flex-direction:column}
-  .water-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-  .water-val{font-size:18px;font-weight:800;color:var(--text);margin-top:1px;font-variant-numeric:tabular-nums}
-  .water-controls{display:flex;align-items:center;gap:8px}
-  .water-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:18px;font-weight:800;display:grid;place-items:center;cursor:pointer}
-  .water-btn:active{background:var(--line)}
-
-  /* Weekly Calorie Averaging Card */
-  .weekly-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;font-size:13px}
-  .weekly-card .label{color:var(--muted);font-weight:600}
-  .weekly-card b{color:var(--text);font-weight:800}
-
-  main{flex:1;padding:6px 16px 120px}
-  .section-title{display:flex;align-items:center;justify-content:space-between;margin:18px 2px 10px}
-  .section-title h2{font-size:15px;margin:0;letter-spacing:.3px}
-  .link-btn{background:none;border:none;color:var(--accent);font-weight:700;font-size:14px;padding:8px 10px;min-height:48px;display:inline-flex;align-items:center;cursor:pointer}
-
-  /* quick foods chips */
-  .chips{display:flex;flex-wrap:wrap;gap:9px}
-  .chip{
-    display:flex;flex-direction:column;align-items:flex-start;gap:2px;
-    background:var(--surface);border:1px solid var(--line);border-radius:14px;
-    padding:10px 14px;min-height:var(--tap);text-align:left;color:var(--text);
-    cursor:pointer;
+  .stat-label{
+    font-family: 'Bangers', cursive; font-size: 19px; letter-spacing: 1px;
+    color: #000; text-transform: uppercase; text-shadow: 1px 1px 0 #fff;
   }
-  .chip:active{background:var(--surface-2);transform:scale(.97)}
-  .chip .nm{font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px}
-  .chip .mt{font-size:12px;color:var(--muted)}
-  .chip.empty{color:var(--muted);font-weight:500;font-size:14px;border-style:dashed;width:100%;justify-content:center;align-items:center;flex-direction:column;padding:24px 16px}
-  .chip.more{width:100%;justify-content:center;align-items:center;flex-direction:row;color:var(--accent);font-weight:700;font-size:14px;background:transparent;border-style:dashed;min-height:48px}
+  .stat-val{
+    font-family: 'Bangers', cursive; font-size: 50px; line-height: 1;
+    letter-spacing: 1.5px; color: #000; text-shadow: 2px 2px 0 #fff; margin-top: 4px;
+  }
+  .stat-val small{font-size: 22px; color: #000; font-family: 'Bangers', cursive;}
+  .goal-edit{
+    font-family: 'Outfit', sans-serif; font-size: 13.5px; font-weight: 700;
+    color: #000; background: #fff; border: 2px solid #000; border-radius: 10px;
+    padding: 5px 12px; margin-top: 8px; cursor: pointer; box-shadow: 2px 2px 0 #000;
+  }
+  .goal-edit:active{transform: translate(1px, 1px); box-shadow: 1px 1px 0 #000;}
+
+  /* Donut Ring */
+  .ring-wrap{position:relative;width:96px;height:96px;flex:0 0 auto}
+  .donut-ring{width:100%;height:100%;transform:rotate(-90deg)}
+  .donut-ring circle{fill:none;stroke-width:10}
+  .ring-bg{stroke: #000; opacity: 0.18}
+  .ring-fg{
+    stroke: var(--pop-pink); stroke-linecap: round;
+    stroke-dasharray: 251.2; stroke-dashoffset: 251.2;
+    transition: stroke-dashoffset .4s ease;
+  }
+  .ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+  .ring-center span{font-family:'Bangers', cursive; font-size:26px; color: #000; text-shadow: 1.5px 1.5px 0 #fff;}
+  .ring-center small{font-family:'Bangers', cursive; font-size:12px; color:#000; letter-spacing:1px; margin-top:2px}
+
+  .bar{height:14px;border-radius:8px;background:#fff;border:2.5px solid #000;overflow:hidden;margin-top:12px;}
+  .bar > i{display:block;height:100%;width:0;border-radius:4px;transition:width .35s ease}
+  .bar.cal > i{background: var(--pop-cyan);}
+  .bar.pro > i{background: var(--pop-pink);}
+  .bar.carbs > i{background: var(--pop-cyan);}
+  .bar.fat > i{background: var(--pop-yellow);}
+  .bar.over > i{background: var(--pop-red);}
+
+  .breakdown{
+    display: flex; gap: 12px; margin-top: 12px; color: #000;
+    font-family: 'Outfit', sans-serif; font-size: 13.5px; font-weight: 700; flex-wrap: wrap;
+    background: #fff; padding: 8px 14px; border: 2px solid #000; border-radius: 10px; box-shadow: 2px 2px 0 #000;
+  }
+  .breakdown b{color: var(--pop-pink); font-size: 15px; font-weight: 800;}
+
+  /* Macro Breakdown Grid - Solid White Cards */
+  .macro-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+  .macro-stat{
+    background: #ffffff; border: 2.5px solid #000; border-radius: 16px;
+    padding: 12px 10px; box-shadow: 3px 3px 0 #000;
+  }
+  .macro-stat .lbl{
+    font-family: 'Bangers', cursive; font-size: 17px; letter-spacing: 1px;
+    color: #000; text-transform: uppercase;
+  }
+  .macro-stat:nth-child(1) .lbl{color: var(--pop-pink);}
+  .macro-stat:nth-child(2) .lbl{color: #0088cc;}
+  .macro-stat:nth-child(3) .lbl{color: #d97706;}
+
+  .macro-stat .val{
+    font-family: 'Bangers', cursive; font-size: 24px; font-weight: 500; margin-top: 2px;
+    color: #000; letter-spacing: 1px;
+  }
+  .macro-stat .val small{font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 700; color: #666;}
+
+  /* Water Counter Card - Clean Cyan */
+  .water-card{
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--pop-cyan); border: 3px solid #000; border-radius: 18px;
+    padding: 12px 18px; margin-bottom: 14px; box-shadow: 4px 4px 0 #000; color: #000;
+  }
+  .water-label{font-family: 'Bangers', cursive; font-size: 20px; letter-spacing: 1px; text-shadow: 1px 1px 0 #fff;}
+  .water-val{font-family: 'Bangers', cursive; font-size: 24px; letter-spacing: 1px;}
+  .water-controls{display:flex;align-items:center;gap:8px}
+  .water-btn{
+    width: 40px; height: 40px; border-radius: 10px; border: 2.5px solid #000;
+    background: #fff; color: #000; font-family: 'Bangers', cursive; font-size: 24px;
+    display: grid; place-items: center; cursor: pointer; box-shadow: 2px 2px 0 #000;
+  }
+  .water-btn:active{transform: translate(1px, 1px); box-shadow: 1px 1px 0 #000;}
+
+  /* Weekly Card & Streak Card */
+  .weekly-card, .streak-card{
+    background: #ffffff; border: 2.5px solid #000; border-radius: 16px;
+    padding: 12px 16px; margin-bottom: 10px; box-shadow: 3px 3px 0 #000;
+    display: flex; align-items: center; justify-content: space-between; font-size: 14px;
+  }
+  .weekly-card .label, .streak-card .label{
+    font-family: 'Bangers', cursive; font-size: 18px; letter-spacing: 1px; color: #000;
+  }
+  .weekly-card b, .streak-card b{font-weight: 800; color: var(--pop-pink);}
+
+  main{flex:1;padding:4px 4px 130px}
+  .section-title{display:flex;align-items:center;justify-content:space-between;margin:20px 4px 10px}
+  .section-title h2{
+    font-family: 'Bangers', cursive; font-size: 26px; letter-spacing: 1.5px;
+    margin: 0; color: #000; text-shadow: 1px 1px 0 #fff;
+  }
+  .link-btn{
+    background: #fff; border: 2px solid #000; border-radius: 10px;
+    color: #000; font-family: 'Outfit', sans-serif; font-size: 13.5px; font-weight: 700;
+    padding: 5px 12px; min-height: 38px; cursor: pointer; box-shadow: 2px 2px 0 #000;
+  }
+  .link-btn:active{transform: translate(1px, 1px); box-shadow: 1px 1px 0 #000;}
+
+  /* Quick Foods Chips */
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{
+    display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+    background: #ffffff; border: 2.5px solid #000; border-radius: 14px;
+    padding: 10px 14px; min-height: var(--tap); color: #000;
+    box-shadow: 3px 3px 0 #000; cursor: pointer; transition: transform .1s;
+  }
+  .chip:active{transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000;}
+  .chip .nm{font-family: 'Outfit', sans-serif; font-size: 14.5px; font-weight: 800; display: flex; align-items: center; gap: 6px;}
+  .chip .mt{font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600; color: #555;}
+  .chip.empty{
+    background: #fff; border: 2.5px dashed #000; box-shadow: 3px 3px 0 #000;
+    width: 100%; justify-content: center; align-items: center; text-align: center;
+  }
+  .chip.more{
+    width: 100%; justify-content: center; align-items: center;
+    background: #ffffff; border: 2.5px solid #000; box-shadow: 3px 3px 0 #000;
+    font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; color: #000;
+  }
 
   /* Meal Section Grouping */
-  .meal-section{margin-bottom:16px}
-  .meal-header{display:flex;align-items:center;justify-content:space-between;padding:10px 4px 6px;margin-bottom:6px;border-bottom:1px solid var(--line)}
-  .meal-header h3{font-size:14px;font-weight:800;margin:0;color:var(--text);display:flex;align-items:center;gap:6px}
-  .meal-header .meal-sub{font-size:12px;color:var(--muted);font-weight:600}
+  .meal-section{
+    background: #ffffff; border: 2.5px solid #000; border-radius: 18px;
+    padding: 12px; margin-bottom: 14px; box-shadow: 4px 4px 0 #000;
+  }
+  .meal-header{
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 2px 4px 10px; border-bottom: 2px dashed #000; margin-bottom: 10px;
+  }
+  .meal-header h3{
+    font-family: 'Bangers', cursive; font-size: 24px; letter-spacing: 1px;
+    margin: 0; color: #000;
+  }
+  .meal-header .meal-sub{
+    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; color: var(--pop-pink);
+    background: #fff8e7; padding: 4px 10px; border: 1.5px solid #000;
+    border-radius: 8px; box-shadow: 1.5px 1.5px 0 #000;
+  }
 
-  /* log list & swipe-to-delete */
+  /* Calmer Food Rows (Item 4 Polish) */
   .log{display:flex;flex-direction:column;gap:8px}
-  .item-wrap{position:relative;overflow:hidden;border-radius:14px;touch-action:pan-y}
-  .item-swipe-bg{position:absolute;inset:0;background:var(--bad);display:flex;align-items:center;justify-content:flex-end;padding-right:20px;color:#fff;font-weight:800;font-size:14px;border-radius:14px}
+  .item-wrap{position:relative;overflow:hidden;border-radius:12px;touch-action:pan-y}
+  .item-swipe-bg{
+    position: absolute; inset: 0; background: var(--pop-red);
+    display: flex; align-items: center; justify-content: flex-end;
+    padding-right: 16px; color: #fff; font-family: 'Bangers', cursive;
+    font-size: 18px; letter-spacing: 1px; border: 2px solid #000; border-radius: 12px;
+  }
   .item{
-    position:relative;z-index:2;
-    display:flex;align-items:center;gap:12px;background:var(--surface);
-    border:1px solid var(--line);border-radius:14px;padding:11px 13px;
-    transition:transform .15s ease-out;
+    position: relative; z-index: 2;
+    display: flex; align-items: center; gap: 12px; background: #ffffff;
+    border: 2px solid #000; border-radius: 12px; padding: 10px 12px;
+    box-shadow: 2px 2px 0 #000; transition: transform .15s ease-out;
   }
   .item.swiping{transition:none}
-  .item .tag{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;font-size:22px;flex:0 0 auto;overflow:hidden}
-  .item .tag img{width:100%;height:100%;object-fit:cover}
-  .item.food .tag{background:rgba(76,194,255,.14)}
-  .item.exercise .tag{background:rgba(52,211,153,.14)}
+  .item .tag{
+    width: 38px; height: 38px; border-radius: 10px; border: 1.5px solid #000;
+    background: #fff3d1; display: grid; place-items: center;
+    font-size: 22px; flex: 0 0 auto;
+  }
+  .item.exercise .tag{background: #e0f9ff;}
   .item .body{flex:1;min-width:0}
-  .item .body .nm{font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px;min-width:0}
-  .item .body .nm-txt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
-  .item .body .mt{font-size:12.5px;color:var(--muted);margin-top:1px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
-  .item .note-badge{font-size:11px;background:var(--surface-2);border:1px solid var(--line);color:var(--accent);padding:1px 6px;border-radius:6px;font-weight:600;flex:0 0 auto}
-  .item .amt{font-weight:800;font-variant-numeric:tabular-nums;font-size:15px}
-  .item.exercise .amt{color:var(--good)}
-  .item .del{width:48px;height:48px;border-radius:12px;border:none;background:transparent;color:var(--muted);font-size:20px;flex:0 0 auto;display:grid;place-items:center;cursor:pointer}
-  .item .del:active{background:var(--surface-2);color:var(--bad)}
+  .item .body .nm{font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 800; color: #000;}
+  .item .body .mt{font-family: 'Outfit', sans-serif; font-size: 13.5px; font-weight: 600; color: #555555; margin-top: 1px;}
+  .item .note-badge{
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 800;
+    background: #fff3d1; color: #000; border: 1px solid #000;
+    padding: 1px 6px; border-radius: 6px; margin-left: 4px;
+  }
+  .item .amt{font-family: 'Bangers', cursive; font-size: 26px; letter-spacing: 1px; color: #000; font-weight: 400;}
+  .item.exercise .amt{color: #00aa55;}
+  .item .del{
+    width: 34px; height: 34px; border-radius: 8px; border: 1.5px solid #000;
+    background: #ffffff; color: #666; font-size: 16px; font-weight: 800;
+    flex: 0 0 auto; display: grid; place-items: center; cursor: pointer;
+    transition: background .15s, color .15s;
+  }
+  .item .del:hover, .item .del:active{background: var(--pop-red); color: #fff; border-color: #000;}
 
-  /* Empty State Illustrations */
-  .empty-state{text-align:center;padding:32px 16px;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center}
-  .empty-icon{margin-bottom:12px;opacity:.65;color:var(--accent)}
-  .empty-title{font-weight:700;font-size:15px;color:var(--text);margin-bottom:4px}
-  .empty-desc{font-size:13px;color:var(--muted);max-width:280px;line-height:1.4}
-  .empty-note{color:var(--muted);text-align:center;padding:26px 10px;font-size:14px}
-
-  /* floating add buttons */
+  /* Floating Action Buttons */
   .fab-wrap{
-    position:fixed;left:0;right:0;bottom:0;z-index:25;
-    padding:10px 16px calc(var(--safe-bottom) + 12px);
-    background:linear-gradient(180deg,transparent,var(--bg) 36%);
-    display:flex;gap:12px;max-width:640px;margin:0 auto;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
+    padding: 10px 16px calc(var(--safe-bottom) + 14px);
+    background: linear-gradient(180deg, transparent, var(--bg) 35%);
+    display: flex; gap: 12px; max-width: 680px; margin: 0 auto;
   }
   .fab{
-    flex:1;height:56px;border-radius:16px;border:none;font-weight:800;font-size:16px;
-    display:flex;align-items:center;justify-content:center;gap:8px;color:#04121b;
-    cursor:pointer;
+    flex: 1; height: 56px; border-radius: 16px; border: 3px solid #000;
+    font-family: 'Bangers', cursive; font-size: 24px; letter-spacing: 1.5px;
+    display: flex; align-items: center; justify-content: center; gap: 8px; color: #000;
+    box-shadow: 4px 4px 0 #000; cursor: pointer; transition: transform .1s;
   }
-  .fab.food{background:linear-gradient(180deg,var(--accent),var(--accent-2))}
-  .fab.ex{background:linear-gradient(180deg,#3ee0a3,#22b883)}
-  .fab:active{filter:brightness(.92);transform:translateY(1px)}
+  .fab.food{background: var(--pop-yellow);}
+  .fab.ex{background: var(--pop-cyan);}
+  .fab:active{transform: translate(2px, 2px); box-shadow: 2px 2px 0 #000;}
 
-  /* modal / sheet */
-  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+  /* Sheets & Modals */
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
   .scrim.open{opacity:1;pointer-events:auto}
   .sheet{
-    position:fixed;left:0;right:0;bottom:0;z-index:41;max-width:640px;margin:0 auto;
-    background:var(--surface);border-radius:22px 22px 0 0;border-top:1px solid var(--line);
-    padding:8px 18px calc(var(--safe-bottom) + 18px);
-    transform:translateY(100%);transition:transform .26s cubic-bezier(.2,.8,.2,1);
-    max-height:92vh;overflow:auto;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 41; max-width: 680px; margin: 0 auto;
+    background: #ffffff; border-top: 3px solid #000; border-left: 3px solid #000; border-right: 3px solid #000;
+    border-radius: 24px 24px 0 0; padding: 12px 18px calc(var(--safe-bottom) + 18px);
+    box-shadow: 0 -8px 0 rgba(0,0,0,0.1);
+    transform: translateY(100%); transition: transform .26s cubic-bezier(.2,.8,.2,1);
+    max-height: 92vh; overflow: auto;
   }
   .sheet.open{transform:translateY(0)}
-  .grab{width:42px;height:5px;border-radius:3px;background:var(--line);margin:8px auto 6px}
-  .sheet h3{margin:6px 2px 14px;font-size:18px}
-  .sheet h4{margin:16px 2px 9px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;font-weight:700}
-  .field{margin-bottom:13px}
-  .field label{display:block;font-size:13px;color:var(--muted);font-weight:600;margin:0 2px 6px}
+  .grab{width:42px;height:5px;border-radius:3px;background:#000;margin:6px auto 10px}
+  .sheet h3{font-family: 'Bangers', cursive; font-size: 28px; letter-spacing: 1px; margin: 6px 0 14px; color: #000;}
+  .sheet h4{font-family: 'Bangers', cursive; font-size: 19px; letter-spacing: 1px; margin: 14px 0 8px; color: #000;}
+
+  .field{margin-bottom:12px}
+  .field label{font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: #000; margin-bottom: 5px; display: block;}
   .field input, .field select{
-    width:100%;height:var(--tap);border-radius:13px;border:1px solid var(--line);
-    background:var(--surface-2);color:var(--text);font-size:17px;padding:0 15px;
-    -webkit-user-select:text;user-select:text;
+    width: 100%; height: var(--tap); border-radius: 12px; border: 2.5px solid #000;
+    background: #fff8e7; color: #000; font-family: 'Outfit', sans-serif; font-size: 16px;
+    font-weight: 700; padding: 0 14px;
   }
-  .field input:focus, .field select:focus{outline:none;border-color:var(--accent)}
+  .field input:focus, .field select:focus{outline:none; background: #fff; border-color: var(--pop-pink);}
 
-  /* Meal selector pills */
-  .meal-pills{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
-  .meal-pill-btn{flex:1 0 auto;min-width:72px;height:40px;padding:0 8px;font-size:12.5px;border-radius:11px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px}
-  .meal-pill-btn.active{background:var(--accent);color:#04121b;border-color:var(--accent)}
+  /* Meal Selector Pills */
+  .meal-pills{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
+  .meal-pill-btn{
+    flex: 1 0 auto; min-width: 78px; height: 42px; border-radius: 12px; border: 2.5px solid #000;
+    background: #ffffff; color: #000; font-family: 'Bangers', cursive; font-size: 17px; letter-spacing: 1px;
+    cursor: pointer; box-shadow: 2.5px 2.5px 0 #000; display: flex; align-items: center; justify-content: center; gap: 4px;
+  }
+  .meal-pill-btn.active{background: var(--pop-yellow); transform: translate(1px, 1px); box-shadow: 1px 1px 0 #000;}
 
-  /* Unit mode toggle */
+  /* Unit Toggle */
   .unit-toggle{display:flex;gap:6px;margin-bottom:12px}
-  .unit-btn{flex:1;height:40px;border-radius:11px;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer}
-  .unit-btn.active{background:var(--accent);color:#04121b;border-color:var(--accent)}
+  .unit-btn{
+    flex: 1; height: 40px; border-radius: 10px; border: 2.5px solid #000;
+    background: #ffffff; color: #000; font-family: 'Outfit', sans-serif; font-size: 13.5px; font-weight: 700;
+    cursor: pointer; box-shadow: 2.5px 2.5px 0 #000;
+  }
+  .unit-btn.active{background: var(--pop-cyan); transform: translate(1px, 1px); box-shadow: 1px 1px 0 #000;}
 
-  /* Ratio preset buttons for goals */
+  /* Preset Ratios */
   .ratio-presets{display:flex;gap:6px;margin-bottom:14px}
-  .ratio-btn{flex:1;padding:8px 4px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;text-align:center}
-  .ratio-btn.active{background:var(--accent);color:#04121b;border-color:var(--accent)}
+  .ratio-btn{
+    flex: 1; padding: 8px 4px; border-radius: 10px; border: 2.5px solid #000;
+    background: #ffffff; color: #000; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700;
+    cursor: pointer; box-shadow: 2.5px 2.5px 0 #000; text-align: center;
+  }
+  .ratio-btn.active{background: var(--pop-pink); color: #fff; transform: translate(1px, 1px); box-shadow: 1px 1px 0 #000;}
 
-  /* Collapsible section toggle */
-  .collapsible-btn{background:none;border:none;color:var(--accent);font-size:13px;font-weight:700;padding:6px 0;cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin-bottom:8px}
-
-  /* food name type-ahead */
-  .suggest{margin:-4px 0 13px;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--surface-2);max-height:50vh;overflow-y:auto}
-  .suggest:empty{display:none}
-  .suggest-item{display:flex;align-items:center;justify-content:space-between;gap:10px;background:none;border:none;border-bottom:1px solid var(--line);color:var(--text);padding:12px 14px;text-align:left;width:100%;min-height:50px;cursor:pointer}
-  .suggest-item:last-child{border-bottom:none}
-  .suggest-item:active{background:var(--surface)}
-  .suggest-item .nm{font-weight:600;font-size:15px;display:flex;align-items:center;flex-wrap:wrap;gap:4px}
-  .suggest-item .nm b{color:var(--accent);font-weight:800}
-  .suggest-item .badge{font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px;display:inline-block}
-  .suggest-item .badge.saved{background:rgba(76,194,255,.15);color:var(--accent)}
-  .suggest-item .badge.usda{background:rgba(167,139,250,.15);color:var(--protein)}
-  .suggest-item .mt{font-size:12.5px;color:var(--muted);white-space:nowrap;flex:0 0 auto}
-  .row2{display:flex;gap:11px}
-  .row2 .field{flex:1}
-  .check{display:flex;align-items:center;gap:10px;margin:4px 2px 14px;color:var(--muted);font-size:14px}
-  .check input{width:22px;height:22px;accent-color:var(--accent)}
-
-  /* Sticky sheet action buttons */
+  /* Sheet Actions */
   .sheet-actions{
-    position:sticky;bottom:0;z-index:10;
-    display:flex;gap:11px;margin-top:12px;padding-top:10px;
-    background:var(--surface);border-top:1px solid var(--line);
+    position: sticky; bottom: 0; z-index: 10;
+    display: flex; gap: 10px; margin-top: 14px; padding-top: 10px;
+    background: #ffffff; border-top: 2px dashed #000;
   }
-  .btn{flex:1;height:54px;border-radius:14px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-weight:700;font-size:16px;cursor:pointer}
-  .btn.primary{background:linear-gradient(180deg,var(--accent),var(--accent-2));border:none;color:#04121b}
-  .btn.danger{color:var(--bad)}
-  .btn:active{filter:brightness(.93)}
-  .btn:disabled{cursor:wait;filter:saturate(.55);opacity:.8}
-
-  /* manage foods list & drag reordering */
-  .manage-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);background:var(--surface);transition:background .15s ease}
-  .manage-item.is-dragging{
-    position:fixed !important;
-    z-index:1000 !important;
-    pointer-events:none !important;
-    background:var(--surface-2) !important;
-    box-shadow:0 12px 32px rgba(0,0,0,.6), 0 0 0 2px var(--accent) !important;
-    border-radius:12px !important;
-    opacity:0.95 !important;
-    transform:scale(1.02);
-    transition:none !important;
+  .btn{
+    flex: 1; height: 52px; border-radius: 14px; border: 2.5px solid #000;
+    background: #fff; color: #000; font-family: 'Bangers', cursive; font-size: 20px; letter-spacing: 1px;
+    box-shadow: 3px 3px 0 #000; cursor: pointer;
   }
-  .manage-item-placeholder{
-    height:56px;
-    border:2px dashed var(--accent);
-    background:rgba(56, 189, 248, 0.08);
-    border-radius:12px;
-    margin:6px 0;
-    box-sizing:border-box;
-    transition:all .12s ease;
-  }
-  .drag-handle{cursor:grab;color:var(--muted);font-size:18px;padding:8px 4px;user-select:none;-webkit-user-select:none;touch-action:none;flex:0 0 auto;min-width:36px;text-align:center}
-  .drag-handle:active,.manage-item.is-dragging .drag-handle{cursor:grabbing;color:var(--accent)}
-  .manage-item .body{flex:1;min-width:0}
-  .manage-item .nm{font-weight:700;display:flex;align-items:center;gap:6px}
-  .manage-item .mt{font-size:12.5px;color:var(--muted)}
-  .mini{width:48px;height:48px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:18px;flex:0 0 auto;display:grid;place-items:center;cursor:pointer}
-  .mini.del:active{color:var(--bad)}
+  .btn.primary{background: var(--pop-yellow); color: #000;}
+  .btn.danger{background: var(--pop-red); color: #fff;}
+  .btn:active{transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000;}
 
-  /* Theme Selector */
-  .theme-picker{display:flex;gap:8px;margin-bottom:14px}
-  .theme-btn{flex:1;height:48px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:14px;font-weight:600;cursor:pointer}
-  .theme-btn.active{background:var(--accent);color:#04121b;border-color:var(--accent);font-weight:800}
-
-  /* Toast with Undo */
+  /* Toast Banner */
   .toast{
-    position:fixed;left:50%;bottom:calc(var(--safe-bottom) + 92px);transform:translateX(-50%) translateY(20px);
-    background:var(--surface-2);border:1px solid var(--accent);color:var(--text);padding:10px 18px;border-radius:30px;
-    font-size:14px;font-weight:600;z-index:60;opacity:0;pointer-events:none;transition:all .25s;white-space:nowrap;
-    display:flex;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,.3);
+    position: fixed; left: 50%; bottom: calc(var(--safe-bottom) + 90px); transform: translateX(-50%) translateY(20px);
+    background: var(--pop-yellow); border: 2.5px solid #000; color: #000; padding: 10px 18px; border-radius: 26px;
+    font-family: 'Outfit', sans-serif; font-size: 14.5px; font-weight: 800; z-index: 60; opacity: 0; pointer-events: none;
+    transition: all .25s; box-shadow: 4px 4px 0 #000; display: flex; align-items: center; gap: 12px;
   }
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
-  .toast-undo{background:var(--accent);color:#04121b;border:none;border-radius:16px;padding:4px 10px;font-weight:800;font-size:12px;cursor:pointer}
+  .toast.show{opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto}
+  .toast-undo{
+    background: var(--pop-pink); color: #fff; border: 1.5px solid #000;
+    border-radius: 12px; padding: 3px 10px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 800; cursor: pointer;
+    box-shadow: 1.5px 1.5px 0 #000;
+  }
 
-  /* Pull-to-refresh pull indicator */
-  .pull-indicator{text-align:center;font-size:12px;color:var(--muted);font-weight:600;height:0;overflow:hidden;transition:height .15s ease, opacity .15s ease;opacity:0;display:flex;align-items:center;justify-content:center;gap:6px}
-  .pull-indicator.visible{height:36px;opacity:1}
+  /* Pull Indicator */
+  .pull-indicator{
+    text-align: center; font-family: 'Bangers', cursive; font-size: 16px; letter-spacing: 1px;
+    color: #000; height: 0; overflow: hidden; transition: height .15s ease, opacity .15s ease; opacity: 0;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .pull-indicator.visible{height: 36px; opacity: 1}
 
-  .hint{color:var(--muted);font-size:13px;margin:2px 2px 14px;line-height:1.5}
-  .ver{text-align:center;color:var(--muted);font-size:11px;letter-spacing:.5px;margin:24px 0 4px}
+  .hint{color: var(--muted); font-size: 13.5px; font-weight: 600; margin: 2px 2px 14px; line-height: 1.4}
+  .ver{text-align: center; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 700; color: var(--muted); margin: 20px 0 6px}
 
-  /* Warm editorial dashboard skin. Food visuals intentionally stay local emoji-only. */
-  :root{
-    --bg:#f8f4ed; --surface:#fffdf9; --surface-2:#f4eee4; --line:#e6d9c8;
-    --text:#382f25; --muted:#766958; --accent:#45694e; --accent-2:#31543d;
-    --good:#45694e; --warn:#bd8631; --bad:#bb5d39; --protein:#45694e;
-    --carbs:#a48147; --fat:#bd5d38; --water:#45694e;
-    --radius:20px; --tap:52px;
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
+  .offline-pill{
+    display: none; align-items: center; gap: 5px; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 800;
+    padding: 3px 8px; border-radius: 8px; background: var(--pop-red); color: #fff; border: 1.5px solid #000; box-shadow: 1.5px 1.5px 0 #000;
   }
-  :root[data-theme="dark"]{
-    --bg:#24241e; --surface:#302f27; --surface-2:#3b392e; --line:#514d3e;
-    --text:#f5eee3; --muted:#c5b9a6; --accent:#91b692; --accent-2:#6d9772;
-    --good:#9dc79d; --warn:#d9ac5d; --bad:#df8561; --protein:#9dc79d;
-    --carbs:#ddbd80; --fat:#e58861; --water:#9dc79d;
-  }
-  :root[data-theme="light"]{
-    --bg:#f8f4ed; --surface:#fffdf9; --surface-2:#f4eee4; --line:#e6d9c8;
-    --text:#382f25; --muted:#766958; --accent:#45694e; --accent-2:#31543d;
-    --good:#45694e; --warn:#bd8631; --bad:#bb5d39; --protein:#45694e;
-    --carbs:#a48147; --fat:#bd5d38; --water:#45694e;
-  }
-  @media (prefers-color-scheme: light){
-    :root:not([data-theme="dark"]){
-      --bg:#f8f4ed; --surface:#fffdf9; --surface-2:#f4eee4; --line:#e6d9c8;
-      --text:#382f25; --muted:#766958; --accent:#45694e; --accent-2:#31543d;
-      --good:#45694e; --warn:#bd8631; --bad:#bb5d39; --protein:#45694e;
-      --carbs:#a48147; --fat:#bd5d38; --water:#45694e;
-    }
-  }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --bg:#24241e; --surface:#302f27; --surface-2:#3b392e; --line:#514d3e;
-      --text:#f5eee3; --muted:#c5b9a6; --accent:#91b692; --accent-2:#6d9772;
-      --good:#9dc79d; --warn:#d9ac5d; --bad:#df8561; --protein:#9dc79d;
-      --carbs:#ddbd80; --fat:#e58861; --water:#9dc79d;
-    }
-  }
-  body{font-family:ui-rounded,"Avenir Next",Avenir,"Segoe UI",sans-serif;background:var(--bg);}
-  #app{max-width:760px;padding:0 12px;}
-  header{background:color-mix(in srgb,var(--bg) 92%,transparent);border-bottom:0;padding:calc(var(--safe-top) + 16px) 4px 12px;}
-  .brand{font-family:Georgia,"Times New Roman",serif;font-size:29px;font-weight:700;letter-spacing:-1.2px;color:var(--accent-2);}
-  .brand .dot{width:27px;height:27px;background:var(--accent-2);box-shadow:none;display:grid;place-items:center;}
-  .brand .dot::after{content:"⌁";color:#fffdf9;font-size:17px;font-family:Georgia,serif;line-height:1;}
-  .date{font-family:Georgia,"Times New Roman",serif;font-size:16px;color:var(--text);}
-  .icon-btn{width:48px;height:48px;border:0;border-radius:50%;background:var(--surface);box-shadow:0 3px 12px rgba(64,47,28,.10);color:var(--text);}
-  .head-summary{font-size:12px;border-top:1px solid var(--line);margin-top:10px;padding-top:9px;}
-  .summary{padding:4px 4px 8px;}
-  .stat,.macro-stat,.water-card,.weekly-card,.chip,.item,.sheet{background:var(--surface);border-color:var(--line);box-shadow:0 5px 16px rgba(64,47,28,.07);}
-  .stat{border-radius:22px;padding:22px;margin-bottom:14px;background:linear-gradient(125deg,var(--surface),#fbf7f0);}
-  .stat.over-budget{background:linear-gradient(125deg,#fff7f1,var(--surface));box-shadow:0 5px 16px rgba(122,65,37,.12);}
-  .stat-label,.macro-stat .lbl,.water-label{color:var(--muted);letter-spacing:2px;font-size:11px;}
-  .stat-val{font-family:Georgia,"Times New Roman",serif;font-size:49px;font-weight:500;letter-spacing:-2px;line-height:1.05;margin-top:7px;}
-  .stat-val small{font-family:ui-rounded,"Avenir Next",sans-serif;letter-spacing:0;font-size:17px;color:var(--muted);}
-  .goal-edit{font-size:14px;color:var(--muted);padding:9px 0 0;}
-  .ring-wrap{width:106px;height:106px;}
-  .donut-ring circle{stroke-width:7;}
-  .ring-center span{font-family:Georgia,"Times New Roman",serif;font-size:25px;font-weight:500;}
-  .ring-center small{letter-spacing:1px;font-size:9px;}
-  .bar{height:11px;border:0;background:#ece4d8;margin-top:16px;}
-  .bar.cal > i,.bar.pro > i{background:var(--accent);}
-  .bar.carbs > i{background:var(--carbs);}
-  .bar.fat > i{background:var(--fat);}
-  .breakdown{border-top:1px solid var(--line);padding-top:14px;margin-top:16px;justify-content:space-between;gap:8px;font-size:12px;}
-  .breakdown span{display:grid;gap:2px;}
-  .breakdown b{font-size:14px;}
-  .macro-grid{gap:12px;margin-bottom:14px;}
-  .macro-stat{border-radius:18px;padding:15px 13px 13px;}
-  .macro-stat .val{font-family:Georgia,"Times New Roman",serif;font-size:23px;font-weight:500;margin-top:7px;}
-  .macro-stat .val small{font-family:ui-rounded,"Avenir Next",sans-serif;font-size:11px;}
-  .macro-stat .bar{height:8px;margin-top:13px;}
-  .water-card{border-radius:18px;padding:14px 17px;margin-bottom:14px;}
-  .water-info{flex-direction:row;align-items:baseline;gap:14px;}
-  .water-val{font-family:Georgia,"Times New Roman",serif;font-size:21px;font-weight:500;}
-  .water-btn{border:0;border-radius:12px;background:#ecebdc;color:var(--text);}
-  .weekly-card{border-radius:18px;padding:15px 17px;margin-bottom:8px;}
-  .weekly-card .label{font-family:Georgia,"Times New Roman",serif;font-size:16px;color:var(--text);}
-  main{padding:4px 4px 130px;}
-  .section-title{margin:19px 3px 10px;}
-  .section-title h2,.meal-header h3{font-family:Georgia,"Times New Roman",serif;font-size:20px;font-weight:500;letter-spacing:-.3px;}
-  .link-btn{color:var(--accent);font-size:13px;min-height:40px;}
-  .chips{gap:9px;}
-  .chip{border-radius:15px;padding:10px 13px;box-shadow:none;}
-  .chip .nm{font-size:13px;}
-  .chip.more{color:var(--accent);background:transparent;}
-  .meal-section{background:var(--surface);border:1px solid var(--line);border-radius:19px;padding:0 10px 9px;margin-bottom:12px;box-shadow:0 5px 16px rgba(64,47,28,.06);}
-  .meal-header{padding:13px 5px 9px;margin-bottom:5px;}
-  .meal-header .meal-sub{font-size:11px;white-space:nowrap;}
-  .log{gap:6px;}
-  .item-wrap,.item,.item-swipe-bg{border-radius:13px;}
-  .item{box-shadow:none;background:#fffcf8;padding:9px 11px;gap:10px;}
-  .item .tag{width:42px;height:42px;border-radius:12px;background:#edf0df;color:var(--accent-2);font-size:21px;}
-  .item.food .tag{background:#edf0df;}
-  .item.exercise .tag{background:#f8ead1;}
-  .item .body .nm{font-size:14px;}
-  .item .body .mt{font-size:11.5px;}
-  .item .amt{font-family:Georgia,"Times New Roman",serif;font-size:19px;font-weight:500;}
-  .item .del{width:38px;height:38px;font-size:18px;}
-  .fab-wrap{max-width:760px;padding:10px 16px calc(var(--safe-bottom) + 14px);background:linear-gradient(180deg,transparent,var(--bg) 30%);}
-  .fab{height:54px;border-radius:17px;font-family:Georgia,"Times New Roman",serif;font-size:17px;font-weight:500;color:#fffdf9;box-shadow:0 5px 13px rgba(64,47,28,.16);}
-  .fab.food{background:var(--accent-2);}.fab.ex{background:#bd5d38;}
-  .sheet{border-radius:24px 24px 0 0;box-shadow:0 -8px 30px rgba(64,47,28,.13);}
-  .sheet h3{font-family:Georgia,"Times New Roman",serif;font-weight:500;font-size:24px;}
-  .sheet h4{letter-spacing:1.5px;}
-  .field input,.field select,.meal-pill-btn,.unit-btn,.ratio-btn,.theme-btn,.btn,.mini{background:var(--surface-2);border-color:var(--line);}
-  .meal-pill-btn.active,.unit-btn.active,.ratio-btn.active,.theme-btn.active{background:var(--accent-2);border-color:var(--accent-2);color:#fffdf9;}
-  .btn.primary{background:var(--accent-2);color:#fffdf9;}
-  .toast{border-color:var(--line);box-shadow:0 8px 24px rgba(64,47,28,.18);}
-  .toast-undo{background:var(--accent-2);color:#fffdf9;}
-  @media (max-width:420px){
-    #app{padding:0 8px;}.stat{padding:18px;}.stat-val{font-size:41px;}.ring-wrap{width:92px;height:92px;}
-    .breakdown{font-size:11px;}.breakdown b{font-size:13px;}.meal-header{align-items:flex-start;gap:8px;}.meal-header .meal-sub{white-space:normal;text-align:right;}
-  }
+  body.is-offline .offline-pill{display: inline-flex;}
 </style>
 </head>
 <body>
 <div id="app">
-  <div class="pull-indicator" id="pullIndicator">↓ Pull to freshen things up</div>
+  <div class="pull-indicator" id="pullIndicator">↓ PULL TO REFRESH!</div>
   <header id="mainHeader">
     <div class="head-row">
-      <div class="brand"><span class="dot"></span>Tally</div>
+      <div class="brand"><span class="dot"></span>TALLY!</div>
       <div style="display:flex;align-items:center;gap:8px">
+        <span class="offline-pill" id="offlinePill" role="status">● OFFLINE</span>
         <span class="date" id="todayDate"></span>
-        <button class="icon-btn" id="openMenu" aria-label="Open settings and data menu">⋯</button>
+        <button class="icon-btn" id="openMenu" aria-label="Open settings and data menu">⚙</button>
       </div>
     </div>
     <div class="head-summary" id="headSummary">
-      <span><b id="miniRemain">2000</b> cal to go</span>
+      <span><b id="miniRemain">2000</b> CAL LEFT!</span>
       <span>•</span>
-      <span><b id="miniPro">0</b>g P</span>
+      <span><b id="miniPro">0</b>G P</span>
       <span>•</span>
-      <span><b id="miniCarbs">0</b>g C</span>
+      <span><b id="miniCarbs">0</b>G C</span>
       <span>•</span>
-      <span><b id="miniFat">0</b>g F</span>
+      <span><b id="miniFat">0</b>G F</span>
     </div>
   </header>
 
@@ -467,7 +482,7 @@
     <div class="stat" id="calStatCard">
       <div class="stat-top">
         <div class="stat-info">
-          <span class="stat-label">Calories to go</span>
+          <span class="stat-label">CALORIES REMAINING</span>
           <div class="stat-val" id="calRemain">2000<small> / 2000</small></div>
           <button class="goal-edit" id="editCalGoal">Daily goal: <span id="calGoalTxt">2000</span> ✎</button>
         </div>
@@ -478,11 +493,11 @@
           </svg>
           <div class="ring-center">
             <span id="calRemainNum">2000</span>
-            <small>to go</small>
+            <small>TO GO!</small>
           </div>
         </div>
       </div>
-      <div class="bar cal" id="calBar"><i></i></div>
+      <div class="bar cal" id="calBar" role="progressbar" aria-label="Calories eaten toward your daily goal"><i></i></div>
       <div class="breakdown">
         <span>Food <b id="calFood">0</b></span>
         <span>Exercise <b id="calEx">0</b></span>
@@ -493,27 +508,27 @@
     <!-- Macro Breakdown Grid -->
     <div class="macro-grid">
       <div class="macro-stat">
-        <div class="lbl">Protein</div>
+        <div class="lbl">PROTEIN</div>
         <div class="val"><span id="proTotal">0</span><small>/<span id="proGoalVal">150</span>g</small></div>
-        <div class="bar pro" id="proBar"><i></i></div>
+        <div class="bar pro" id="proBar" role="progressbar" aria-label="Protein toward your daily goal"><i></i></div>
       </div>
       <div class="macro-stat">
-        <div class="lbl">Carbs</div>
+        <div class="lbl">CARBS</div>
         <div class="val"><span id="carbsTotal">0</span><small>/<span id="carbsGoalVal">200</span>g</small></div>
-        <div class="bar carbs" id="carbsBar"><i></i></div>
+        <div class="bar carbs" id="carbsBar" role="progressbar" aria-label="Carbs toward your daily goal"><i></i></div>
       </div>
       <div class="macro-stat">
-        <div class="lbl">Fat</div>
+        <div class="lbl">FAT</div>
         <div class="val"><span id="fatTotal">0</span><small>/<span id="fatGoalVal">67</span>g</small></div>
-        <div class="bar fat" id="fatBar"><i></i></div>
+        <div class="bar fat" id="fatBar" role="progressbar" aria-label="Fat toward your daily goal"><i></i></div>
       </div>
     </div>
 
     <!-- Water Counter Card -->
     <div class="water-card">
       <div class="water-info">
-        <div class="water-label">💧 Water check-in</div>
-        <div class="water-val"><span id="waterCount">0</span> / <span id="waterGoalVal">8</span> <small style="font-size:13px;color:var(--muted);font-weight:600">glasses</small></div>
+        <div class="water-label">SPLASH! 💧 WATER CHECK-IN</div>
+        <div class="water-val"><span id="waterCount">0</span> / <span id="waterGoalVal">8</span> GLASSES</div>
       </div>
       <div class="water-controls">
         <button class="water-btn" id="waterSub" aria-label="Remove one glass of water">−</button>
@@ -523,20 +538,28 @@
 
     <!-- Weekly Calorie Averaging Card -->
     <div class="weekly-card" id="weeklyCard">
-      <span class="label">🗓 Your 7-day rhythm</span>
+      <span class="label">🗓 YOUR 7-DAY RHYTHM</span>
       <span><b id="weeklyAvgVal">0</b> cal/day • <b id="weeklyBankVal">0 cal bank</b></span>
     </div>
+
+    <!-- Consistency: protein streak, hit rate, days logged this month -->
+    <div class="streak-card" id="streakCard">
+      <span class="label" id="streakLabel">🔥 NO PROTEIN STREAK YET</span>
+      <span class="streak-stats"><b id="hitRateVal">0</b>% of logged days hit • <b id="monthDaysVal">0</b> days this month</span>
+    </div>
+
+    <div id="srTotals" class="sr-only" role="status" aria-live="polite"></div>
   </section>
 
   <main>
     <div class="section-title">
-      <h2>Your go-tos</h2>
+      <h2>YOUR GO-TOS!</h2>
       <button class="link-btn" id="manageFoods">Edit list</button>
     </div>
     <div class="chips" id="quickChips"></div>
 
     <div class="section-title">
-      <h2>Today so far</h2>
+      <h2>TODAY SO FAR!</h2>
       <button class="link-btn" id="clearDay">Start over</button>
     </div>
     <div class="log" id="logList"></div>
@@ -545,8 +568,8 @@
   </main>
 
   <div class="fab-wrap">
-    <button class="fab food" id="addFood">＋ Log food</button>
-    <button class="fab ex" id="addExercise">＋ Log activity</button>
+    <button class="fab food" id="addFood">＋ LOG FOOD!</button>
+    <button class="fab ex" id="addExercise">＋ LOG ACTIVITY!</button>
   </div>
 </div>
 
@@ -556,14 +579,14 @@
 <!-- Food sheet -->
 <div class="sheet" id="foodSheet">
   <div class="grab"></div>
-  <h3 id="foodSheetTitle">Log some food</h3>
+  <h3 id="foodSheetTitle">LOG SOME FOOD!</h3>
 
   <!-- Meal selector pills -->
   <div class="meal-pills" id="mealPills">
-    <button class="meal-pill-btn active" data-meal="breakfast">🍳 Breakfast</button>
-    <button class="meal-pill-btn" data-meal="lunch">🥗 Lunch</button>
-    <button class="meal-pill-btn" data-meal="dinner">🍽️ Dinner</button>
-    <button class="meal-pill-btn" data-meal="snack">🍎 Snack</button>
+    <button class="meal-pill-btn active" data-meal="breakfast">🍳 BREAKFAST</button>
+    <button class="meal-pill-btn" data-meal="lunch">🥗 LUNCH</button>
+    <button class="meal-pill-btn" data-meal="dinner">🍽️ DINNER</button>
+    <button class="meal-pill-btn" data-meal="snack">🍎 SNACK</button>
   </div>
 
   <div class="field">
@@ -605,8 +628,8 @@
     </div>
   </div>
 
-  <!-- Collapsible Secondary Nutrients (Fiber & Sugar) -->
-  <button class="collapsible-btn" id="toggleSecondaryNutrients">▸ Fiber &amp; Sugar (Optional)</button>
+  <!-- Collapsible Secondary Nutrients -->
+  <button class="collapsible-btn" id="toggleSecondaryNutrients">▸ Fiber &amp; sugar (optional)</button>
   <div id="secondaryNutrientsWrap" style="display:none">
     <div class="row2">
       <div class="field">
@@ -631,17 +654,17 @@
     <input id="fEmoji" type="text" placeholder="e.g. 🥚, 🍗, 🥣, 🍌" maxlength="4">
   </div>
 
-  <label class="check"><input type="checkbox" id="fSave"> Save this for next time</label>
+  <label class="check"><input type="checkbox" id="fSave"> Save this for next time!</label>
   <div class="sheet-actions">
-    <button class="btn" data-close>Cancel</button>
-    <button class="btn primary" id="fSubmit">Log it</button>
+    <button class="btn" data-close>CANCEL</button>
+    <button class="btn primary" id="fSubmit">LOG IT!</button>
   </div>
 </div>
 
 <!-- Exercise sheet -->
 <div class="sheet" id="exSheet">
   <div class="grab"></div>
-  <h3>Log an activity</h3>
+  <h3>LOG AN ACTIVITY!</h3>
   <div class="field">
     <label for="eName">What did you do?</label>
     <input id="eName" type="text" placeholder="e.g. Walk, Gym" autocomplete="off" spellcheck="true" autocapitalize="words" autocorrect="on" enterkeyhint="next">
@@ -655,32 +678,32 @@
     <input id="eNotes" type="text" placeholder="e.g. 30 min cardio" autocomplete="off">
   </div>
   <div class="sheet-actions">
-    <button class="btn" data-close>Cancel</button>
-    <button class="btn primary" id="eSubmit">Log it</button>
+    <button class="btn" data-close>CANCEL</button>
+    <button class="btn primary" id="eSubmit">LOG IT!</button>
   </div>
 </div>
 
 <!-- Manage foods sheet -->
 <div class="sheet" id="manageSheet">
   <div class="grab"></div>
-  <h3>Your go-to foods</h3>
+  <h3>YOUR GO-TO FOODS!</h3>
   <p class="hint">Save the things you reach for most, then tap them to log in a flash. Drag ⋮⋮ to reorder.</p>
   <div class="field" style="margin-bottom:12px">
     <input id="manageSearch" type="search" placeholder="Find a go-to..." autocomplete="off">
   </div>
   <div id="manageList"></div>
   <div class="sheet-actions" style="margin-top:16px">
-    <button class="btn" data-close>Close</button>
-    <button class="btn primary" id="addNewFood">＋ Add a go-to</button>
+    <button class="btn" data-close>CLOSE</button>
+    <button class="btn primary" id="addNewFood">＋ ADD A GO-TO</button>
   </div>
 </div>
 
 <!-- Goal sheet -->
 <div class="sheet" id="goalSheet">
   <div class="grab"></div>
-  <h3 id="goalTitle">Make it yours</h3>
+  <h3 id="goalTitle">MAKE IT YOURS!</h3>
 
-  <h4>Pick a macro mix</h4>
+  <h4>PICK A MACRO MIX!</h4>
   <div class="ratio-presets" id="ratioPresets">
     <button class="ratio-btn" data-p="30" data-c="40" data-f="30">30/40/30 (Balanced)</button>
     <button class="ratio-btn" data-p="30" data-c="50" data-f="20">30/50/20 (High Carb)</button>
@@ -693,43 +716,43 @@
   </div>
   <div class="row2">
     <div class="field">
-      <label for="goalProInput">Protein Goal (g)</label>
+      <label for="goalProInput">Protein goal (g)</label>
       <input id="goalProInput" type="number" inputmode="numeric" min="0">
     </div>
     <div class="field">
-      <label for="goalCarbsInput">Carbs Goal (g)</label>
+      <label for="goalCarbsInput">Carbs goal (g)</label>
       <input id="goalCarbsInput" type="number" inputmode="numeric" min="0">
     </div>
   </div>
   <div class="row2">
     <div class="field">
-      <label for="goalFatInput">Fat Goal (g)</label>
+      <label for="goalFatInput">Fat goal (g)</label>
       <input id="goalFatInput" type="number" inputmode="numeric" min="0">
     </div>
     <div class="field">
-      <label for="goalWaterInput">Water Goal (glasses)</label>
+      <label for="goalWaterInput">Water goal (glasses)</label>
       <input id="goalWaterInput" type="number" inputmode="numeric" min="0">
     </div>
   </div>
   <div class="sheet-actions">
-    <button class="btn" data-close>Cancel</button>
-    <button class="btn primary" id="goalSubmit">Save</button>
+    <button class="btn" data-close>CANCEL</button>
+    <button class="btn primary" id="goalSubmit">SAVE!</button>
   </div>
 </div>
 
 <!-- Menu sheet -->
 <div class="sheet" id="menuSheet">
   <div class="grab"></div>
-  <h3>Settings &amp; your data</h3>
+  <h3>SETTINGS &amp; YOUR DATA</h3>
 
-  <h4>App theme</h4>
+  <h4>APP THEME</h4>
   <div class="theme-picker" id="themePicker">
-    <button class="theme-btn active" data-theme-val="auto">Auto (System)</button>
-    <button class="theme-btn" data-theme-val="dark">Dark</button>
-    <button class="theme-btn" data-theme-val="light">Light</button>
+    <button class="theme-btn active" data-theme-val="auto">AUTO (SYSTEM)</button>
+    <button class="theme-btn" data-theme-val="dark">DARK</button>
+    <button class="theme-btn" data-theme-val="light">LIGHT</button>
   </div>
 
-  <h4>Daily goals</h4>
+  <h4>DAILY GOALS</h4>
   <div class="row2">
     <div class="field">
       <label for="menuCalGoal">Calorie goal</label>
@@ -751,27 +774,27 @@
     </div>
   </div>
 
-  <h4>USDA food search</h4>
+  <h4>USDA FOOD SEARCH</h4>
   <p class="hint">Add your free USDA API key to search everyday foods as you log. It stays right here on this device.</p>
   <div class="field">
     <label for="menuUsdaKey">USDA API Key</label>
     <input id="menuUsdaKey" type="text" placeholder="Paste your key here" autocomplete="off" spellcheck="false">
   </div>
 
-  <h4>Keep a copy</h4>
+  <h4>KEEP A COPY</h4>
   <p class="hint">Your data lives only on this device. Download a backup before moving to a new phone, then import it there.</p>
   <div class="sheet-actions" style="flex-direction:column">
-    <button class="btn primary" id="exportBtn" style="width:100%">⤓ Download full backup</button>
-    <button class="btn" id="importBtn" style="width:100%;margin-top:11px">⤒ Bring in a backup</button>
-    <button class="btn" id="exportFoodsBtn" style="width:100%;margin-top:11px">Download my go-tos</button>
-    <button class="btn danger" id="resetAllBtn" style="width:100%;margin-top:11px">Erase everything</button>
+    <button class="btn primary" id="exportBtn" style="width:100%">⤓ DOWNLOAD FULL BACKUP</button>
+    <button class="btn" id="importBtn" style="width:100%;margin-top:11px">⤒ BRING IN A BACKUP</button>
+    <button class="btn" id="exportFoodsBtn" style="width:100%;margin-top:11px">DOWNLOAD MY GO-TOS</button>
+    <button class="btn danger" id="resetAllBtn" style="width:100%;margin-top:11px">ERASE EVERYTHING</button>
   </div>
   <input type="file" id="importFile" accept="application/json,.json" hidden>
 </div>
 
 <div class="toast" id="toast">
   <span id="toastMsg"></span>
-  <button class="toast-undo" id="toastUndo" style="display:none">Undo</button>
+  <button class="toast-undo" id="toastUndo" style="display:none">UNDO</button>
 </div>
 
 <script src="food-images.js"></script>
@@ -797,7 +820,7 @@
       { id: uid(), name: "Banana", calories: 105, protein: 1.3, carbs: 27, fat: 0.3, fiber: 3.1, sugar: 14, emoji: "🍌" },
       { id: uid(), name: "Protein shake", calories: 160, protein: 30, carbs: 3, fat: 2, fiber: 1, sugar: 1, emoji: "🥤" }
     ],
-    days: {} // "YYYY-MM-DD": { entries:[{id,type,name,calories,protein,carbs,fat,fiber,sugar,servings,unitMode,meal,timestamp,notes,barcode,imageUrl,emoji}], water:0 }
+    days: {}
   });
 
   let state = load();
@@ -901,7 +924,7 @@
   }
   function prettyDate(key){
     const [y,m,d]=key.split("-").map(Number);
-    return new Date(y,m-1,d).toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"});
+    return new Date(y,m-1,d).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
   }
   function today(){
     if(!state.days[currentKey]) state.days[currentKey] = { entries:[], water:0 };
@@ -963,7 +986,7 @@
     const strokeLength = 251.2;
     const clampedPct = Math.max(0, Math.min(1, calPct));
     donutFg.style.strokeDashoffset = strokeLength * (1 - clampedPct);
-    donutFg.style.stroke = isOver ? "var(--bad)" : "var(--accent)";
+    donutFg.style.stroke = isOver ? "var(--pop-red)" : "var(--pop-pink)";
 
     const calBar = $("#calBar");
     calBar.classList.toggle("over", isOver);
@@ -996,7 +1019,7 @@
     $("#waterCount").textContent = water;
     $("#waterGoalVal").textContent = waterGoal;
 
-    // Weekly Calorie Averaging (Bug 4 fix)
+    // Weekly Calorie Averaging
     const weekly = Helpers.calculateWeeklyAverages(state.days, currentKey, g.calories);
     $("#weeklyAvgVal").textContent = weekly.avgCalories;
     if(weekly.loggedDaysCount === 0){
@@ -1033,7 +1056,6 @@
       const d=document.createElement("button");
       d.className="chip empty";
       d.innerHTML=`<div class="empty-state" style="padding:10px 0">
-        <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         <div class="empty-title">Your shortcut shelf is empty</div>
         <div class="empty-desc">Tap <b>Edit list</b> to save a few favorites and make future logging a breeze.</div>
       </div>`;
@@ -1046,12 +1068,11 @@
         const b=document.createElement("button");
         b.className="chip";
         const emoji = f.emoji || detectEmoji(f.name);
-        const iconSpan = emoji ? `<span style="font-size:16px">${esc(emoji)}</span>` : "";
+        const iconSpan = emoji ? `<span style="font-size:18px">${esc(emoji)}</span>` : "";
         b.innerHTML=`<span class="nm">${iconSpan}${esc(f.name)}</span><span class="mt">${f.calories} cal · ${Helpers.round1(f.protein)}g P</span>`;
         b.onclick=()=>{
           vibrate(20);
           quickExpanded=false;
-          // Bug 3 Fix: Infer current meal dynamically on quick add!
           logFood({
             name: f.name,
             calories: f.calories,
@@ -1086,9 +1107,8 @@
     const entries = today().entries;
     if(entries.length===0){
       list.innerHTML=`<div class="empty-state">
-        <svg class="empty-icon" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <div class="empty-title">A fresh page for today</div>
-        <div class="empty-desc">Tap a go-to above or <b>＋ Log food</b> below when you’re ready.</div>
+        <div class="empty-desc">Tap a go-to above or <b>＋ LOG FOOD!</b> below when you're ready.</div>
       </div>`;
       return;
     }
@@ -1105,13 +1125,12 @@
       const hdr = document.createElement("div");
       hdr.className = "meal-header";
       const subInfo = `${grp.netCal} cal • ${grp.protein}g P • ${grp.carbs}g C • ${grp.fat}g F`;
-      hdr.innerHTML = `<h3>${Helpers.MEAL_LABELS[mealKey]}</h3><span class="meal-sub">${subInfo}</span>`;
+      hdr.innerHTML = `<h3>${Helpers.MEAL_LABELS[mealKey].toUpperCase()}</h3><span class="meal-sub">${subInfo}</span>`;
       sec.appendChild(hdr);
 
       const subList = document.createElement("div");
       subList.className = "log";
 
-      // Newest first in each section
       for(let i=grp.entries.length-1; i>=0; i--){
         const it = grp.entries[i];
         const wrap = document.createElement("div");
@@ -1203,7 +1222,7 @@
 
   function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 
-  /* ---------- mutations (Refactored to Options Object) ---------- */
+  /* ---------- mutations ---------- */
   function logFood(opts){
     const o = opts || {};
     const image = FoodImages.sanitizeFoodImageMetadata(o.metadata);
@@ -1332,7 +1351,6 @@
     baseFoodNutrients = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, sugar: 0 };
   }
 
-  // Bug 1 & Bug 2 Fix: Sync manual field entries to baseFoodNutrients!
   function updateBaseFromManualFields(){
     if(isScalingProgrammatically) return;
     const q = +$("#fServings").value || (activeUnitMode === "100g" ? 100 : 1);
@@ -1357,7 +1375,6 @@
     if(foodMode !== "add") return;
     const qty = +$("#fServings").value || (activeUnitMode === "100g" ? 100 : 1);
 
-    // If baseFoodNutrients wasn't populated yet, capture current inputs as base!
     if(baseFoodNutrients.calories === 0 && (+$("#fCal").value > 0 || +$("#fPro").value > 0)){
       updateBaseFromManualFields();
     }
@@ -1380,13 +1397,12 @@
   $("#addFood").onclick=()=>{
     foodMode="add"; editingFoodId=null; selectedFoodMetadata=null;
     resetBaseNutrients();
-    $("#foodSheetTitle").textContent="Log some food";
-    $("#fSubmit").textContent="Log it";
+    $("#foodSheetTitle").textContent="LOG SOME FOOD!";
+    $("#fSubmit").textContent="LOG IT!";
     $("#fName").value=""; $("#fCal").value=""; $("#fPro").value="";
     $("#fCarbs").value=""; $("#fFat").value=""; $("#fFiber").value=""; $("#fSugar").value="";
     $("#fServings").value="1"; $("#fNotes").value=""; $("#fEmoji").value="";
 
-    // Bug 2 Fix: Hide servings and unit toggle in edit/newSaved modes!
     $("#fServingsWrap").style.display = "";
     $("#unitToggle").style.display = "";
 
@@ -1434,7 +1450,6 @@
     metadata.emoji = emoji;
 
     if($("#fSave").checked){
-      // Save base per-serving / per-100g nutrients to saved foods!
       const baseSave = (baseFoodNutrients.calories > 0) ? baseFoodNutrients : { calories: cal, protein: pro, carbs, fat, fiber, sugar };
       state.foods.push({
         id:uid(), name,
@@ -1458,7 +1473,7 @@
     hide(); pop(`${name} is on today’s list`);
   };
 
-  /* Typeahead over saved foods & USDA FoodData Central API */
+  /* Typeahead over saved foods & USDA */
   const fSuggest=$("#fSuggest");
   function clearSuggest(){ fSuggest.innerHTML=""; }
   function highlight(name,q){
@@ -1468,7 +1483,6 @@
   }
 
   let usdaDebounceT=null;
-  // Bug 5 Fix: Exact USDA Nutrient ID Matching!
   function parseUsdaFood(item){
     if(!item || !item.description) return null;
     let calories=0, protein=0, carbs=0, fat=0, fiber=0, sugar=0;
@@ -1539,7 +1553,7 @@
       const b=document.createElement("button");
       b.type="button"; b.className="suggest-item";
       const badge = f.isSaved
-        ? `<span class="badge saved">Saved</span>`
+        ? `<span class="badge saved">SAVED</span>`
         : `<span class="badge usda">USDA</span>`;
       const emojiVal = f.emoji || detectEmoji(f.name);
       const emojiSpan = emojiVal ? `<span style="font-size:16px;margin-right:4px">${esc(emojiVal)}</span>` : "";
@@ -1567,9 +1581,6 @@
 
   $("#fName").addEventListener("input",()=>{
     selectedFoodMetadata=null;
-    // The name is only a label — resetting the base here would desync it from the
-    // nutrient fields, so changing servings afterwards would silently do nothing.
-    // Base is reset at every sheet entry point instead.
     if(foodMode!=="add"){ clearSuggest(); return; }
     const q=$("#fName").value.trim();
     if(!q){ clearSuggest(); clearTimeout(usdaDebounceT); return; }
@@ -1625,7 +1636,6 @@
     const wrap=$("#manageList"); wrap.innerHTML="";
     if(state.foods.length===0){
       wrap.innerHTML=`<div class="empty-state">
-        <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         <div class="empty-title">No go-tos yet</div>
         <div class="empty-desc">Tap <b>＋ Add a go-to</b> to save your first favorite.</div>
       </div>`;
@@ -1645,7 +1655,7 @@
       row.dataset.index = index;
 
       const emojiVal = f.emoji || detectEmoji(f.name);
-      const emojiSpan = emojiVal ? `<span style="font-size:16px">${esc(emojiVal)}</span>` : "";
+      const emojiSpan = emojiVal ? `<span style="font-size:18px">${esc(emojiVal)}</span>` : "";
 
       row.innerHTML=`<div class="drag-handle" title="Drag to reorder"${manageSearchQuery ? " hidden" : ""}>⋮⋮</div>
         <div class="body"><div class="nm">${emojiSpan}${esc(f.name)}</div><div class="mt">${f.calories} cal · ${Helpers.round1(f.protein)}g P · ${Helpers.round1(f.carbs||0)}g C · ${Helpers.round1(f.fat||0)}g F</div></div>`;
@@ -1781,7 +1791,6 @@
     $("#fCarbs").value=f.carbs||0; $("#fFat").value=f.fat||0;
     $("#fFiber").value=f.fiber||0; $("#fSugar").value=f.sugar||0;
 
-    // Bug 2 Fix: Hide servings and unit toggle in edit mode!
     $("#fServingsWrap").style.display = "none";
     $("#unitToggle").style.display = "none";
 
@@ -1800,7 +1809,6 @@
     $("#fName").value=""; $("#fCal").value=""; $("#fPro").value="";
     $("#fCarbs").value=""; $("#fFat").value=""; $("#fFiber").value=""; $("#fSugar").value="";
 
-    // Bug 2 Fix: Hide servings and unit toggle in newSaved mode!
     $("#fServingsWrap").style.display = "none";
     $("#unitToggle").style.display = "none";
 
@@ -1823,8 +1831,6 @@
     show("goalSheet"); setTimeout(() => $("#goalCalInput").select(), 250);
   }
 
-  /* Macro ratio presets. The .active button is the pending choice while the sheet is open;
-     it's committed to state.goals.macroRatios on save so calorie edits keep re-deriving. */
   function activeRatio(){
     const b = document.querySelector(".ratio-btn.active");
     return b ? { protein:+b.dataset.p, carbs:+b.dataset.c, fat:+b.dataset.f } : null;
@@ -1852,7 +1858,6 @@
 
   $("#goalCalInput").addEventListener("input", applyRatioToInputs);
 
-  // Typing your own gram target drops the preset, so a later calorie edit can't overwrite it.
   ["#goalProInput", "#goalCarbsInput", "#goalFatInput"].forEach(sel => {
     $(sel).addEventListener("input", () => setActiveRatio(null));
   });
@@ -1956,8 +1961,6 @@
     const emoji=rawEmoji || detectEmoji(name);
     const e = {
       id: uid(), type, name, calories: Helpers.num(it.calories),
-      // Keep an absent timestamp absent — inventing import time would fabricate a clock
-      // reading and a meal. Helpers.mealForEntry handles the gap deterministically.
       timestamp: Helpers.num(it.timestamp), notes: Helpers.str(it.notes).trim(), emoji
     };
     if(type==="food"){

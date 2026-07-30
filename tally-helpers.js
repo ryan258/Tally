@@ -151,6 +151,115 @@
     };
   }
 
+  function dayKey(d){
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
+  function parseDayKey(key){
+    const parts = (key || "").split("-").map(Number);
+    return (parts.length === 3 && !parts.some(isNaN))
+      ? new Date(parts[0], parts[1] - 1, parts[2])
+      : new Date();
+  }
+
+  // null means "no log for this day" — distinct from a logged day totalling 0g.
+  function dayProtein(day){
+    if(!day || !Array.isArray(day.entries) || day.entries.length === 0) return null;
+    let p = 0;
+    for(const e of day.entries){
+      if(e.type !== "exercise") p += num(e.protein);
+    }
+    return round1(p);
+  }
+
+  function calculateConsistency(daysMap, currentKey, proteinGoal){
+    const days = daysMap || {};
+    const goal = num(proteinGoal);
+    const base = parseDayKey(currentKey);
+    const hitOn = key => {
+      const p = dayProtein(days[key]);
+      return goal > 0 && p !== null && p >= goal;
+    };
+
+    // Today is still in progress, so a miss today doesn't break a streak that is
+    // alive through yesterday. Any other miss ends it.
+    let streak = 0;
+    for(let i = 0; i < 365; i++){
+      const d = new Date(base);
+      d.setDate(d.getDate() - i);
+      if(hitOn(dayKey(d))) streak++;
+      else if(i > 0) break;
+    }
+
+    // Hit rate counts only days that were actually logged in the last 30.
+    let loggedDays = 0, hits = 0;
+    for(let i = 0; i < 30; i++){
+      const d = new Date(base);
+      d.setDate(d.getDate() - i);
+      const key = dayKey(d);
+      if(dayProtein(days[key]) === null) continue;
+      loggedDays++;
+      if(hitOn(key)) hits++;
+    }
+
+    const prefix = `${base.getFullYear()}-${String(base.getMonth() + 1).padStart(2, "0")}-`;
+    let daysThisMonth = 0;
+    for(const key of Object.keys(days)){
+      if(key.indexOf(prefix) === 0 && dayProtein(days[key]) !== null) daysThisMonth++;
+    }
+
+    return {
+      streak,
+      loggedDays,
+      hitRate: loggedDays > 0 ? Math.round((hits / loggedDays) * 100) : 0,
+      daysThisMonth,
+    };
+  }
+
+  const CSV_COLUMNS = [
+    "date", "time", "meal", "type", "name", "servings",
+    "calories", "protein", "carbs", "fat", "fiber", "sugar", "notes"
+  ];
+
+  function csvCell(v){
+    const s = str(v);
+    // Quote anything a spreadsheet could misread, and double up embedded quotes.
+    return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  }
+
+  function buildHistoryCsv(daysMap){
+    const days = daysMap || {};
+    const rows = [CSV_COLUMNS.join(",")];
+
+    for(const date of Object.keys(days).sort()){
+      const entries = days[date] && days[date].entries;
+      if(!Array.isArray(entries)) continue;
+      for(const it of entries){
+        const isEx = it.type === "exercise";
+        rows.push([
+          date,
+          formatEntryTime(it.timestamp),
+          isEx ? "" : mealForEntry(it),
+          isEx ? "exercise" : "food",
+          str(it.name),
+          isEx ? "" : (num(it.servings) || 1),
+          num(it.calories),
+          isEx ? "" : num(it.protein),
+          isEx ? "" : num(it.carbs),
+          isEx ? "" : num(it.fat),
+          isEx ? "" : num(it.fiber),
+          isEx ? "" : num(it.sugar),
+          str(it.notes),
+        ].map(csvCell).join(","));
+      }
+    }
+
+    return rows.join("\n");
+  }
+
   const api = Object.freeze({
     num,
     str,
@@ -166,6 +275,9 @@
     mealForEntry,
     groupEntriesByMeal,
     calculateWeeklyAverages,
+    calculateConsistency,
+    buildHistoryCsv,
+    CSV_COLUMNS,
   });
 
   root.TallyHelpers = api;

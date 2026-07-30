@@ -2,6 +2,30 @@
 
 All notable changes to the Tally calorie & protein tracker project will be documented in this file.
 
+## [1.4.0] - 2026-07-30
+
+### Added — Accessibility, PWA & Housekeeping (Ideas 12, 26, 32, 33, 34, 65, 66, 67, 69, 72, 74, 87, 98, 100)
+
+- **98. Single-source version**: New `version.js` sets `TALLY_VERSION`, loaded by both `index.html` and `sw.js` (`importScripts`). The service worker cache name is now derived from it, so a version bump can no longer be forgotten.
+- **26, 32 & 33. Consistency card**: New card showing the current protein-goal streak, the hit rate across logged days, and days logged this month. Today counts as in-progress, so an unfinished today never breaks a live streak.
+- **34. Export history as CSV**: "Download history as CSV" in the ⋯ menu, with proper quoting for names and notes containing commas, quotes, or newlines. Exercise rows leave macro columns blank rather than writing a misleading `0`.
+- **65. ARIA live region**: Totals are announced to screen readers after every add, delete, or undo.
+- **66. Focus management**: Opening a sheet moves focus into it, `Escape` closes it, and focus returns to the control that opened it. Only fields marked `data-autofocus` take real focus, so other sheets no longer pop the on-screen keyboard.
+- **67. Reduced-motion support**: `prefers-reduced-motion` collapses transitions and skips the count-up animations.
+- **69. Progress bar labels**: Calorie and macro bars expose `role="progressbar"` with live value, max, and a readable `aria-valuetext`.
+- **72. Offline indicator**: An "Offline" pill appears in the header when the connection drops.
+- **74. App shortcuts**: Manifest `shortcuts` jump straight to Log food / Log activity; the deep-link param is cleared after opening so a reload doesn't reopen the sheet.
+- **87. Backup schema version**: Exports carry `schemaVersion` and `appVersion`. Importing a backup from a newer format warns first. Older backups without the field still import unchanged.
+- **12. Calorie sanity cap**: Entries over 5000 calories ask for confirmation instead of silently logging a typo, and return focus to the calorie field when declined.
+- **100. Data-size warning**: Warns once per session when stored history grows large, and surfaces a clear message if a write fails because storage is full.
+
+### Changed
+- Replaced four duplicated `show(...); setTimeout(focus)` call sites with focus handling inside `show()`.
+- `downloadJSON` now delegates to a shared `download` helper used by both the JSON and CSV exports.
+
+### Tests
+- **99. Test harness**: The `tests/` suite (run with `node --test tests/*.test.js`, no framework or dependencies) covers idea 99 and predates this release. Added cases for streak/consistency stats and CSV escaping — 15 tests passing.
+
 ## [1.3.0] - 2026-07-30
 
 ### Added — Tracking, Data Model & Goal Enhancements (Ideas 1–7, 11, 13, 14, 16, 18)

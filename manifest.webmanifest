@@ -8,6 +8,20 @@
   "orientation": "portrait",
   "background_color": "#0e1116",
   "theme_color": "#0e1116",
+  "shortcuts": [
+    {
+      "name": "Log food",
+      "short_name": "Food",
+      "url": "./index.html?action=food",
+      "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Log exercise",
+      "short_name": "Exercise",
+      "url": "./index.html?action=exercise",
+      "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    }
+  ],
   "icons": [
     {
       "src": "icon.svg",

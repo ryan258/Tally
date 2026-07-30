@@ -34,9 +34,10 @@ Copy these files to any web server — a static host like GitHub Pages, Netlify,
 | File | Purpose |
 |------|---------|
 | `index.html` | The main UI markup and application controller script. |
-| `tally-helpers.js` | Pure utilities for macro ratio derivations, serving scaling, meal grouping, and 7-day averages. |
+| `version.js` | Single source of truth for the version — bump here to update both the UI and the service worker cache. |
+| `tally-helpers.js` | Pure utilities for macro ratio derivations, serving scaling, meal grouping, 7-day averages, streak/consistency stats, and CSV export. |
 | `food-images.js` | Safe barcode lookup, image validation, and local food-image fallbacks. |
-| `manifest.webmanifest` | PWA metadata for installing to the home screen. |
+| `manifest.webmanifest` | PWA metadata and home-screen shortcuts. |
 | `sw.js` | Service worker for offline caching. |
 | `icon.svg` | App icon (standard "any" purpose). |
 | `icon-maskable.svg` | Maskable icon — fills adaptive platform shapes. |

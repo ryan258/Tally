@@ -13,6 +13,8 @@ const {
   LEGACY_MEAL,
   groupEntriesByMeal,
   calculateWeeklyAverages,
+  calculateConsistency,
+  buildHistoryCsv,
 } = require("../tally-helpers.js");
 
 test("deriveMacroGoalsFromRatios computes correct macro grams for 40/30/30", () => {
@@ -114,4 +116,60 @@ test("calculateWeeklyAverages computes 7-day average and bank relative to logged
   assert.equal(res.totalNet, 6000);
   assert.equal(res.targetPeriod, 6000); // 2000 * 3 logged days
   assert.equal(res.bankNet, 0); // 6000 net - 6000 target = 0 cal bank!
+});
+
+const proteinDay = grams => ({ entries: [{ type: "food", name: "Shake", calories: 160, protein: grams }] });
+
+test("calculateConsistency counts a streak back from today, tolerating an unfinished today", () => {
+  const days = {
+    "2026-07-30": proteinDay(10),  // today, still short — must not break the streak
+    "2026-07-29": proteinDay(160),
+    "2026-07-28": proteinDay(155),
+    "2026-07-27": proteinDay(20),  // this is what ends it
+    "2026-07-26": proteinDay(200),
+  };
+  assert.equal(calculateConsistency(days, "2026-07-30", 150).streak, 2);
+
+  // Once today clears the goal it joins the streak.
+  assert.equal(calculateConsistency({ ...days, "2026-07-30": proteinDay(151) }, "2026-07-30", 150).streak, 3);
+
+  // A gap day with no log at all is a miss, not a skip.
+  const gapped = { "2026-07-30": proteinDay(151), "2026-07-28": proteinDay(151) };
+  assert.equal(calculateConsistency(gapped, "2026-07-30", 150).streak, 1);
+});
+
+test("calculateConsistency rates only logged days and counts this month's logs", () => {
+  const days = {
+    "2026-07-30": proteinDay(151),
+    "2026-07-29": proteinDay(10),
+    "2026-07-28": proteinDay(151),
+    "2026-07-27": { entries: [] },   // opened the app, logged nothing
+    "2026-06-15": proteinDay(151),   // previous month
+  };
+  const res = calculateConsistency(days, "2026-07-30", 150);
+
+  assert.equal(res.loggedDays, 3);    // the empty day is not held against the rate
+  assert.equal(res.hitRate, 67);      // 2 of 3
+  assert.equal(res.daysThisMonth, 3); // June is excluded, so is the empty day
+
+  // No goal set means nothing to hit — and no division by zero.
+  assert.equal(calculateConsistency(days, "2026-07-30", 0).hitRate, 0);
+  assert.deepEqual(calculateConsistency({}, "2026-07-30", 150), { streak: 0, loggedDays: 0, hitRate: 0, daysThisMonth: 0 });
+});
+
+test("buildHistoryCsv escapes cells that would otherwise break a spreadsheet", () => {
+  const csv = buildHistoryCsv({
+    "2026-07-29": { entries: [{ type: "exercise", name: "Walk", calories: 150, notes: "" }] },
+    "2026-07-28": { entries: [{ type: "food", name: 'Rice, "jasmine"', calories: 200, protein: 4, meal: "lunch", notes: "line\nbreak" }] },
+  });
+  const lines = csv.split("\n");
+
+  assert.match(lines[0], /^date,time,meal,type,name,servings,calories,protein/);
+  assert.ok(lines[1].startsWith("2026-07-28,"), "days sort oldest first");
+  assert.ok(lines[1].includes('"Rice, ""jasmine"""'), "commas and quotes escaped");
+  assert.ok(csv.includes('"line\nbreak"'), "newlines stay inside a quoted cell");
+
+  // Exercise rows leave the macro columns empty rather than writing a misleading 0.
+  const walk = csv.split("\n").find(l => l.includes("Walk"));
+  assert.equal(walk, "2026-07-29,,,exercise,Walk,,150,,,,,,");
 });

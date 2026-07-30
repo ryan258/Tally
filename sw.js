@@ -1,9 +1,12 @@
 /* Tally service worker — offline-first cache of the app shell.
-   Bump CACHE when you change any file so clients pick up the update. */
-const CACHE = "tally-v9";
+   The cache name is derived from version.js, so bumping the version there is the
+   only thing needed to make clients pick up an update. */
+importScripts("./version.js");
+const CACHE = "tally-v" + globalThis.TALLY_VERSION;
 const ASSETS = [
   "./",
   "./index.html",
+  "./version.js",
   "./food-images.js",
   "./tally-helpers.js",
   "./manifest.webmanifest",

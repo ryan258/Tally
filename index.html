@@ -225,9 +225,29 @@
   .btn:disabled{cursor:wait;filter:saturate(.55);opacity:.8}
 
   /* manage foods list & drag reordering (Idea 51) */
-  .manage-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);background:var(--surface)}
-  .manage-item.dragging{opacity:.4;background:var(--surface-2)}
-  .drag-handle{cursor:grab;color:var(--muted);font-size:18px;padding:8px 4px;user-select:none;flex:0 0 auto;min-width:36px;text-align:center}
+  .manage-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);background:var(--surface);transition:background .15s ease}
+  .manage-item.is-dragging{
+    position:fixed !important;
+    z-index:1000 !important;
+    pointer-events:none !important;
+    background:var(--surface-2) !important;
+    box-shadow:0 12px 32px rgba(0,0,0,.6), 0 0 0 2px var(--accent) !important;
+    border-radius:12px !important;
+    opacity:0.95 !important;
+    transform:scale(1.02);
+    transition:none !important;
+  }
+  .manage-item-placeholder{
+    height:56px;
+    border:2px dashed var(--accent);
+    background:rgba(56, 189, 248, 0.08);
+    border-radius:12px;
+    margin:6px 0;
+    box-sizing:border-box;
+    transition:all .12s ease;
+  }
+  .drag-handle{cursor:grab;color:var(--muted);font-size:18px;padding:8px 4px;user-select:none;-webkit-user-select:none;touch-action:none;flex:0 0 auto;min-width:36px;text-align:center}
+  .drag-handle:active,.manage-item.is-dragging .drag-handle{cursor:grabbing;color:var(--accent)}
   .manage-item .body{flex:1;min-width:0}
   .manage-item .nm{font-weight:700;display:flex;align-items:center;gap:6px}
   .manage-item .mt{font-size:12.5px;color:var(--muted)}
@@ -1080,39 +1100,105 @@
 
       // Drag Reordering Touch/Pointer Event Handlers (Idea 51)
       const handle = row.querySelector(".drag-handle");
-      let startY = 0, initialIdx = index;
-      handle.addEventListener("touchstart", e => {
-        startY = e.touches[0].clientY;
-        row.classList.add("dragging");
+      let isDragging = false;
+      let offsetY = 0;
+      let offsetX = 0;
+      let placeholder = null;
+
+      handle.addEventListener("pointerdown", e => {
+        if (e.button !== undefined && e.button !== 0) return;
+
+        const rect = row.getBoundingClientRect();
+        offsetY = e.clientY - rect.top;
+        offsetX = e.clientX - rect.left;
+        isDragging = true;
+
+        placeholder = document.createElement("div");
+        placeholder.className = "manage-item-placeholder";
+        placeholder.style.height = `${rect.height}px`;
+
+        wrap.insertBefore(placeholder, row);
+
+        row.classList.add("is-dragging");
+        row.style.width = `${rect.width}px`;
+        row.style.left = `${rect.left}px`;
+        row.style.top = `${rect.top}px`;
+
+        try { handle.setPointerCapture(e.pointerId); } catch (_) {}
         vibrate(10);
-      }, {passive:true});
+      });
 
-      handle.addEventListener("touchmove", e => {
-        const currentY = e.touches[0].clientY;
-        const dy = currentY - startY;
-        row.style.transform = `translateY(${dy}px)`;
-      }, {passive:true});
+      handle.addEventListener("pointermove", e => {
+        if (!isDragging || !placeholder) return;
 
-      handle.addEventListener("touchend", e => {
-        row.classList.remove("dragging");
-        row.style.transform = "none";
-        const touchY = e.changedTouches[0].clientY;
-        const items = Array.from(wrap.children);
-        const target = items.find(item => {
-          const rect = item.getBoundingClientRect();
-          return touchY >= rect.top && touchY <= rect.bottom;
-        });
-        if(target && target !== row){
-          const targetId = target.dataset.id;
-          const fromIdx = state.foods.findIndex(x => x.id === f.id);
-          const toIdx = state.foods.findIndex(x => x.id === targetId);
-          if(fromIdx > -1 && toIdx > -1){
-            const [moved] = state.foods.splice(fromIdx, 1);
-            state.foods.splice(toIdx, 0, moved);
-            save(); renderManage(); renderQuick(); vibrate(15);
+        const topY = e.clientY - offsetY;
+        const leftX = e.clientX - offsetX;
+        row.style.top = `${topY}px`;
+        row.style.left = `${leftX}px`;
+
+        const siblings = Array.from(wrap.children).filter(
+          child => child !== row && child !== placeholder && child.classList.contains("manage-item")
+        );
+
+        let inserted = false;
+        for (const sibling of siblings) {
+          const sRect = sibling.getBoundingClientRect();
+          const midY = sRect.top + sRect.height / 2;
+          if (e.clientY < midY) {
+            wrap.insertBefore(placeholder, sibling);
+            inserted = true;
+            break;
           }
         }
+        if (!inserted && siblings.length > 0) {
+          wrap.appendChild(placeholder);
+        }
       });
+
+      const endDrag = e => {
+        if (!isDragging) return;
+        isDragging = false;
+
+        try { handle.releasePointerCapture(e.pointerId); } catch (_) {}
+
+        if (placeholder && placeholder.parentElement) {
+          wrap.insertBefore(row, placeholder);
+          placeholder.remove();
+          placeholder = null;
+        }
+
+        row.classList.remove("is-dragging");
+        row.style.width = "";
+        row.style.left = "";
+        row.style.top = "";
+
+        const currentDomIds = Array.from(wrap.children)
+          .map(el => el.dataset.id)
+          .filter(Boolean);
+
+        if (currentDomIds.length > 0) {
+          const idMap = new Map(state.foods.map(item => [item.id, item]));
+          const newFoods = [];
+
+          currentDomIds.forEach(id => {
+            if (idMap.has(id)) {
+              newFoods.push(idMap.get(id));
+              idMap.delete(id);
+            }
+          });
+          idMap.forEach(item => newFoods.push(item));
+
+          state.foods = newFoods;
+          save();
+        }
+
+        renderManage();
+        renderQuick();
+        vibrate(15);
+      };
+
+      handle.addEventListener("pointerup", endDrag);
+      handle.addEventListener("pointercancel", endDrag);
 
       wrap.appendChild(row);
     });

@@ -73,20 +73,23 @@
     font-family: 'Outfit', system-ui, -apple-system, sans-serif;
     font-size: 15px; line-height: 1.4;
     overscroll-behavior-y: none;
+    overflow-x: hidden;
     -webkit-user-select: none; user-select: none;
     transition: background-color .3s, color .3s;
   }
 
   #app{max-width:680px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding:0 8px;}
 
-  /* Header */
+  /* Header - End-to-End Background with Centered Content Container */
   header{
     position: sticky; top: 0; z-index: 20;
+    width: 100%;
     background: var(--pop-yellow);
     border-bottom: 3px solid #000;
-    padding: calc(var(--safe-top) + 10px) 16px 10px;
     box-shadow: 0 3px 0 #000;
+    padding: calc(var(--safe-top) + 10px) 0 10px;
   }
+  .head-container{max-width:680px;margin:0 auto;padding:0 16px;}
   .head-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
   .brand{
     display: flex; align-items: center; gap: 8px;
@@ -456,9 +459,8 @@
 </style>
 </head>
 <body>
-<div id="app">
-  <div class="pull-indicator" id="pullIndicator">↓ PULL TO REFRESH!</div>
-  <header id="mainHeader">
+<header id="mainHeader">
+  <div class="head-container">
     <div class="head-row">
       <div class="brand"><span class="dot"></span>TALLY!</div>
       <div style="display:flex;align-items:center;gap:8px">
@@ -476,7 +478,11 @@
       <span>•</span>
       <span><b id="miniFat">0</b>G F</span>
     </div>
-  </header>
+  </div>
+</header>
+
+<div id="app">
+  <div class="pull-indicator" id="pullIndicator">↓ PULL TO REFRESH!</div>
 
   <section class="summary">
     <div class="stat" id="calStatCard">

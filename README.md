@@ -16,7 +16,7 @@ A fast, offline, install-to-home-screen web app for tracking daily calories, pro
 - **Notes Field** — tag entries with notes (e.g. `🏷️ Post-workout`).
 - **Midnight Reset** — totals are keyed to the local calendar date, so at midnight the day automatically starts back at zero.
 - **My Foods & USDA Search** — save foods for quick adding, or search standard USDA FoodData Central items live.
-- **Food Thumbnails** — Open Food Facts barcode image thumbnails with local fallback glyphs.
+- **Emoji Food Icons** — expressive, local icons for foods without image thumbnails.
 - **Export / Import** — back up *foods + goals + history* (or just your foods) to a JSON file.
 - **Installable & Offline** — "Add to Home Screen" PWA support.
 

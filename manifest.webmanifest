@@ -1,7 +1,7 @@
 {
-  "name": "Tally — Calorie & Protein Tracker",
+  "name": "Tally — Your everyday food tracker",
   "short_name": "Tally",
-  "description": "Track daily calories and protein, log exercise, save your go-to foods. Resets every midnight. All data stays on your phone.",
+  "description": "A friendly food tracker for your everyday meals, movement, and go-to foods. Your data stays on your phone.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

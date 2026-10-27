@@ -8,6 +8,9 @@ This document explains how **Tally** is hosted on GitHub Pages, how to enable/co
 
 Tally is a zero-build, static Progressive Web App (PWA) composed of:
 - `index.html` (UI + Logic + Local Storage)
+- `version.js` (Single source of truth for version and service-worker cache)
+- `tally-helpers.js` (Pure computation helpers for goals, metrics, and exports)
+- `food-images.js` (Barcode validation and image fallbacks)
 - `sw.js` (Offline Service Worker Cache)
 - `manifest.webmanifest` (PWA Installation Metadata)
 - `icon.svg` & `icon-maskable.svg` (App Icons)
@@ -71,4 +74,14 @@ To deploy changes to your live site:
    ```
 3. GitHub Pages automatically re-builds and publishes the update within ~30–60 seconds.
 
-> **Note on Service Worker Updates**: When modifying `index.html` or `sw.js`, remember to bump the `CACHE` name in `sw.js` (e.g., `tally-v4` → `tally-v5`) and `VERSION` in `index.html` so installed PWA clients fetch the updated cache shell immediately.
+> **Note on Service Worker Updates**: When deploying updates to `index.html` or dependencies, bump `TALLY_VERSION` in `version.js`. Both `index.html` and `sw.js` read this value automatically to invalidate old `tally-v*` caches and install the updated app shell.
+
+---
+
+## 5. Automated Tests
+
+Verify changes locally before committing using Node's native test runner (no dependencies required):
+
+```bash
+node --test tests/*.test.js
+```

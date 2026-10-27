@@ -2,6 +2,20 @@
 
 All notable changes to the Tally calorie & protein tracker project will be documented in this file.
 
+## [Unreleased]
+
+### Added — Storage Resilience, Recovery & Service Worker Hardening
+
+- **Malformed Data Preservation & Raw Download**: Unreadable or corrupted `localStorage` data no longer crashes the app or gets overwritten on boot; displays an advisory banner and enables **Download preserved data** (`#exportRecoveryBtn`) in the menu to retrieve the raw string before restoring.
+- **Node Test Suites**: Added comprehensive automated test suites for storage resilience (`tests/tally-persistence.test.js`) and service worker offline caching boundaries (`tests/tally-service-worker.test.js`).
+
+### Fixed
+
+- **Atomic Storage Mutations**: Failed `localStorage` writes during full backup import, go-to food merging, or device reset no longer leave in-memory state out-of-sync with storage; memory state only changes if the save succeeds.
+- **Goal Field Sanitization**: Backup sanitization now retains zero-valued targets (`0` is valid) as well as fiber and sugar targets.
+- **Service Worker Cache Cleanup Isolation**: Activation cache pruning now filters for `tally-v*` caches, preserving unrelated application caches sharing the same origin.
+- **Resilient Service Worker Fetch & Navigation-Only Fallback**: Service worker cache writes use `waitUntil` and handle quota rejections without breaking network responses; offline fallback shell (`./index.html`) is restricted to navigation requests.
+
 ## [1.5.0] - 2026-07-30
 
 ### Added — Pop Art Redesign, Trend Charts & Simpsons Demo Data (Ideas 25, 27)

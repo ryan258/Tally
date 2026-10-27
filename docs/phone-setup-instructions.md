@@ -53,3 +53,4 @@ When you add a branded USDA result, Tally can use its barcode to request a produ
 * **Moving Data to a New Phone**:
   1. On your old phone: Menu (⋯) → **Export backup**. Save or share the `.json` file.
   2. On your new phone: Menu (⋯) → **Import backup** → select the `.json` file.
+* **Storage Protection & Recovery**: If stored data ever becomes unreadable or storage is unavailable, Tally preserves your data rather than overwriting it, displays a notice banner, and enables **Download preserved data** in the Menu (⋯) so you can safeguard your raw records before restoring a backup.

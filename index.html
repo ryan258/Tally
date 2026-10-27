@@ -548,6 +548,7 @@
 </header>
 
 <div id="app">
+  <p id="storageNotice" class="hint" role="status" aria-live="polite" hidden></p>
   <div class="pull-indicator" id="pullIndicator">↓ PULL TO REFRESH!</div>
 
   <div class="view-tabs" role="tablist">
@@ -921,6 +922,7 @@
   <div class="sheet-actions" style="flex-direction:column">
     <button class="btn primary" id="exportBtn" style="width:100%">⤓ DOWNLOAD FULL BACKUP</button>
     <button class="btn" id="importBtn" style="width:100%;margin-top:11px">⤒ BRING IN A BACKUP</button>
+    <button class="btn" id="exportRecoveryBtn" style="width:100%;margin-top:11px;display:none" hidden>DOWNLOAD PRESERVED DATA</button>
     <button class="btn" id="exportFoodsBtn" style="width:100%;margin-top:11px">DOWNLOAD MY GO-TOS</button>
     <button class="btn" id="exportCsvBtn" style="width:100%;margin-top:11px">DOWNLOAD HISTORY AS CSV</button>
     <button class="btn danger" id="resetAllBtn" style="width:100%;margin-top:11px">ERASE EVERYTHING</button>
@@ -964,14 +966,32 @@
     days: {}
   });
 
+  // Initialize error UI state before startup can call save()/pop().
+  let toastT;
+  let storageReadable = true;
+  let recoveryRaw = null;
+  let recoveryDownloaded = false;
   let state = load();
 
   function uid(){ return Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4); }
+  function storageNotice(message){
+    const notice=$("#storageNotice");
+    if(notice){ notice.textContent=message; notice.hidden=!message; notice.style.display=message?"":"none"; }
+    const recovery=$("#exportRecoveryBtn");
+    if(recovery){ recovery.hidden=typeof recoveryRaw!=="string"; recovery.style.display=recovery.hidden?"none":""; }
+  }
   function load(){
+    let raw;
     try{
-      const raw = localStorage.getItem(KEY);
+      raw = localStorage.getItem(KEY);
       if(!raw) return defaultState();
       const s = JSON.parse(raw);
+      if(!s || typeof s!=="object" || Array.isArray(s) ||
+         (s.foods!==undefined && !Array.isArray(s.foods)) ||
+         (s.days && (typeof s.days!=="object" || Array.isArray(s.days))) ||
+         (s.goals && (typeof s.goals!=="object" || Array.isArray(s.goals)))){
+        throw new Error("Saved data has an unsupported shape");
+      }
       if(!s.goals) s.goals = { calories: 2000, protein: 150, carbs: 200, fat: 67, fiber: 30, sugar: 50, waterGoal: 8 };
       if(typeof s.goals.carbs !== "number") s.goals.carbs = 200;
       if(typeof s.goals.fat !== "number") s.goals.fat = 67;
@@ -981,24 +1001,41 @@
       if(typeof s.usdaApiKey !== "string") s.usdaApiKey = "";
       if(typeof s.theme !== "string") s.theme = "auto";
       return s;
-    }catch(e){ return defaultState(); }
+    }catch(e){
+      storageReadable=false;
+      recoveryRaw=typeof raw==="string" ? raw : null;
+      storageNotice(recoveryRaw!==null
+        ? "Your saved data could not be opened. It is preserved. Use the menu to download preserved data before bringing in a backup."
+        : "Browser storage is unavailable. Changes stay in this tab; download a backup before closing it.");
+      return defaultState();
+    }
   }
   // Browsers cap localStorage near 5MB. Warn once per session well before that so a
   // backup is still possible while writes are succeeding.
   const SIZE_WARN_BYTES = 3.5 * 1024 * 1024;
   let sizeWarned = false;
-  function save(){
-    const json = JSON.stringify(state);
+  function save(nextState=state, {replaceUnreadable=false}={}){
+    if(!storageReadable && !replaceUnreadable){
+      storageNotice(recoveryRaw!==null
+        ? "Your saved data is preserved. Download preserved data from the menu before bringing in a full backup."
+        : "Browser storage is unavailable. Changes stay in this tab; download a backup before closing it.");
+      return false;
+    }
+    const json = JSON.stringify(nextState);
     try{
       localStorage.setItem(KEY, json);
     }catch(e){
-      pop("This device is out of storage — download a backup, then erase some history");
-      return;
+      storageNotice("Browser storage is not saving. Download a backup before closing this tab.");
+      pop("Could not save on this device — download a backup before closing this tab");
+      return false;
     }
+    if(replaceUnreadable){ storageReadable=true; recoveryRaw=null; recoveryDownloaded=false; }
+    storageNotice("");
     if(!sizeWarned && json.length > SIZE_WARN_BYTES){
       sizeWarned = true;
       pop("Your history is getting large — download a backup from the ⚙ menu");
     }
+    return true;
   }
 
   /* ---------- Haptic Feedback ---------- */
@@ -2302,6 +2339,11 @@
   }
 
   $("#exportBtn").onclick=()=>downloadJSON(state,`tally-backup-${todayKey()}.json`);
+  $("#exportRecoveryBtn").onclick=()=>{
+    if(typeof recoveryRaw!=="string") return;
+    download(recoveryRaw,`tally-preserved-${todayKey()}.json`,"application/json","Your preserved data is ready to keep safe");
+    recoveryDownloaded=true;
+  };
   $("#exportFoodsBtn").onclick=()=>downloadJSON({foods:state.foods},`tally-foods-${todayKey()}.json`);
   $("#exportCsvBtn").onclick=()=>{
     const csv=Helpers.buildHistoryCsv(state.days);
@@ -2367,7 +2409,8 @@
   function sanitizeGoals(g){
     const out={
       calories: state.goals.calories, protein: state.goals.protein,
-      carbs: state.goals.carbs || 200, fat: state.goals.fat || 67, waterGoal: state.goals.waterGoal || 8,
+      carbs: state.goals.carbs ?? 200, fat: state.goals.fat ?? 67, waterGoal: state.goals.waterGoal ?? 8,
+      fiber: state.goals.fiber ?? 30, sugar: state.goals.sugar ?? 50,
       macroRatios: state.goals.macroRatios || null
     };
     if(g && typeof g==="object"){
@@ -2375,11 +2418,10 @@
       out.macroRatios = (r && typeof r==="object")
         ? { protein:Helpers.num(r.protein), carbs:Helpers.num(r.carbs), fat:Helpers.num(r.fat) }
         : null;
-      if(Helpers.num(g.calories)>0) out.calories=Helpers.num(g.calories);
-      if(Helpers.num(g.protein)>0)  out.protein=Helpers.num(g.protein);
-      if(Helpers.num(g.carbs)>0)    out.carbs=Helpers.num(g.carbs);
-      if(Helpers.num(g.fat)>0)      out.fat=Helpers.num(g.fat);
-      if(Helpers.num(g.waterGoal)>0) out.waterGoal=Helpers.num(g.waterGoal);
+      for(const key of ["calories","protein","carbs","fat","fiber","sugar","waterGoal"]){
+        const value=Number(g[key]);
+        if(g[key]!==null && g[key]!=="" && Number.isFinite(value) && value>=0) out[key]=value;
+      }
     }
     return out;
   }
@@ -2399,17 +2441,24 @@
         }
         if(data.foods && !data.days && !data.goals){
           const added=mergeFoods(data.foods);
-          pop(`${added} go-to${added===1?"":"s"} added`);
+          if(added!==null) pop(`${added} go-to${added===1?"":"s"} added`);
         }else if(data.foods || data.days){
           if(confirm("Bring in this backup? It will replace your current go-tos, goals, and history.")){
-            state = {
+            const candidate = {
               goals: sanitizeGoals(data.goals),
               usdaApiKey: Helpers.str(data.usdaApiKey || state.usdaApiKey),
               theme: Helpers.str(data.theme || state.theme),
               foods: sanitizeFoods(data.foods),
               days:  sanitizeDays(data.days)
             };
-            save(); applyTheme(state.theme); pop("Backup safely brought in");
+            if(!storageReadable && recoveryRaw!==null && !recoveryDownloaded){
+              pop("Download preserved data from the menu before replacing it");
+            }else if(save(candidate,{replaceUnreadable:recoveryDownloaded})){
+              state=candidate;
+              applyTheme(state.theme); pop("Backup safely brought in");
+            }else{
+              pop("The backup was not saved; your previous data is unchanged");
+            }
           }
         }else{ pop("We couldn’t recognize that file"); }
       }catch(err){ pop("We couldn’t read that file"); }
@@ -2419,18 +2468,24 @@
   };
   function mergeFoods(incoming){
     const have=new Set(state.foods.map(f=>f.name.toLowerCase()));
+    const foods=state.foods.slice();
     let added=0;
     sanitizeFoods(incoming).forEach(f=>{
       if(!have.has(f.name.toLowerCase())){
-        state.foods.push(f); have.add(f.name.toLowerCase()); added++;
+        foods.push(f); have.add(f.name.toLowerCase()); added++;
       }
     });
-    save(); render();
+    const candidate={...state,foods};
+    if(!save(candidate)){ pop("The go-tos were not saved; your previous data is unchanged"); return null; }
+    state=candidate; render();
     return added;
   }
   $("#resetAllBtn").onclick=()=>{
     if(confirm("Erase everything on this device—your go-tos, goals, and history? This can’t be undone.")){
-      localStorage.removeItem(KEY); state=defaultState(); save(); applyTheme(state.theme); render(); hide(); pop("Everything has been erased");
+      const candidate=defaultState();
+      if(save(candidate,{replaceUnreadable:true})){
+        state=candidate; applyTheme(state.theme); render(); hide(); pop("Everything has been erased");
+      }else{ pop("Could not erase saved data; your previous data is unchanged"); }
     }
   };
 
@@ -2450,7 +2505,6 @@
   }
 
   /* Toast & Toast with Undo */
-  let toastT;
   function pop(msg){
     const t=$("#toast"), tm=$("#toastMsg"), tu=$("#toastUndo");
     if(tm) tm.textContent=msg;

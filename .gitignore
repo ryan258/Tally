@@ -11,3 +11,7 @@ Thumbs.db
 # Local backup files exported from the app
 tally-backup-*.json
 tally-foods-*.json
+
+# Dependencies
+node_modules/
+

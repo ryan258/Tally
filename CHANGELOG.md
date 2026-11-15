@@ -4,6 +4,15 @@ All notable changes to the Tally calorie & protein tracker project will be docum
 
 ## [Unreleased]
 
+### Added — Accessibility, Security & Quality Hardening
+
+- **Accessible Modal Dialogs & Focus Trapping**: All modal sheets (`#foodSheet`, `#exSheet`, `#manageSheet`, `#goalSheet`, `#menuSheet`) now start `inert` in HTML and declare explicit `role="dialog"`, `aria-modal="true"`, and `aria-labelledby` heading associations. Opening any sheet dynamically inerts background page elements (`#app`, `#mainHeader`), traps keyboard focus inside the sheet (wrapping on `Tab` / `Shift+Tab`), and restores focus to the triggering element upon `Escape` or sheet closure.
+- **USDA Key Masking & Reveal Toggle**: The USDA API key input in Settings is masked as a password input by default with an accessible `#toggleUsdaKey` button to toggle visibility; automatically re-masks whenever the settings sheet is dismissed or navigated away from.
+- **Single-Source Food Emoji Detection**: Consolidated keyword-to-emoji mapping into `food-images.js` (`TallyFoodImages.detectEmoji`) alongside existing fallback glyphs.
+- **Strict Backup Payload Validation**: Full backup imports validate container types and reject invalid payloads or arrays before any state mutations occur.
+- **Developer Tooling & CI Automation**: Added ESLint and Prettier configuration, `package.json` scripts (`test`, `lint`, `format`), and a GitHub Actions workflow (`.github/workflows/ci.yml`) to enforce 44 automated tests on push and pull requests.
+- **Date Formatting Helper**: Exported `prettyDate` pure helper in `tally-helpers.js`.
+
 ### Added — Storage Resilience, Recovery & Service Worker Hardening
 
 - **Malformed Data Preservation & Raw Download**: Unreadable or corrupted `localStorage` data no longer crashes the app or gets overwritten on boot; displays an advisory banner and enables **Download preserved data** (`#exportRecoveryBtn`) in the menu to retrieve the raw string before restoring.
@@ -11,6 +20,8 @@ All notable changes to the Tally calorie & protein tracker project will be docum
 
 ### Fixed
 
+- **Missing CSS Component Selectors**: Defined missing layout and UI rules for `.row2` two-column grids, `.suggest` / `.suggest-item` / `.badge` typeahead suggestions, `.empty-state` panels, `.collapsible-btn` secondary nutrients, `.theme-picker` controls, and `.manage-item` drag-and-drop rows.
+- **Goal Sheet Enter Key Submissions**: Enter key presses on buttons inside the goal sheet (e.g. Cancel or Ratio presets) now trigger the button's native behavior rather than inadvertently submitting the goal form.
 - **Atomic Storage Mutations**: Failed `localStorage` writes during full backup import, go-to food merging, or device reset no longer leave in-memory state out-of-sync with storage; memory state only changes if the save succeeds.
 - **Goal Field Sanitization**: Backup sanitization now retains zero-valued targets (`0` is valid) as well as fiber and sugar targets.
 - **Service Worker Cache Cleanup Isolation**: Activation cache pruning now filters for `tally-v*` caches, preserving unrelated application caches sharing the same origin.

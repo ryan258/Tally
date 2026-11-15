@@ -38,8 +38,8 @@ Tally supports live nutrition search using the official USDA FoodData Central da
 1. Obtain a free API key from [USDA FoodData Central](https://fdc.nal.usda.gov/api-guide.html) (takes ~30 seconds).
 2. Open **Tally** on your phone.
 3. Tap the **Menu (⋯)** button in the top right.
-4. Scroll to **USDA Food Database API Key** and paste your key.
-5. Tap anywhere outside the menu or tap Close.
+4. Scroll to **USDA Food Database API Key** and paste your key (it is masked by default for privacy; tap the eye icon button to reveal or re-hide it).
+5. Tap anywhere outside the menu or tap Close (the key automatically re-masks when closed).
 
 Your API key is saved locally in your phone's browser storage (`localStorage`). It is **never sent to any third-party server or saved in public repository code**.
 

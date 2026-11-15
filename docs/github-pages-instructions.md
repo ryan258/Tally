@@ -52,8 +52,9 @@ Static hosting services like GitHub Pages serve files directly to client browser
 Tally handles API keys using **Device-Local Storage**:
 1. No API keys are hardcoded in `index.html` or committed to Git.
 2. The user pastes their USDA API key into the app's **Menu (⋯)** sheet on their device.
-3. The key is saved locally in browser `localStorage` (`state.usdaApiKey`).
-4. When performing live searches, Tally queries `api.nal.usda.gov` directly from the client using the locally stored key.
+3. The key is masked by default with an on-demand reveal toggle and auto-remasks on close.
+4. The key is saved locally in browser `localStorage` (`state.usdaApiKey`).
+5. When performing live searches, Tally queries `api.nal.usda.gov` directly from the client using the locally stored key.
 
 This guarantees your personal API key remains private while deploying public code to GitHub Pages.
 

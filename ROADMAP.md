@@ -4,9 +4,9 @@ Tally is a fast, offline-first personal calorie and nutrition tracker built for 
 
 ---
 
-## Current Status: v1.5.0 + Storage & Offline Hardening
+## Current Status: v1.5.0 + Storage, Offline & Accessibility Hardening
 
-All core tracking, insights, and offline resilience features are implemented and tested across 33 automated Node test cases (`node --test tests/*.test.js`).
+All core tracking, insights, offline resilience, and sheet accessibility features are implemented and verified across 44 automated Node test cases (`node --test tests/*.test.js` or `npm test`).
 
 ### Shipped Milestones
 
@@ -46,14 +46,21 @@ All core tracking, insights, and offline resilience features are implemented and
   - View switcher tab bar toggling between **Today** and **Insights** panes.
   - 30-day Homer Simpson demo dataset for instant feature exploration.
 
-- **Storage Persistence & Service Worker Resilience (Current)**
+- **Storage Persistence & Service Worker Resilience**
   - **Corrupt Storage Preservation**: Unreadable or malformed `localStorage` data is preserved on startup rather than wiped, exposing a **Download preserved data** menu action.
   - **Atomic Storage Updates**: State mutations during backup import, go-to merging, or resets occur only when storage writes succeed; failures leave current data intact.
   - **Zero-Valued Goal Retention**: Retains zero-valued targets and preserved fiber/sugar targets across backup sanitization.
   - **Service Worker Isolation**: Activation cleans only `tally-v*` cache versions, leaving unrelated caches on the same origin undisturbed.
   - **Resilient Offline Shell**: Offline fallback is strictly restricted to document navigation (`mode === "navigate"`), preventing HTML from being served for failed API or resource calls.
   - **Background Cache Lifecycles**: Cache refreshes are kept alive via `waitUntil` without blocking or delaying network responses.
-  - **Automated Test Coverage**: Dedicated persistence (`tests/tally-persistence.test.js`) and service worker (`tests/tally-service-worker.test.js`) suites.
+
+- **Accessibility Hardening, UI Polish & Security (Current)**
+  - **Accessible Sheet Dialogs & Focus Trapping**: All sheets now use native `inert`, `role="dialog"`, `aria-modal="true"`, and accessible heading labels (`aria-labelledby`). When opened, sibling page elements become `inert`. Keyboard focus wraps smoothly on `Tab` and `Shift+Tab`, skipping hidden/disabled items, and restores to the triggering control on `Escape`.
+  - **Restored CSS Layout & Component Styles**: Added complete styling for `.row2` two-column inputs, `.suggest` typeahead item badges, `.empty-state` banners, `.collapsible-btn` secondary nutrient toggles, `.theme-picker` buttons, and `.manage-item` drag rows.
+  - **USDA API Key Masking**: The USDA key input in the Settings menu is masked as a password with a dedicated accessible show/hide toggle button (`#toggleUsdaKey`), and automatically re-masks whenever the sheet closes.
+  - **Unified Emoji Detection**: Single source of truth in `food-images.js` (`TallyFoodImages.detectEmoji`) for food keywords to emoji mapping with generic fallback.
+  - **Strict Backup Payload Validation**: Non-object or array-wrapped JSON backups are safely rejected with user feedback before touching memory or storage.
+  - **Tooling & CI Automation**: Integrated ESLint, Prettier, and GitHub Actions CI workflow running 44 automated tests.
 
 ---
 

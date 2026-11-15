@@ -2,12 +2,8 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const {
-  num,
-  str,
-  round1,
   deriveMacroGoalsFromRatios,
   calculateServingNutrients,
-  formatEntryTime,
   inferMealTag,
   mealForEntry,
   LEGACY_MEAL,

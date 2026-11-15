@@ -2,7 +2,7 @@
   "use strict";
 
   function num(v){ const n=+v; return Number.isFinite(n) && n>=0 ? n : 0; }
-  function str(v){ return typeof v==="string" ? v : (v==null ? "" : String(v)); }
+  function str(v){ return typeof v === "string" ? v : (v === null || v === undefined ? "" : String(v)); }
   function round1(n){ return Math.round((+n||0)*10)/10; }
 
   function deriveMacroGoalsFromRatios(calorieGoal, proteinPct, carbsPct, fatPct){
@@ -156,6 +156,12 @@
     const m = String(d.getMonth() + 1).padStart(2, "0");
     const day = String(d.getDate()).padStart(2, "0");
     return `${y}-${m}-${day}`;
+  }
+
+  function prettyDate(key){
+    const [y,m,d] = (key || "").split("-").map(Number);
+    if(!y || !m || !d) return "";
+    return new Date(y, m - 1, d).toLocaleDateString(undefined, {weekday:"short", month:"short", day:"numeric"});
   }
 
   function parseDayKey(key){
@@ -495,6 +501,7 @@
     calculateWeeklySummary,
     buildHistoryCsv,
     CSV_COLUMNS,
+    prettyDate,
   });
 
   root.TallyHelpers = api;

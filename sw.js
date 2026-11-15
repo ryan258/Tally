@@ -37,7 +37,9 @@ self.addEventListener("fetch", e => {
         // usable network response or hold it until a cache write completes.
         try {
           e.waitUntil(Promise.resolve(cache.put(e.request, res.clone())).catch(() => {}));
-        } catch (_) {}
+        } catch {
+          // Cache-write failures must not break an already-successful response.
+        }
       }
       return res;
     });

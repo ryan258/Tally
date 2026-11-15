@@ -513,9 +513,171 @@
   }
   body.is-offline .offline-pill{display: inline-flex;}
 
+  /* Two-column field pairs */
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+  /* Typeahead suggestions */
+  .suggest{display:flex;flex-direction:column;gap:6px;margin:-4px 0 12px}
+  .suggest:empty{display:none}
+  .suggest-item{
+    display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;
+    background:#fff8e7;border:2px solid #000;border-radius:10px;padding:8px 12px;cursor:pointer;
+    box-shadow:2px 2px 0 #000;min-height:44px;
+  }
+  .suggest-item:active{transform:translate(1px,1px);box-shadow:1px 1px 0 #000}
+  .suggest-item .nm{font-family:'Outfit',sans-serif;font-size:14px;font-weight:800;color:#000;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+  .suggest-item .nm b{color:var(--pop-pink)}
+  .suggest-item .mt{font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:600;color:#555}
+  .badge{font-family:'Outfit',sans-serif;font-size:10px;font-weight:800;letter-spacing:.5px;padding:1px 6px;border-radius:5px;border:1.5px solid #000}
+  .badge.saved{background:var(--pop-yellow)}
+  .badge.usda{background:var(--pop-cyan)}
+
+  /* Empty states */
+  .empty-state{
+    text-align:center;background:#ffffff;border:2.5px dashed #000;border-radius:14px;
+    padding:18px 14px;box-shadow:3px 3px 0 #000;
+  }
+  .empty-title{font-family:'Bangers',cursive;font-size:19px;letter-spacing:.5px;color:#000}
+  .empty-desc{font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:#555;margin-top:4px;line-height:1.4}
+  .empty-note{
+    font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:#555;
+    padding:14px;text-align:center;background:#fff8e7;border:2px dashed #000;border-radius:12px;
+  }
+
+  /* Collapsible secondary nutrients */
+  .collapsible-btn{
+    width:100%;height:42px;border-radius:10px;border:2.5px dashed #000;background:#fff8e7;color:#000;
+    font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;margin-bottom:12px;text-align:left;padding:0 14px;
+  }
+
+  /* Theme picker */
+  .theme-picker{display:flex;gap:6px;margin-bottom:14px}
+  .theme-btn{
+    flex:1;height:40px;border-radius:10px;border:2.5px solid #000;background:#ffffff;color:#000;
+    font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;cursor:pointer;box-shadow:2.5px 2.5px 0 #000;
+  }
+  .theme-btn.active{background:var(--pop-yellow);transform:translate(1px,1px);box-shadow:1px 1px 0 #000}
+
+  /* Manage list rows */
+  .manage-item{
+    display:flex;align-items:center;gap:10px;background:#ffffff;border:2px solid #000;border-radius:12px;
+    padding:8px 10px;box-shadow:2px 2px 0 #000;margin-bottom:8px;
+  }
+  .manage-item .body{flex:1;min-width:0}
+  .manage-item .body .nm{font-family:'Outfit',sans-serif;font-size:14.5px;font-weight:800;color:#000;display:flex;align-items:center;gap:6px}
+  .manage-item .body .mt{font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:600;color:#555;margin-top:1px}
+  .drag-handle{cursor:grab;font-size:16px;color:#666;padding:4px;touch-action:none;user-select:none;letter-spacing:-2px}
+  .drag-handle:active{cursor:grabbing}
+  .mini{
+    width:34px;height:34px;border-radius:8px;border:1.5px solid #000;background:#fff;color:#000;
+    font-size:15px;display:grid;place-items:center;cursor:pointer;flex:0 0 auto;box-shadow:1.5px 1.5px 0 #000;
+  }
+  .mini.del{color:var(--pop-red)}
+  .mini:active{transform:translate(1px,1px);box-shadow:0 0 0 #000}
+  .manage-item.is-dragging{
+    position:fixed;z-index:50;opacity:.9;box-shadow:4px 4px 0 #000;pointer-events:none;
+  }
+  .manage-item-placeholder{border:2px dashed #000;border-radius:12px;background:#fff8e7;margin-bottom:8px}
+
+  /* Checkbox label */
+  .check{display:flex;align-items:center;gap:8px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:#000;margin-bottom:12px;cursor:pointer}
+  .check input{width:22px;height:22px;accent-color:var(--pop-pink)}
+
+  /* Truncating names and streak stats */
+  .nm-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .item .body .nm{display:flex;align-items:center;gap:4px;min-width:0}
+  .streak-stats{font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:#333;text-align:right}
+
+  /* Chart container */
+  .chart-container{width:100%}
+
   /* Keep focus visible for keyboard users on the controls that receive it. */
   .sheet :focus-visible,.icon-btn:focus-visible,.link-btn:focus-visible,.btn:focus-visible,.trend-btn:focus-visible{
     outline:3px solid var(--pop-pink);outline-offset:2px;}
+
+  /* High-contrast theme overrides — strong borders and high-text legibility */
+  :root[data-theme="highcontrast"]{
+    --bg:#000; --surface:#111; --surface-2:#1c1c1c; --line:#ffffff; --text:#ffffff; --muted:#e8e8e8;
+    --pop-paper:#000; --pop-card-bg:#111; --pop-yellow:#ffe600; --pop-cyan:#00e5ff; --pop-pink:#ff2a85;
+    --accent:#00e5ff; --accent-2:#ffe600; --ring-shadow:0 0 0 #fff;
+  }
+  :root[data-theme="highcontrast"] body{background-image:none;background-color:#000;color:#fff}
+  :root[data-theme="highcontrast"] header,
+  :root[data-theme="highcontrast"] .stat,
+  :root[data-theme="highcontrast"] .streak-stats,
+  :root[data-theme="highcontrast"] .macro-grid,
+  :root[data-theme="highcontrast"] .water-card,
+  :root[data-theme="highcontrast"] .weekly-card,
+  :root[data-theme="highcontrast"] .streak-card,
+  :root[data-theme="highcontrast"] .summary-card,
+  :root[data-theme="highcontrast"] .trend-card,
+  :root[data-theme="highcontrast"] .macro-stat,
+  :root[data-theme="highcontrast"] .s-stat,
+  :root[data-theme="highcontrast"] .day-box,
+  :root[data-theme="highcontrast"] .chip,
+  :root[data-theme="highcontrast"] .meal-section,
+  :root[data-theme="highcontrast"] .meal-header h3,
+  :root[data-theme="highcontrast"] .meal-sub,
+  :root[data-theme="highcontrast"] .item,
+  :root[data-theme="highcontrast"] .item .tag,
+  :root[data-theme="highcontrast"] .item .body .nm,
+  :root[data-theme="highcontrast"] .item .body .mt,
+  :root[data-theme="highcontrast"] .chart-box,
+  :root[data-theme="highcontrast"] .sheet,
+  :root[data-theme="highcontrast"] .field input,
+  :root[data-theme="highcontrast"] .field select,
+  :root[data-theme="highcontrast"] .suggest-item,
+  :root[data-theme="highcontrast"] .manage-item,
+  :root[data-theme="highcontrast"] .empty-state,
+  :root[data-theme="highcontrast"] .empty-note,
+  :root[data-theme="highcontrast"] .toast,
+  :root[data-theme="highcontrast"] .date,
+  :root[data-theme="highcontrast"] .breakdown,
+  :root[data-theme="highcontrast"] .icon-btn,
+  :root[data-theme="highcontrast"] .link-btn,
+  :root[data-theme="highcontrast"] .fab,
+  :root[data-theme="highcontrast"] .btn,
+  :root[data-theme="highcontrast"] .view-tab,
+  :root[data-theme="highcontrast"] .unit-btn,
+  :root[data-theme="highcontrast"] .ratio-btn,
+  :root[data-theme="highcontrast"] .meal-pill-btn,
+  :root[data-theme="highcontrast"] .goal-edit,
+  :root[data-theme="highcontrast"] .water-btn,
+  :root[data-theme="highcontrast"] .item .del{
+    border-color:#ffffff !important;
+  }
+  :root[data-theme="highcontrast"] .stat,
+  :root[data-theme="highcontrast"] .item,
+  :root[data-theme="highcontrast"] .chip,
+  :root[data-theme="highcontrast"] .meal-section,
+  :root[data-theme="highcontrast"] .breakdown,
+  :root[data-theme="highcontrast"] .sheet,
+  :root[data-theme="highcontrast"] .macro-stat,
+  :root[data-theme="highcontrast"] .water-card,
+  :root[data-theme="highcontrast"] .empty-state{
+    background:#111 !important;
+    color:#ffffff !important;
+  }
+  :root[data-theme="highcontrast"] .stat::before,
+  :root[data-theme="highcontrast"] .stat.over-budget{
+    background:#111 !important;
+    color:#ffe600 !important;
+  }
+  :root[data-theme="highcontrast"] .field input,
+  :root[data-theme="highcontrast"] .suggest-item,
+  :root[data-theme="highcontrast"] .manage-item{
+    background:#1c1c1c !important;
+    color:#ffffff !important;
+  }
+  :root[data-theme="highcontrast"] .s-stat{background:#1c1c1c !important;color:#ffffff !important;}
+  :root[data-theme="highcontrast"] .chart-box{background:#1c1c1c !important;}
+  :root[data-theme="highcontrast"] .item .body .nm,
+  :root[data-theme="highcontrast"] .nm-txt{color:#ffffff !important;}
+  :root[data-theme="highcontrast"] .metric-label-zoom{zoom:1;}
+
+  /* Font-size scaling via zoom; widely supported on Chrome/Safari */
+  html[data-font-size="large"] body{ zoom:1.12; }
+  html[data-font-size="xlarge"] body{ zoom:1.28; }
 
   @media (prefers-reduced-motion: reduce){
     *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;
@@ -709,7 +871,7 @@
 <div class="scrim" id="scrim"></div>
 
 <!-- Food sheet -->
-<div class="sheet" id="foodSheet">
+<div class="sheet" id="foodSheet" role="dialog" aria-modal="true" aria-labelledby="foodSheetTitle" tabindex="-1" inert>
   <div class="grab"></div>
   <h3 id="foodSheetTitle">LOG SOME FOOD!</h3>
 
@@ -794,9 +956,9 @@
 </div>
 
 <!-- Exercise sheet -->
-<div class="sheet" id="exSheet">
+<div class="sheet" id="exSheet" role="dialog" aria-modal="true" aria-labelledby="exerciseSheetTitle" tabindex="-1" inert>
   <div class="grab"></div>
-  <h3>LOG AN ACTIVITY!</h3>
+  <h3 id="exerciseSheetTitle">LOG AN ACTIVITY!</h3>
   <div class="field">
     <label for="eName">What did you do?</label>
     <input id="eName" data-autofocus type="text" placeholder="e.g. Walk, Gym" autocomplete="off" spellcheck="true" autocapitalize="words" autocorrect="on" enterkeyhint="next">
@@ -816,9 +978,9 @@
 </div>
 
 <!-- Manage foods sheet -->
-<div class="sheet" id="manageSheet">
+<div class="sheet" id="manageSheet" role="dialog" aria-modal="true" aria-labelledby="manageSheetTitle" tabindex="-1" inert>
   <div class="grab"></div>
-  <h3>YOUR GO-TO FOODS!</h3>
+  <h3 id="manageSheetTitle">YOUR GO-TO FOODS!</h3>
   <p class="hint">Save the things you reach for most, then tap them to log in a flash. Drag ⋮⋮ to reorder.</p>
   <div class="field" style="margin-bottom:12px">
     <input id="manageSearch" type="search" placeholder="Find a go-to..." autocomplete="off">
@@ -831,7 +993,7 @@
 </div>
 
 <!-- Goal sheet -->
-<div class="sheet" id="goalSheet">
+<div class="sheet" id="goalSheet" role="dialog" aria-modal="true" aria-labelledby="goalTitle" tabindex="-1" inert>
   <div class="grab"></div>
   <h3 id="goalTitle">MAKE IT YOURS!</h3>
 
@@ -873,15 +1035,23 @@
 </div>
 
 <!-- Menu sheet -->
-<div class="sheet" id="menuSheet">
+<div class="sheet" id="menuSheet" role="dialog" aria-modal="true" aria-labelledby="menuSheetTitle" tabindex="-1" inert>
   <div class="grab"></div>
-  <h3>SETTINGS &amp; YOUR DATA</h3>
+  <h3 id="menuSheetTitle">SETTINGS &amp; YOUR DATA</h3>
 
   <h4>APP THEME</h4>
   <div class="theme-picker" id="themePicker">
     <button class="theme-btn active" data-theme-val="auto">AUTO (SYSTEM)</button>
     <button class="theme-btn" data-theme-val="dark">DARK</button>
     <button class="theme-btn" data-theme-val="light">LIGHT</button>
+    <button class="theme-btn" data-theme-val="highcontrast">HIGH CONTRAST</button>
+  </div>
+
+  <h4>FONT SIZE</h4>
+  <div class="theme-picker" id="fontSizePicker">
+    <button class="theme-btn active" data-size="normal">NORMAL</button>
+    <button class="theme-btn" data-size="large">LARGE</button>
+    <button class="theme-btn" data-size="xlarge">XLARGE</button>
   </div>
 
   <h4>DAILY GOALS</h4>
@@ -910,7 +1080,8 @@
   <p class="hint">Add your free USDA API key to search everyday foods as you log. It stays right here on this device.</p>
   <div class="field">
     <label for="menuUsdaKey">USDA API Key</label>
-    <input id="menuUsdaKey" type="text" placeholder="Paste your key here" autocomplete="off" spellcheck="false">
+    <input id="menuUsdaKey" type="password" placeholder="Paste your key here" autocomplete="off" spellcheck="false">
+    <button class="btn" id="toggleUsdaKey" type="button" aria-controls="menuUsdaKey" style="width:100%;margin-top:8px">SHOW API KEY</button>
   </div>
 
   <h4>SIMPSONS DEMO DATA</h4>
@@ -948,6 +1119,24 @@
   const VERSION = globalThis.TALLY_VERSION;
   const SCHEMA_VERSION = 1;
 
+  // Global safety net: never leave the UI frozen on a runtime error. Errors are
+  // surfaced via toast so the user can save/export before closing.
+  let lastErrorToastAt = 0;
+  window.addEventListener("error", e => {
+    const now = Date.now();
+    if(now - lastErrorToastAt < 5000) return;
+    lastErrorToastAt = now;
+    try{ pop("Something hiccuped — your data is still safe in this tab"); }catch(_){}
+    console.error("[tally]", e.message);
+  });
+  window.addEventListener("unhandledrejection", e => {
+    const now = Date.now();
+    if(now - lastErrorToastAt < 5000) return;
+    lastErrorToastAt = now;
+    try{ pop("Something hiccuped — your data is still safe in this tab"); }catch(_){}
+    console.error("[tally]", e.reason);
+  });
+
   // Honour the OS "reduce motion" setting for the count-up animations. CSS covers the rest.
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -956,6 +1145,7 @@
     goals: { calories: 2000, protein: 150, carbs: 200, fat: 67, fiber: 30, sugar: 50, waterGoal: 8, macroRatios: { protein: 30, carbs: 40, fat: 30 } },
     usdaApiKey: "",
     theme: "auto",
+    fontSize: "normal",
     foods: [
       { id: uid(), name: "Egg", calories: 78, protein: 6, carbs: 0.6, fat: 5, fiber: 0, sugar: 0.4, emoji: "🥚" },
       { id: uid(), name: "Chicken breast 100g", calories: 165, protein: 31, carbs: 0, fat: 3.6, fiber: 0, sugar: 0, emoji: "🍗" },
@@ -1000,6 +1190,7 @@
       if(!s.days)  s.days = {};
       if(typeof s.usdaApiKey !== "string") s.usdaApiKey = "";
       if(typeof s.theme !== "string") s.theme = "auto";
+      if(typeof s.fontSize !== "string") s.fontSize = "normal";
       return s;
     }catch(e){
       storageReadable=false;
@@ -1060,37 +1251,38 @@
   }
   applyTheme(state.theme);
 
+  /* ---------- Font size switcher ---------- */
+  function applyFontSize(size){
+    state.fontSize = size || "normal";
+    if(state.fontSize === "normal"){
+      document.documentElement.removeAttribute("data-font-size");
+    } else {
+      document.documentElement.setAttribute("data-font-size", state.fontSize);
+    }
+    save();
+    document.querySelectorAll("#fontSizePicker .theme-btn").forEach(b => {
+      b.classList.toggle("active", b.getAttribute("data-size") === state.fontSize);
+    });
+  }
+  applyFontSize(state.fontSize);
+
   document.addEventListener("click", e => {
     const btn = e.target.closest(".theme-btn");
-    if(btn){
+    if(!btn) return;
+    const themeVal = btn.getAttribute("data-theme-val");
+    const sizeVal = btn.getAttribute("data-size");
+    if(themeVal){
       vibrate(10);
-      applyTheme(btn.getAttribute("data-theme-val"));
+      applyTheme(themeVal);
+    } else if(sizeVal){
+      vibrate(10);
+      applyFontSize(sizeVal);
     }
   });
 
   /* ---------- Emoji Auto-Detector ---------- */
-  function detectEmoji(name){
-    const n=String(name||"").toLowerCase();
-    if(n.includes("egg")) return "🥚";
-    if(n.includes("chicken")||n.includes("poultry")) return "🍗";
-    if(n.includes("yogurt")||n.includes("oat")||n.includes("cereal")) return "🥣";
-    if(n.includes("banana")) return "🍌";
-    if(n.includes("shake")||n.includes("smoothie")||n.includes("drink")) return "🥤";
-    if(n.includes("steak")||n.includes("beef")||n.includes("meat")) return "🥩";
-    if(n.includes("apple")) return "🍎";
-    if(n.includes("salad")) return "🥗";
-    if(n.includes("pizza")) return "🍕";
-    if(n.includes("rice")) return "🍚";
-    if(n.includes("fish")||n.includes("salmon")||n.includes("tuna")) return "🐟";
-    if(n.includes("bread")||n.includes("toast")) return "🍞";
-    if(n.includes("coffee")||n.includes("espresso")) return "☕";
-    if(n.includes("milk")||n.includes("cheese")) return "🧀";
-    if(n.includes("walk")||n.includes("hike")) return "🚶";
-    if(n.includes("run")||n.includes("jog")) return "🏃";
-    if(n.includes("gym")||n.includes("workout")||n.includes("lift")) return "🏋️";
-    if(n.includes("cycle")||n.includes("bike")) return "🚴";
-    return "";
-  }
+  // Single source of truth lives in food-images.js; this is a thin alias.
+  function detectEmoji(name){ return FoodImages.detectEmoji(name); }
 
   /* ---------- Animated Count-Up ---------- */
   const animState = { calRemain: null, proTotal: null, carbsTotal: null, fatTotal: null };
@@ -1115,10 +1307,6 @@
   function todayKey(d=new Date()){
     const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0");
     return `${y}-${m}-${day}`;
-  }
-  function prettyDate(key){
-    const [y,m,d]=key.split("-").map(Number);
-    return new Date(y,m-1,d).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
   }
   function today(){
     if(!state.days[currentKey]) state.days[currentKey] = { entries:[], water:0 };
@@ -1158,7 +1346,7 @@
   }
 
   function render(){
-    $("#todayDate").textContent = prettyDate(currentKey);
+    $("#todayDate").textContent = Helpers.prettyDate(currentKey);
     const t = totals();
     const g = state.goals;
 
@@ -1609,14 +1797,22 @@
 
   /* ---------- sheets ---------- */
   const scrim=$("#scrim");
+  const sheetBackground=[$("#mainHeader"),$("#app")];
   let openSheet=null;
   let lastFocused=null;
+  function setUsdaKeyVisible(visible){
+    const input=$("#menuUsdaKey"), button=$("#toggleUsdaKey");
+    if(input) input.type=visible ? "text" : "password";
+    if(button) button.textContent=visible ? "HIDE API KEY" : "SHOW API KEY";
+  }
   function show(id){
-    if(openSheet){ openSheet.classList.remove("open"); openSheet.style.transform = ""; }
+    setUsdaKeyVisible(false);
+    if(openSheet){ openSheet.classList.remove("open"); openSheet.style.transform = ""; openSheet.inert=true; }
     // Only remember the opener when no sheet was already up, so chained sheets
     // still return focus to the button that started the flow.
     if(!openSheet) lastFocused = document.activeElement;
-    const s=$("#"+id); s.classList.add("open"); scrim.classList.add("open"); openSheet=s;
+    const s=$("#"+id); s.inert=false; s.classList.add("open"); scrim.classList.add("open"); openSheet=s;
+    sheetBackground.forEach(node=>{ if(node) node.inert=true; });
 
     // Move focus into the sheet. Only a field marked data-autofocus gets real focus —
     // anything else would pop the on-screen keyboard on a phone, so those sheets take
@@ -1627,8 +1823,10 @@
     setTimeout(()=>{ if(openSheet===s) target.focus(); }, reduceMotion.matches ? 0 : 280);
   }
   function hide(){
-    if(openSheet){ openSheet.classList.remove("open"); openSheet.style.transform = ""; }
+    setUsdaKeyVisible(false);
+    if(openSheet){ openSheet.classList.remove("open"); openSheet.style.transform = ""; openSheet.inert=true; }
     scrim.classList.remove("open"); openSheet=null;
+    sheetBackground.forEach(node=>{ if(node) node.inert=false; });
     if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
     // Restoring to <body> is a no-op that would just steal focus back from nothing.
     if(lastFocused && lastFocused !== document.body && document.contains(lastFocused) && lastFocused.focus) lastFocused.focus();
@@ -1680,7 +1878,18 @@
   });
 
   document.addEventListener("keydown", e => {
-    if(e.key === "Escape" && openSheet) hide();
+    if(!openSheet) return;
+    if(e.key === "Escape"){ e.preventDefault(); hide(); return; }
+    if(e.key !== "Tab") return;
+    const controls=Array.from(openSheet.querySelectorAll("button, input, select, textarea, a[href], [tabindex]"))
+      .filter(node=>node.tabIndex>=0 && !node.disabled && !node.closest("[inert]") && node.getClientRects().length);
+    const first=controls[0], last=controls[controls.length-1], active=document.activeElement;
+    if(!first){ e.preventDefault(); openSheet.focus(); return; }
+    if(e.shiftKey && (active===first || active===openSheet || !openSheet.contains(active))){
+      e.preventDefault(); last.focus();
+    }else if(!e.shiftKey && (active===last || active===openSheet || !openSheet.contains(active))){
+      e.preventDefault(); first.focus();
+    }
   });
 
   /* Food Sheet logic */
@@ -2305,6 +2514,7 @@
     const usdaKeyEl=$("#menuUsdaKey");
     if(usdaKeyEl) usdaKeyEl.value=state.usdaApiKey||"";
     applyTheme(state.theme);
+    applyFontSize(state.fontSize);
     show("menuSheet");
   };
 
@@ -2320,6 +2530,10 @@
   bindGoalInput("#menuFatGoal","fat");
 
   const usdaInput=$("#menuUsdaKey");
+  const toggleUsdaKey=$("#toggleUsdaKey");
+  if(usdaInput && toggleUsdaKey){
+    toggleUsdaKey.onclick=()=>setUsdaKeyVisible(usdaInput.type === "password");
+  }
   if(usdaInput){
     const applyUsdaKey=()=>{ state.usdaApiKey=usdaInput.value.trim(); save(); };
     usdaInput.addEventListener("change",applyUsdaKey);
@@ -2432,7 +2646,12 @@
     r.onload=()=>{
       try{
         const data=JSON.parse(r.result);
-        if(!data || typeof data!=="object"){ pop("We couldn’t recognize that file"); return; }
+        if(!data || typeof data!=="object" || Array.isArray(data) ||
+           (data.foods!==undefined && !Array.isArray(data.foods)) ||
+           (data.days!==undefined && (!data.days || typeof data.days!=="object" || Array.isArray(data.days))) ||
+           (data.goals!==undefined && (!data.goals || typeof data.goals!=="object" || Array.isArray(data.goals)))){
+          pop("We couldn’t recognize that backup format; your data is unchanged"); return;
+        }
         // Files with no schemaVersion are pre-1.4 backups and still import fine.
         const fileSchema = Helpers.num(data.schemaVersion) || 0;
         if(fileSchema > SCHEMA_VERSION &&
@@ -2448,6 +2667,7 @@
               goals: sanitizeGoals(data.goals),
               usdaApiKey: Helpers.str(data.usdaApiKey || state.usdaApiKey),
               theme: Helpers.str(data.theme || state.theme),
+              fontSize: Helpers.str(data.fontSize || state.fontSize),
               foods: sanitizeFoods(data.foods),
               days:  sanitizeDays(data.days)
             };
@@ -2543,7 +2763,11 @@
   if(eNameEl) eNameEl.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); eCalEl.focus(); } });
   if(eCalEl) eCalEl.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#eSubmit").click(); } });
 
-  $("#goalSheet").addEventListener("keydown",e=>{ if(e.key==="Enter") $("#goalSubmit").click(); });
+  $("#goalSheet").addEventListener("keydown",e=>{
+    if(e.key==="Enter" && !e.isComposing && e.target.tagName==="INPUT"){
+      e.preventDefault(); $("#goalSubmit").click();
+    }
+  });
 
   /* Collapsing summary header on scroll */
   const mainHeader = $("#mainHeader");
